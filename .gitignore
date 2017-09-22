@@ -1,1 +1,8 @@
+#Directories
 /.idea
+
+
+
+
+#Files
+*.pyc
