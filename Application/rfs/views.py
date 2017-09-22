@@ -33,7 +33,7 @@ class ProjectDetail(DetailView):
 class ProjectCreate(CreateView):
     model=Project
     template_name='rfs/project_create.html'
-    fields=['project_name']
+    fields=['project_name','description']
     def get_context_data(self,**kwargs):
         context=super(ProjectCreate,self).get_context_data(**kwargs)
         context['all_projects']=Project.objects.all()

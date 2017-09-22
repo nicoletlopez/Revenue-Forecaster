@@ -28,28 +28,22 @@
 
                       <ul class="stats-overview">
                         <li>
-                          <span class="name"> Occupancy Rate </span>
+                          <span class="name"> Field </span>
                           <span class="value text-success"> ### </span>
                         </li>
                         <li>
-                          <span class="name"> RevPar </span>
+                          <span class="name"> Field </span>
                           <span class="value text-success"> ### </span>
                         </li>
                         <li class="hidden-phone">
-                          <span class="name"> Revenue Forecast </span>
+                          <span class="name"> Field </span>
                           <span class="value text-success"> ### </span>
                         </li>
                       </ul>
                       <br />
-
                       <div id="mainb" style="height:350px;">
                           {% include 'rfs/project_graphs.html' %}
                       </div>
-
-
-
-
-
                     </div>
 
                     <!-- start project-detail sidebar -->
@@ -64,8 +58,11 @@
                         <div class="panel-body">
                           <h3 class="green"><i class="fa fa-paint-brush"></i> {{ project.project_name }}</h3>
 
-                          <p>//Project description will be here</p>
-
+                            {% if project.description %}
+                            <p>{{ project.description }}</p>
+                                {% else %}
+                                <p>No description.</p>
+                            {% endif %}
 
                           <br />
                           <h5>Project files</h5>
