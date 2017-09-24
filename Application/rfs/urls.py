@@ -10,6 +10,7 @@ urlpatterns=[
     url(r'^dashboard/$',views.IndexView,name='index'),
     url(r'project/(?P<pk>[0-9]+)/details/$',views.ProjectDetail.as_view(),name='project'),
     url(r'project/create/$',views.ProjectCreate.as_view(),name='project-create'),
+    #url(r'project/files/',views.FileView.as_view(),name='file-view'),
     #url(r'project/')
     #url(r'^signup/$',views.LoginView,name='signup'),
 ]

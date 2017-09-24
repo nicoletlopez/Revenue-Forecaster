@@ -2,88 +2,31 @@
 {% block title %}{{ project.project_name }} Project - Details{% endblock %}
 {% block body %}
 <!-- page content -->
-    <div class="">
-            <div class="page-title">
-              <div class="title_left">
-                <h3>{{ project.project_name }} Project <small> details</small></h3>
-              </div>
+<div class="">
+      <div class="page-title">
+        <div class="title_left">
+          <h3>{{ project.project_name }} Project <small>{% block subtitle %}details{% endblock %}</small></h3>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="x_panel">
+            <div class="x_title">
+              <h2>TABS WILL BE HERE :D</h2>
+              <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+              </ul>
+              <div class="clearfix"></div>
             </div>
 
-            <div class="clearfix"></div>
-            <div class="row">
-              <div class="col-md-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>TABS WILL BE HERE :D</h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                      </li>
-                    </ul>
-                    <div class="clearfix"></div>
-                  </div>
-
-                  <div class="x_content">
-
-                    <div class="col-md-9 col-sm-9 col-xs-12">
-
-                      <ul class="stats-overview">
-                        <li>
-                          <span class="name"> Field </span>
-                          <span class="value text-success"> ### </span>
-                        </li>
-                        <li>
-                          <span class="name"> Field </span>
-                          <span class="value text-success"> ### </span>
-                        </li>
-                        <li class="hidden-phone">
-                          <span class="name"> Field </span>
-                          <span class="value text-success"> ### </span>
-                        </li>
-                      </ul>
-                      <br />
-                      <div id="mainb" style="height:350px;">
-                          {% include 'rfs/project_graphs.html' %}
-                      </div>
-                    </div>
-
-                    <!-- start project-detail sidebar -->
-                    <div class="col-md-3 col-sm-3 col-xs-12">
-
-                      <section class="panel">
-
-                        <div class="x_title">
-                          <h2>Project Description</h2>
-                          <div class="clearfix"></div>
-                        </div>
-                        <div class="panel-body">
-                          <h3 class="green"><i class="fa fa-paint-brush"></i> {{ project.project_name }}</h3>
-
-                            {% if project.description %}
-                            <p>{{ project.description }}</p>
-                                {% else %}
-                                <p>No description.</p>
-                            {% endif %}
-
-                          <br />
-                          <h5>Project files</h5>
-                          <ul class="list-unstyled project_files">
-                            //project files will be here
-                          </ul>
-                          <br />
-
-                          <div class="text-center mtop20">
-                            <a href="#" class="btn btn-sm btn-primary">Add files</a>
-                          </div>
-                        </div>
-
-                      </section>
-
-                    </div>
-                    <!-- end project-detail sidebar -->
-
-                  </div>
-                </div>
-              </div>
+            <div class="x_content">
+            {% block content %}{% include 'rfs/project_details.html' %}{% endblock %}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}

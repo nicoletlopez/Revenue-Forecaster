@@ -21,6 +21,7 @@ def IndexView(request):
     template_name='rfs/base.html'
     return render(request,template_name,context)
 
+#PROJECT VIEWS
 class ProjectDetail(DetailView):
     model=Project
     template_name='rfs/project.html'
@@ -28,6 +29,7 @@ class ProjectDetail(DetailView):
     def get_context_data(self,**kwargs):
         context=super(ProjectDetail,self).get_context_data(**kwargs)
         context['all_projects']=Project.objects.all()
+        context['all_files']=File.objects.all()
         return context
 
 class ProjectCreate(CreateView):

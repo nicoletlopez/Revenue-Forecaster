@@ -1,0 +1,39 @@
+{% include 'rfs/project_graphs.html' %}
+<div class="col-md-3 col-sm-3 col-xs-12">
+
+<section class="panel">
+
+  <div class="x_title">
+    <h2>Project Description</h2>
+    <div class="clearfix"></div>
+  </div>
+  <div class="panel-body">
+    <h3 class="green"><i class="fa fa-paint-brush"></i> {{ project.project_name }}</h3>
+
+      {% if project.description %}
+      <p>{{ project.description }}</p>
+          {% else %}
+          <p>No description.</p>
+      {% endif %}
+
+    <br />
+    <h5>Project files</h5>
+    <ul class="list-unstyled project_files">
+    {% if project.file_set.all %}
+        {% for file in project.file_set.all %}
+        <li>{{ file.file_name }}</li>
+        {% endfor %}
+    {% else %}
+         <li>No files uploaded.</li>
+    {% endif %}
+    </ul>
+    <br />
+
+    <div class="text-center mtop20">
+      <a href="#" class="btn btn-sm btn-primary">Add files</a>
+    </div>
+  </div>
+
+</section>
+
+</div>
