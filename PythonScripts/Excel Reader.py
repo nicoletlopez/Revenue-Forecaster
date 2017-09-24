@@ -2,10 +2,10 @@ from __future__ import print_function
 from os.path import join, dirname, abspath
 import datetime, xlrd
 from xlrd.sheet import ctype_text
+'''
+#database 
 import MySQLdb
 connection=MySQLdb.connect(host="localhost", user="root", passwd="", db="python")
-
-#database syntax
 cur=connection.cursor() #establishes connection
 cur.execute("create table lfy(ID int NOT NULL AUTO_INCREMENT, LastName varchar(255) NOT NULL,FirstName varchar(255),Age int, PRIMARY KEY (ID))") #create Table
 cur.execute("insert into lfy (FirstName,LastName) values('Lars','Monsen')") #Insert to Table
@@ -16,6 +16,7 @@ row=cur.fetchone() #fetch one row at a time
 connection.commit() #pushes the values to database
 cur.close()
 connection.close()
+'''
 
 
 # Open the workbook
