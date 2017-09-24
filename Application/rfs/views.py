@@ -41,3 +41,13 @@ class ProjectCreate(CreateView):
         context['all_projects']=Project.objects.all()
         return context
 
+class FileAdd(TemplateView):
+    model=File
+    template_name='rfs/file_add.html'
+    fields=['file_name']
+
+    def get_context_data(self,**kwargs):
+        context=super(FileAdd,self).get_context_data(**kwargs)
+        context['all_projects']=Project.objects.all()
+        context['all_files'] = File.objects.all()
+        return context

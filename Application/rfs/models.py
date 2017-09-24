@@ -16,6 +16,9 @@ class File(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
     file_name=models.FileField()
 
+    def get_absolute_url(self):
+        return reverse('rfs:file-add',kwargs={'pk':self.pk})
+
 
 """
 class SEGMENTATION_LIST(models.Model):

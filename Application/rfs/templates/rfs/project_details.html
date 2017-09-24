@@ -21,17 +21,21 @@
     <ul class="list-unstyled project_files">
     {% if project.file_set.all %}
         {% for file in project.file_set.all %}
-        <li>{{ file.file_name }}</li>
+        <li><a href="#"><i class="fa fa-file-excel-o"></i>{{ file.file_name }}</a></li>
         {% endfor %}
     {% else %}
          <li>No files uploaded.</li>
     {% endif %}
-    </ul>
+</ul>
+
     <br />
 
     <div class="text-center mtop20">
-      <a href="#" class="btn btn-sm btn-primary">Add files</a>
+
+            <a href="{% url 'rfs:file-add' project.id %}" class="btn btn-sm btn-primary">Add files</a>
+
     </div>
+
   </div>
 
 </section>
