@@ -19,13 +19,12 @@ class File(models.Model):
     def get_absolute_url(self):
         return reverse('rfs:file-add',kwargs={'pk':self.pk})
 
-"""Created by JUSTIN"""
-"""
 class Segment_list(models.Model):
+    seg_id = models.AutoField(primary_key=True)
     seg_type = models.CharField(max_length=25)
 
-class Group_segment(models.Model):
-"""
+    def __str__(self):
+        return str(self.seg_id) + " - %s" % self.seg_type
 
 
 """
