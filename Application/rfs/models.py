@@ -14,10 +14,7 @@ class Project(models.Model):
 
 class File(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
-    file_name=models.FileField()
-
-    def get_absolute_url(self):
-        return reverse('rfs:file-add',kwargs={'pk':self.pk})
+    excel_file=models.FileField()
 
 class Segment_list(models.Model):
     seg_id = models.AutoField(primary_key=True)
