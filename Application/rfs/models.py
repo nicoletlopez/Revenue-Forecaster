@@ -22,11 +22,38 @@ class File(models.Model):
 class Segment_list(models.Model):
     seg_id = models.AutoField(primary_key=True)
     seg_type = models.CharField(max_length=25)
-
     def __str__(self):
         return str(self.seg_id) + " - %s" % self.seg_type
+    class Meta:
+        ordering = ['seg_id']
 
+class Individual_segment(models.Model):
+    ind_seg_id = models.OneToOneField(Segment_list,on_delete=models.CASCADE,primary_key=True)
+    ind_seg_nme = models.CharField(max_length=25)
+    def __str__(self):
+        return str(self.ind_seg_id) + " %s " % self.ind_seg_nme
+    class Meta:
+        ordering = ['ind_seg_id']
 
+class Group_segment(models.Model):
+    grp_seg_id = models.OneToOneField(Segment_list,on_delete=models.CASCADE,primary_key=True)
+    grp_seg_nme = models.CharField(max_length=25)
+    def __str__(self):
+        return str(self.grp_seg_id) + " %s " % self.grp_seg_nme
+    class Meta:
+        ordering = ['grp_seg_id']
+
+class Actual(models.Model):
+    actual_id = models.CharField(max_length=20, primary_key=True,)
+    SEG_ID = models.ForeignKey(Segment_list, primary_key=True, unique=False)
+    PROJECT_ID = models.ForeignKey(Project)
+    DATE = models.DateField()
+    BUDGET_RNS = models.FloatField()
+    BUDGET_ARR = models.FloatField()
+    BUDGET_REVENUE = models.FloatField()
+    ACTUAL_RNS = models.FloatField()
+    ACTUAL_ARR = models.FloatField()
+    ACTUAL_REVENUE = models.FloatField()
 """
 class SEGMENTATION_LIST(models.Model):
     SEG_ID=models.CharField(max_length=25,primary_key=True)
