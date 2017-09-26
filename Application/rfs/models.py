@@ -12,9 +12,12 @@ class Project(models.Model):
         return self.project_name
         #+'-'+self.last_modified+'-'+self.created_at
 
+def project_directory_path(instance,filename):
+    return 'project_{0}/{1}'.format(instance.project.project_name,filename)
+
 class File(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
-    excel_file=models.FileField()
+    excel_file=models.FileField(upload_to=project_directory_path)
 
 class Segment_list(models.Model):
     seg_id = models.AutoField(primary_key=True)
