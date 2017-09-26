@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'RevenueSystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'rfsa',
+        'NAME': 'rfsa2',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
