@@ -44,6 +44,10 @@ class ProjectCreate(CreateView):
         context['all_projects']=Project.objects.all()
         return context
 
+class ProjectDelete(DeleteView):
+    model=Project
+    success_url=reverse_lazy('rfs:index')
+
 def FileAdd(request,project_id):
     form=FileForm(request.POST or None,request.FILES or None)
     project=get_object_or_404(Project,pk=project_id)
@@ -77,7 +81,7 @@ def FileAdd(request,project_id):
             return render(request, 'rfs/file_add.html', context)
 
         file.save()
-        return render(request, 'rfs/project_details.html', {'project': project,'all_projects':projects,})
+        return render(request, 'rfs/file_add.html', {'project': project,'all_projects':projects,'form': form,})
     context = {
         'all_projects': projects,
         'all_files': File.objects.all(),
