@@ -33,7 +33,7 @@ class Segment_list(models.Model):
 
 class Individual_segment(models.Model):
     ind_seg_id = models.OneToOneField(Segment_list,on_delete=models.CASCADE,primary_key=True)
-    ind_seg_nme = models.CharField(max_length=25, )
+    ind_seg_nme = models.CharField(max_length=25)
     def __str__(self):
         return self.ind_seg_nme
     class Meta:
@@ -49,7 +49,7 @@ class Group_segment(models.Model):
 
 class Actual(models.Model):
     actual_id = models.AutoField(primary_key=True,)
-    seg_id = models.ForeignKey(Segment_list, on_delete=models.CASCADE)
+    seg_id = models.ForeignKey(Segment_list, on_delete=models.CASCADE,blank=True,default='RCK')
     date = models.DateField()
     budget_rns = models.FloatField()
     budget_arr = models.FloatField()
@@ -58,7 +58,7 @@ class Actual(models.Model):
     actual_arr = models.FloatField()
     actual_rev = models.FloatField()
     def __str__(self):
-        return str(self.actual_id) + " %s %s " % (self.seg_id,self.date)
+        return str(self.actual_id) + " - %s %s " % (self.seg_id,self.date)
     class Meta:
         ordering = ['actual_id']
 
@@ -69,6 +69,8 @@ class Forecast(models.Model):
     forecast_arr = models.FloatField()
     forecast_rev = models.FloatField()
     actual_reference = models.ManyToManyField(Actual)
+    def __str__(self):
+        return str(self.forecast_id) + " - %s " % self.date
 
 """
 class SEGMENTATION_LIST(models.Model):
