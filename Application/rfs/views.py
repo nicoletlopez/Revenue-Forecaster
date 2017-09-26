@@ -52,7 +52,6 @@ def FileAdd(request,project_id):
     form=FileForm(request.POST or None,request.FILES or None)
     project=get_object_or_404(Project,pk=project_id)
     projects=Project.objects.all()
-
     if form.is_valid():
         project_files = project.file_set.all()
         for f in project_files:
@@ -81,7 +80,11 @@ def FileAdd(request,project_id):
             return render(request, 'rfs/file_add.html', context)
 
         file.save()
-        return render(request, 'rfs/file_add.html', {'project': project,'all_projects':projects,'form': form,})
+        return render(request, 'rfs/file_add.html',
+                      {'project': project,
+                       'all_projects':projects,
+                       'form': form,
+                       })
     context = {
         'all_projects': projects,
         'all_files': File.objects.all(),
@@ -91,14 +94,14 @@ def FileAdd(request,project_id):
     return render(request, 'rfs/file_add.html', context)
 
 """
-class FileAdd(TemplateView):
-    model=File
-    template_name='rfs/file_add.html'
-    fields=['file_name']
-
-    def get_context_data(self,**kwargs):
-        context=super(FileAdd,self).get_context_data(**kwargs)
-        context['all_projects']=Project.objects.all()
-        context['all_files'] = File.objects.all()
-        return context
+def FileDelete(request,project_id,file_id):
+    form = FileForm(request.POST or None, request.FILES or None)
+    project=get_object_or_404(Project, pk=project_id)
+    file=File.objects.get(pk=file_id)
+    file.delete()
+    return render(request,'rfs/project.html',
+                {'all_projects': Project.objects.all(),
+                'all_files': File.objects.all(),
+                'project': project,
+                'form': form,})
 """

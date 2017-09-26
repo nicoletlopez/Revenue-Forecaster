@@ -14,7 +14,8 @@
     <ul class="list-unstyled project_files">
     {% if project.file_set.all %}
         {% for file in project.file_set.all %}
-        <li><a href="#"><i class="fa fa-file-excel-o"></i>{{ file.excel_file }}</a></li>
+        <li><a href="#"><i class="fa fa-file-excel-o"></i>{{ file.excel_file }}</a>
+        </li>
         {% endfor %}
     {% else %}
          <li>No files uploaded.</li>
