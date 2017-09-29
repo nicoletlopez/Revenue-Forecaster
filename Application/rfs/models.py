@@ -19,6 +19,9 @@ class File(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
     excel_file=models.FileField(upload_to=project_directory_path)
 
+    def get_absolute_url(self):
+        return reverse('rfs:file-delete',kwargs={'file_id':self.pk})
+
 class Segment_list(models.Model):
     SEG_TYPES= (
         ('IND','Individual'),

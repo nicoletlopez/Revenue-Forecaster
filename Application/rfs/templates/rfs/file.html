@@ -13,14 +13,7 @@
     <ul class="list-unstyled project_files">
     {% if project.file_set.all %}
         {% for file in project.file_set.all %}
-        <li><a href="#"><i class="fa fa-file-excel-o"></i>{{ file.excel_file }}</a>
-        <form action="{% url 'rfs:file-delete' project.id file.id %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="project_id" value="{{ project.id }}" />
-            <button type="submit" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-trash"></span>
-            </button>
-        </form>
+        <li><a href="#">{{ file.excel_file }}{% include 'rfs/file_delete.html' %}</a>
         </li>
         {% endfor %}
     {% else %}
