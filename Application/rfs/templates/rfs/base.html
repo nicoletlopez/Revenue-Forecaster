@@ -49,8 +49,8 @@
                   </li>
                   <li><a href="{% url 'rfs:project-create' %}"><i class="fa fa-plus"></i> Create a Project</a>
                   </li>
-                      <li><a><i class="fa fa-folder"></i> Projects <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
+                      <li class="active"><a><i class="fa fa-folder"></i> Projects <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="display:block;">
                     {% if all_projects %}
                         {% for project in all_projects %}
                             <li><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
@@ -113,5 +113,7 @@
     <script src="{% static 'rfs/vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
     <!-- Custom Theme Scripts -->
     <script src="{% static 'rfs/build/js/custom.min.js' %}"></script>
+
+    <script src="{% static 'rfs/self/script.js' %}"></script>
  </body>
 </html>
