@@ -13,8 +13,7 @@
     <ul class="list-unstyled project_files">
     {% if project.file_set.all %}
         {% for file in project.file_set.all %}
-        <li><a href="#">{{ file.excel_file }}{% include 'rfs/file_delete.html' %}</a>
-        </li>
+            <li style="display:inline-block;width: 1000px;"><a href="#"><i class="fa fa-file-excel-o"></i>{{ file.excel_file }}</a>{% include 'rfs/file_delete.html' %}</li>
         {% endfor %}
     {% else %}
          <li>No files uploaded.</li>

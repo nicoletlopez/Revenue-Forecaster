@@ -95,7 +95,11 @@ def FileView(request,project_id):
     return render(request, 'rfs/file.html', context)
 
 def FileDelete(request,project_id,file_id):
-    project=get_object_or_404(Project, pk=project_id)
     file=File.objects.get(pk=file_id)
     file.delete()
     return HttpResponseRedirect(reverse('rfs:file', args=[project_id]))
+
+def FileDeleteInDetails(request,project_id,file_id):
+    file = File.objects.get(pk=file_id)
+    file.delete()
+    return HttpResponseRedirect(reverse('rfs:project', args=[project_id]))
