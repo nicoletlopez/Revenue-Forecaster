@@ -10,3 +10,5 @@ PythonScripts/JUSTIN/.idea/workspace.xml
 PythonScripts/JUSTIN/.idea/JUSTIN.iml
 PythonScripts/JUSTIN/.idea/modules.xml
 PythonScripts/JUSTIN/.idea/misc.xml
+*.xml
+PythonScripts/.idea/PythonScripts.iml
