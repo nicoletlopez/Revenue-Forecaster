@@ -94,24 +94,8 @@ def FileView(request,project_id):
     }
     return render(request, 'rfs/file.html', context)
 
-"""
-class FileDelete(DeleteView):
-    model=File
-    
-    def get_object(self,queryset=None):
-        project=self.kwargs['project_id']
-        file=self.kwargs['file_id']
-        return reverse('rfs:file',kwargs={'project_id':project})
-"""
-
-
 def FileDelete(request,project_id,file_id):
-    form = FileForm(request.POST or None, request.FILES or None)
     project=get_object_or_404(Project, pk=project_id)
     file=File.objects.get(pk=file_id)
     file.delete()
-    return render(request,'rfs/file.html',
-                {'all_projects': Project.objects.all(),
-                'all_files': File.objects.all(),
-                'project': project,
-                'form': form,})
+    return HttpResponseRedirect(reverse('rfs:file', args=[project_id]))
