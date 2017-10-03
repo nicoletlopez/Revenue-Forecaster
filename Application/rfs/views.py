@@ -7,18 +7,19 @@ from django.core.urlresolvers import reverse_lazy,reverse
 from .forms import UserForm,FileForm
 from .models import Project,File
 from django.http import HttpResponse,Http404,HttpResponseRedirect
+from .excelReader import excel_reader
 
 
 EXCEL_FILE_TYPES=['xlsx','xls']
 
-def StartView(request):
+def start_view(request):
     return redirect('rfs:login')
 
-def LoginView(request):
+def login_view(request):
     template_name='rfs/login.html'
     return render(request,template_name)
 
-def IndexView(request):
+def index_view(request):
 
     projects=Project.objects.all()
     context={'all_projects':projects}
@@ -49,7 +50,7 @@ class ProjectDelete(DeleteView):
     model=Project
     success_url=reverse_lazy('rfs:index')
 
-def FileView(request,project_id):
+def file_view(request, project_id):
     form = FileForm(request.POST or None, request.FILES or None)
     project=get_object_or_404(Project,pk=project_id)
     projects = Project.objects.all()
@@ -94,12 +95,27 @@ def FileView(request,project_id):
     }
     return render(request, 'rfs/file.html', context)
 
-def FileDelete(request,project_id,file_id):
+def file_delete(request, project_id, file_id):
     file=File.objects.get(pk=file_id)
     file.delete()
     return HttpResponseRedirect(reverse('rfs:file', args=[project_id]))
 
-def FileDeleteInDetails(request,project_id,file_id):
+def file_delete_in_details(request, project_id, file_id):
     file = File.objects.get(pk=file_id)
     file.delete()
     return HttpResponseRedirect(reverse('rfs:project', args=[project_id]))
+
+##EXCELREADER
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+def read_excel(request):
+
+    choice=request.POST.get('chosenFile')
+    if choice==None:
+        return render(request,'rfs/read_insert.html',{'files':File.objects.all(),})
+    excelReader=excel_reader(str(BASE_DIR)+'/projects/'+str(choice))
+    return render(request,'rfs/read_insert.html',{'output':(str(BASE_DIR)+'/projects/project_d/sample.xlsx'),
+                                                  'files':File.objects.all(),
+                                                  'return':excelReader,
+                                                  'choice':choice
+                                                  })
