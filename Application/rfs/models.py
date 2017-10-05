@@ -37,7 +37,7 @@ class Seg_list(models.Model):
         ordering = ['id']
 
 class Ind_seg(models.Model):
-    ind_id = models.OneToOneField(Seg_list,on_delete=models.CASCADE,
+    ind = models.OneToOneField(Seg_list,on_delete=models.CASCADE,
                                   primary_key=True)
     tag = models.CharField(max_length=30)
     name = models.CharField(max_length=30)
@@ -48,7 +48,7 @@ class Ind_seg(models.Model):
         ordering = ['ind_id']
 
 class Grp_seg(models.Model):
-    grp_id = models.OneToOneField(Seg_list,on_delete=models.CASCADE,
+    grp = models.OneToOneField(Seg_list,on_delete=models.CASCADE,
                                   primary_key=True)
     tag = models.CharField(max_length=30)
     name = models.CharField(max_length=30)
@@ -57,6 +57,7 @@ class Grp_seg(models.Model):
         return self.name
     class Meta:
         ordering = ['grp_id']
+
 
 """
 class Segment_list(models.Model):
