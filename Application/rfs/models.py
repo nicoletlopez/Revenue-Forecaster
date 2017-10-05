@@ -22,6 +22,43 @@ class File(models.Model):
     def get_absolute_url(self):
         return reverse('rfs:file-delete',kwargs={'file_id':self.pk})
 
+class Seg_list(models.Model):
+    SEG_TYPES = (
+        ('IND', 'Individual'),
+        ('GRP', 'Group'),
+    )
+    tag = models.CharField(max_length=30)
+    name = models.CharField(max_length=30)
+    seg_type = models.CharField(max_length=30,choices=SEG_TYPES)
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ['id']
+
+class Ind_seg(models.Model):
+    ind_id = models.OneToOneField(Seg_list,on_delete=models.CASCADE,
+                                  primary_key=True)
+    tag = models.CharField(max_length=30)
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ['ind_id']
+
+class Grp_seg(models.Model):
+    grp_id = models.OneToOneField(Seg_list,on_delete=models.CASCADE,
+                                  primary_key=True)
+    tag = models.CharField(max_length=30)
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ['grp_id']
+
+"""
 class Segment_list(models.Model):
     SEG_TYPES= (
         ('IND','Individual'),
@@ -74,6 +111,7 @@ class Forecast(models.Model):
     actual_reference = models.ManyToManyField(Actual)
     def __str__(self):
         return str(self.forecast_id) + " - %s " % self.date
+        """
 
 """
 class SEGMENTATION_LIST(models.Model):
