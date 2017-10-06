@@ -31,7 +31,7 @@
               <div class="profile_info">
                   <div style="text-align: center;">
                 <span>Welcome,</span>
-                      <h2>John Doe</h2>
+                      <h2>{{ user }}</h2>
                   </div>
               </div>
             </div>
@@ -86,11 +86,11 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    John Doe
+                    {{ user  }}
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
-                    <li><a href="{% url 'rfs:login' %}"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                    <li><a href="{% url 'rfs:logout' %}"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
                   </ul>
                 </li>
               </ul>

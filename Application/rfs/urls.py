@@ -7,6 +7,7 @@ app_name='rfs'
 urlpatterns=[
     url(r'^$', views.start_view, name='start'),
     url(r'^login/$', views.login_view, name='login'),
+    url(r'^logout/$', views.logout_user, name='logout'),
     url(r'^dashboard/$', views.index_view, name='index'),
     url(r'project/(?P<pk>[0-9]+)/$',views.ProjectDetail.as_view(),name='project'),
     url(r'project/create/$',views.ProjectCreate.as_view(),name='project-create'),
