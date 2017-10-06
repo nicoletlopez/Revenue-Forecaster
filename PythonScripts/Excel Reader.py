@@ -44,7 +44,7 @@ for idx, cell_obj in enumerate(row):
         print('(%s) %s' %(idx, cell_obj.value)) #Prints Subsegment
         mon = 5
         monx = 0
-        cur.execute("create table if NOT EXISTS cell_obj.value(ID int NOT NULL AUTO_INCREMENT, name varchar(255), author varchar(40))")
+        #cur.execute("create table if NOT EXISTS cell_obj.value(ID int NOT NULL AUTO_INCREMENT, name varchar(255), author varchar(40))")
         for xmonth in month:
             print (xmonth) #prints the Month
             mon = mon + monx

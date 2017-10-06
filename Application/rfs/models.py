@@ -21,6 +21,8 @@ class File(models.Model):
 
     def get_absolute_url(self):
         return reverse('rfs:file-delete',kwargs={'file_id':self.pk})
+    def __str__(self):
+        return str(self.excel_file)
 
 class Seg_list(models.Model):
     SEG_TYPES = (
@@ -57,6 +59,32 @@ class Grp_seg(models.Model):
         return self.name
     class Meta:
         ordering = ['grp_id']
+
+class Actual(models.Model):
+    actual_id = models.AutoField(primary_key=True,)
+    seg_id = models.ForeignKey(Seg_list, on_delete=models.CASCADE,blank=True,default='RCK')
+    date = models.DateField()
+    budget_rns = models.FloatField()
+    budget_arr = models.FloatField()
+    budget_rev = models.FloatField()
+    actual_rns = models.FloatField()
+    actual_arr = models.FloatField()
+    actual_rev = models.FloatField()
+    def __str__(self):
+        return str(self.actual_id) + " - %s %s " % (self.seg_id,self.date)
+    class Meta:
+        ordering = ['actual_id']
+
+class Forecast(models.Model):
+    forecast_id = models.AutoField(primary_key=True)
+    date = models.DateField()
+    forecast_rns = models.FloatField()
+    forecast_arr = models.FloatField()
+    forecast_rev = models.FloatField()
+    actual_reference = models.ManyToManyField(Actual)
+    def __str__(self):
+        return str(self.forecast_id) + " - %s " % self.date
+
 
 
 """
