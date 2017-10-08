@@ -4,13 +4,14 @@ from django.core.urlresolvers import reverse
 class Project(models.Model):
     project_name=models.CharField(max_length=50,unique=True)
     description=models.TextField(blank=True)
+    status_types=(('ARC','Archived'),('ACT','Active'))
+    status=models.CharField(max_length=3,choices=status_types,default='ACT')
     #last_modified=models.DateTimeField(auto_now=True)
     #created_at=models.DateTimeField(auto_now_add=True)
     def get_absolute_url(self):
         return reverse('rfs:project',kwargs={'pk':self.pk})
     def __str__(self):
-        return self.project_name
-        #+'-'+self.last_modified+'-'+self.created_at
+        return self.project_name+'-'+self.status
 
 def project_directory_path(instance,filename):
     return 'project_{0}/{1}'.format(instance.project.project_name,filename)
@@ -18,6 +19,8 @@ def project_directory_path(instance,filename):
 class File(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
     excel_file=models.FileField(upload_to=project_directory_path)
+    status_types = (('ACH', 'Archived'), ('ACT', 'Active'))
+    status = models.CharField(max_length=3, choices=status_types, default='ACT')
 
     def get_absolute_url(self):
         return reverse('rfs:file-delete',kwargs={'file_id':self.pk})
@@ -63,7 +66,7 @@ class Grp_seg(models.Model):
 
 class Actual(models.Model):
     actual_id = models.AutoField(primary_key=True,)
-    seg_id = models.ForeignKey(Seg_list, on_delete=models.CASCADE,blank=True,default='RCK')
+    seg_id = models.ForeignKey(Seg_list, on_delete=models.CASCADE,blank=True)
     date = models.DateField()
     budget_rns = models.FloatField()
     budget_arr = models.FloatField()

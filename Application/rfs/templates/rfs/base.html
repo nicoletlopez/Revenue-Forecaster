@@ -49,22 +49,26 @@
                   </li>
                   <li><a href="{% url 'rfs:project-create' %}"><i class="fa fa-plus"></i> Create a Project</a>
                   </li>
-                      <li class="active"><a><i class="fa fa-folder"></i> Projects <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu" style="display:block;">
+                  <li class="{% block projact %}{% endblock %}"><a><i class="fa fa-folder"></i> Projects <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="{% block projblo %}{% endblock %}">
                     {% if all_projects %}
                         {% for project in all_projects %}
                             <li><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
-                        <!--
-                      <li><a href="index.html">Dashboard</a></li>
-                      <li><a href="index2.html">Dashboard2</a></li>
-                      <li><a href="index3.html">Dashboard3</a></li>
-                      -->
                     </ul>
                   </li>
-
+                  <li><a><i class="fa fa-archive"></i> Archived Projects <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                    {% if arc_projects %}
+                        {% for project in arc_projects %}
+                            <li><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                    </ul>
+                  </li>
                   </ul>
 
               </div>

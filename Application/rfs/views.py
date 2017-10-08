@@ -29,7 +29,7 @@ def login_view(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return render(request, 'rfs/base.html', {'all_projects': Project.objects.all(),
+                    return render(request, 'rfs/base.html', {'all_projects': Project.objects.all().filter(status='ACT'),
                                                              'user':request.user.username,})
                 else:
                     return render(request, 'rfs/login.html', {'error_message': 'Your account has been disabled'})
@@ -50,11 +50,12 @@ def index_view(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('rfs:login'))
     else:
-        context={'all_projects':Project.objects.all()}
+        context={'all_projects':Project.objects.all().filter(status='ACT'),
+                 'arc_projects':Project.objects.all().filter(status='ARC'),}
         template_name='rfs/base.html'
         return render(request,template_name,context)
 
-##########################PROJECT VIEWS
+##########################PROJECT VIEWS#######################
 class ProjectDetail(LoginRequiredMixin,DetailView):
     login_url = 'rfs:login'
     redirect_field_name = 'redirect_to'
@@ -63,8 +64,9 @@ class ProjectDetail(LoginRequiredMixin,DetailView):
 
     def get_context_data(self,**kwargs):
         context=super(ProjectDetail,self).get_context_data(**kwargs)
-        context['all_projects']=Project.objects.all()
+        context['all_projects']=Project.objects.all().filter(status='ACT')
         context['all_files']=File.objects.all()
+        context['arc_projects']=Project.objects.all().filter(status='ARC')
         return context
 
 class ProjectCreate(LoginRequiredMixin,CreateView):
@@ -75,14 +77,17 @@ class ProjectCreate(LoginRequiredMixin,CreateView):
     form_class = CreateForm
     def get_context_data(self,**kwargs):
         context=super(ProjectCreate,self).get_context_data(**kwargs)
-        context['all_projects']=Project.objects.all()
+        context['all_projects']=Project.objects.all().filter(status='ACT')
+        context['arc_projects'] = Project.objects.all().filter(status='ARC')
         return context
 
-class ProjectDelete(LoginRequiredMixin,DeleteView):
+class ProjectUpdate(LoginRequiredMixin, UpdateView):
     login_url = 'rfs:login'
     redirect_field_name = 'redirect_to'
     model=Project
-    success_url=reverse_lazy('rfs:index')
+    fields=['status']
+    #success_url=reverse_lazy('rfs:project',kwargs={'pk':kwargs['asas']})
+
 
 def file_view(request, project_id):
     if not request.user.is_authenticated():
@@ -90,7 +95,7 @@ def file_view(request, project_id):
     else:
         form = FileForm(request.POST or None, request.FILES or None)
         project=get_object_or_404(Project,pk=project_id)
-        projects = Project.objects.all()
+        projects = Project.objects.all().filter(status='ACT')
         if form.is_valid():
             project_files = project.file_set.all()
             for f in project_files:
@@ -101,6 +106,7 @@ def file_view(request, project_id):
                         'project': project,
                         'form': form,
                         'error_message': 'You already added that file',
+                        'arc_projects': Project.objects.all().filter(status='ARC'),
                     }
                     return render(request, 'rfs/file.html', context)
             file = form.save(commit=False)
@@ -115,6 +121,7 @@ def file_view(request, project_id):
                     'project': project,
                     'form': form,
                     'error_message': 'File must be XLS, XLSX',
+                    'arc_projects': Project.objects.all().filter(status='ARC'),
                 }
                 return render(request, 'rfs/file.html', context)
 
@@ -123,12 +130,14 @@ def file_view(request, project_id):
                           {'project': project,
                            'all_projects': projects,
                            'form': form,
+                           'arc_projects': Project.objects.all().filter(status='ARC'),
                            })
         context = {
             'all_projects': projects,
             'all_files': File.objects.all(),
             'project': project,
             'form': form,
+            'arc_projects': Project.objects.all().filter(status='ARC'),
         }
         return render(request, 'rfs/file.html', context)
 
