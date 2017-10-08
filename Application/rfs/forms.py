@@ -15,4 +15,15 @@ class FileForm(forms.ModelForm):
         model=File
         fields=['excel_file']
 
+class CreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CreateForm, self).__init__(*args, **kwargs)
+        self.fields['project_name'].widget.attrs = {'class': 'form-control'}
+        self.fields['description'].widget.attrs = {'class': 'form-control'}
+
+    class Meta:
+        model=Project
+        fields=['project_name','description']
+
 

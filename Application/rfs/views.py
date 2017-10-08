@@ -3,8 +3,9 @@ from django.views.generic import View,TemplateView,DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy,reverse
-from .forms import UserForm,FileForm
+from .forms import UserForm,FileForm,CreateForm
 from .models import Project,File
 from django.http import HttpResponse,Http404,HttpResponseRedirect
 
@@ -18,28 +19,31 @@ def start_view(request):
     return redirect('rfs:login')
 
 def login_view(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return render(request, 'rfs/base.html', {'all_projects': Project.objects.all(),
-                                                         'user':request.user.username,})
+    if request.user.is_authenticated():
+        return render(request,'rfs/login.html',{'error_message':'Logged out'})
+    else:
+        if request.method == "POST":
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return render(request, 'rfs/base.html', {'all_projects': Project.objects.all(),
+                                                             'user':request.user.username,})
+                else:
+                    return render(request, 'rfs/login.html', {'error_message': 'Your account has been disabled'})
             else:
-                return render(request, 'rfs/login.html', {'error_message': 'Your account has been disabled'})
-        else:
-            return render(request, 'rfs/login.html', {'error_message': 'Invalid login'})
-    return render(request, 'rfs/login.html')
+                return render(request, 'rfs/login.html', {'error_message': 'Invalid login'})
+        return render(request, 'rfs/login.html')
 
 def logout_user(request):
     logout(request)
-    form = UserForm(request.POST or None)
+    #form = UserForm(request.POST or None)
     context = {
-        "form": form,
+        "error_message":'Logged out'
     }
-    return render(request, 'rfs/login.html', context)
+    return render(request,'rfs/login.html',context)
 
 
 def index_view(request):
@@ -51,26 +55,32 @@ def index_view(request):
         return render(request,template_name,context)
 
 ##########################PROJECT VIEWS
-class ProjectDetail(DetailView):
-        model=Project
-        template_name='rfs/project.html'
+class ProjectDetail(LoginRequiredMixin,DetailView):
+    login_url = 'rfs:login'
+    redirect_field_name = 'redirect_to'
+    model=Project
+    template_name='rfs/project.html'
 
-        def get_context_data(self,**kwargs):
-            context=super(ProjectDetail,self).get_context_data(**kwargs)
-            context['all_projects']=Project.objects.all()
-            context['all_files']=File.objects.all()
-            return context
+    def get_context_data(self,**kwargs):
+        context=super(ProjectDetail,self).get_context_data(**kwargs)
+        context['all_projects']=Project.objects.all()
+        context['all_files']=File.objects.all()
+        return context
 
-class ProjectCreate(CreateView):
+class ProjectCreate(LoginRequiredMixin,CreateView):
+    login_url='rfs:login'
+    redirect_field_name='redirect_to'
     model=Project
     template_name='rfs/project_create.html'
-    fields=['project_name','description']
+    form_class = CreateForm
     def get_context_data(self,**kwargs):
         context=super(ProjectCreate,self).get_context_data(**kwargs)
         context['all_projects']=Project.objects.all()
         return context
 
-class ProjectDelete(DeleteView):
+class ProjectDelete(LoginRequiredMixin,DeleteView):
+    login_url = 'rfs:login'
+    redirect_field_name = 'redirect_to'
     model=Project
     success_url=reverse_lazy('rfs:index')
 
