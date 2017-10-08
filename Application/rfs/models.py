@@ -37,6 +37,7 @@ class Seg_list(models.Model):
         return self.name
     class Meta:
         ordering = ['id']
+        unique_together = ("tag","name")
 
 class Ind_seg(models.Model):
     ind = models.OneToOneField(Seg_list,on_delete=models.CASCADE,
@@ -84,8 +85,6 @@ class Forecast(models.Model):
     actual_reference = models.ManyToManyField(Actual)
     def __str__(self):
         return str(self.forecast_id) + " - %s " % self.date
-
-
 
 """
 class Segment_list(models.Model):

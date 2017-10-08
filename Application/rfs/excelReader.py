@@ -2,7 +2,8 @@ from __future__ import print_function
 from os.path import join, dirname, abspath
 import datetime, xlrd
 from xlrd.sheet import ctype_text
-
+from .models import *
+from django.db import models
 '''
 #database 
 import MySQLdb
@@ -18,7 +19,6 @@ connection.commit() #pushes the values to database
 cur.close()
 connection.close()
 '''
-
 def excel_reader(file):
     # Open the workbook
     xl_workbook = xlrd.open_workbook(file) #location and name of the file
@@ -45,7 +45,11 @@ def excel_reader(file):
             print('(%s) %s' %(idx, cell_obj.value)) #Prints Subsegment
             mon = 5
             monx = 0
-            cur.execute("create table if NOT EXISTS cell_obj.value(ID int NOT NULL AUTO_INCREMENT, name varchar(255), author varchar(40))")
+            p = Seg_list()
+            p.tag='OO'
+            p.name='Yes'
+            p.seg_type='IND'
+            p.save()
             for xmonth in month:
                 print (xmonth) #prints the Month
                 mon = mon + monx
