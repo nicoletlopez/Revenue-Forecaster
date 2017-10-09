@@ -32,7 +32,7 @@ unneeded_columns = ['','GRAND TOTAL','TOTAL GROUP','TOTAL INDIVIDUAL','SEGMENT N
 #This block of Code gets the subsegment and values of each subsegment in correspondence to Month
 for idx, cell_obj in enumerate(row):
     #only gets the subsegment
-    subsegment = cell_obj.value #use .value to get the value (duh)
+    subsegment = cell_obj.value.upper() #use .value to get the value (duh)
     if subsegment not in unneeded_columns: #get the Subsegment (rack, group, etc)
         print('(%s) %s' %(idx, subsegment))
         mon = 5
@@ -46,7 +46,7 @@ for idx, cell_obj in enumerate(row):
                 column_header = xl_sheet.cell(erow, ecolumn).value
                 print('\t''(%s) %s' % (ecolumn, column_header))
                 counter = 0
-                for y in range(1, 5): #get the Growth Rate, Actual 2015, Budget, Actual 2014 and their respective values
+                for y in range(2, 3): #get the Growth Rate, Actual 2015, Budget, Actual 2014 and their respective values
                     intersect_value = xl_sheet.cell(mon + y, ecolumn).value #the value within the cell
                     row_title = xl_sheet.cell(erow + y, 2).value # the row names themselves(see the comment before the last one)
                     print('\t' '\t' '(%s) %s: %s' % (erow + y, row_title, intersect_value))

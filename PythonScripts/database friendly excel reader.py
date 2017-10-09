@@ -82,4 +82,11 @@ for idx, cell_obj in enumerate(row):
         erow = 7
         m = 0
 
-print(ind_actual)
+#print(ind_actual)
+counter = 0
+for main in ind_actual:
+    for sub_main in ind_actual:
+        for sub_sub_main in sub_main:
+            print(sub_sub_main)
+            counter +=1
+print(counter)
