@@ -1,3 +1,2 @@
-x = {"One":1}
-x["Two"] = 4
-print(x["Two"])
+for y in range(2,3):
+    print(y)
