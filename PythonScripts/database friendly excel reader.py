@@ -29,7 +29,8 @@ for iog, cell_obj in enumerate(ind_or_grp):
         group_start = iog
         print('%s' % group_start)
 
-ind_actual = np.zeros((13, 12), dtype=[('rns', float), ('arr', float), ('rev', float)])
+ind_actual = np.zeros((13, 12),
+                      dtype=[('subsegment', 'S20'), ('month', 'S10'), ('rns', float), ('arr', float), ('rev', float)])
 grp_actual = np.zeros((5, 12), dtype=[('rns', 'f4'), ('arr', 'f4'), ('rev', 'f4')])
 # ind_actual[0,0]['rns'] = 1231
 # print(ind_actual)
@@ -57,6 +58,8 @@ for idx, cell_obj in enumerate(row):
         monx = 0
         for month in month_list:  # get the month (January, February etc)
             #print(month)
+            ind_actual[ss, m]['subsegment'] = subsegment
+            ind_actual[ss, m]['month'] = month
             mon = mon + monx
             for x in range(0, 3):  # get the column headers (Room Nights Sold, Average Rm Rate(PHP), Revenue (PHP'000)
                 ecolumn = idx + x
