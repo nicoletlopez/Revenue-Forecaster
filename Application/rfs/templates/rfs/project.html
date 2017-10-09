@@ -14,12 +14,13 @@
         <div class="col-md-12">
           <div class="x_panel">
             <div class="x_title">
-              <nav class="nav">
-                  <ul style="height:40px;" class="nav navbar-nav panel_toolbox navbar-left">
+              <div class="navbar">
+                <div class="container">
+                  <ul style="height:40px" class="nav navbar-nav navbar-left navBot panel_toolbox">
                       <li><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
                       <li><a href="{% url 'rfs:file' project.id %}"><i class="fa fa-file"> </i> Files </a></li>
                   </ul>
-              <ul class="nav navbar-right panel_toolbox">
+              <ul class="nav navbar-nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                 </li>
                   <li class="dropdown">
@@ -47,7 +48,8 @@
                         </ul>
                   </li>
               </ul>
-              </nav>
+              </div>
+              </div>
               <div class="clearfix"></div>
             </div>
 
