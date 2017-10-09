@@ -12,6 +12,7 @@
     <link href="{% static 'rfs/vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/build/css/custom.min.css' %}" rel="stylesheet">
+    <link href="{% static 'rfs/self/style.css' %}" rel="stylesheet">
 
 </head>
 <body class="nav-md">
@@ -49,26 +50,34 @@
                   </li>
                   <li><a href="{% url 'rfs:project-create' %}"><i class="fa fa-plus"></i> Create a Project</a>
                   </li>
-                  <li class="{% block projact %}{% endblock %}"><a><i class="fa fa-folder"></i> Projects <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu" style="{% block projblo %}{% endblock %}">
+
+                  {% url 'rfs:file' project.id as url %}
+                  <li class="{% if project.status == 'ACT' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url %}display:block;{% endif %}{% endif %}">
                     {% if all_projects %}
                         {% for project in all_projects %}
-                            <li><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:file' project.id as url %}
+                            <li class="{% if request.path == url %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-archive"></i> Archived Projects <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
+
+
+
+                  <li class="{% if project.status == 'ARC' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url %}display:block;{% endif %}{% endif %}">
                     {% if arc_projects %}
                         {% for project in arc_projects %}
-                            <li><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:file' project.id as url %}
+                            <li class="{% if request.path == url %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
                     </ul>
                   </li>
+
                   </ul>
 
               </div>
