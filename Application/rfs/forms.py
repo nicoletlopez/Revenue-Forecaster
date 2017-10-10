@@ -26,6 +26,6 @@ class CreateForm(forms.ModelForm):
         model=Project
         fields=['project_name','description']
 
-class XlToDbForm(forms.Form):
-    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)
-    file=forms.ModelChoiceField(queryset=File.objects.all())
+#class XlToDbForm(forms.Form):
+#    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)
+#    file=forms.ModelChoiceField(queryset=Project.objects.all().filter())

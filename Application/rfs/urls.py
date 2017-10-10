@@ -9,11 +9,17 @@ urlpatterns=[
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', views.logout_user, name='logout'),
     url(r'^dashboard/$', views.index_view, name='index'),
+    ##PROJECT URLS##
     url(r'project/(?P<pk>[0-9]+)/$',views.ProjectDetail.as_view(),name='project'),
     url(r'project/create/$',views.ProjectCreate.as_view(),name='project-create'),
     url(r'project/(?P<pk>[0-9]+)/update/$', views.ProjectUpdate.as_view(), name='project-delete'),
+    ##FILE URLS##
     url(r'project/(?P<project_id>[0-9]+)/files/$', views.file_view, name='file'),
     url(r'project/(?P<project_id>[0-9]+)/files/(?P<file_id>[0-9]+)/update/$', views.file_delete, name='file-delete'),
     url(r'project/(?P<project_id>[0-9]+)/delete/(?P<file_id>[0-9]+)/$', views.file_delete_in_details, name='file-del'),
+    ##DATA FEEDER URLS##
+    url(r'project/(?P<project_id>[0-9]+)/datafeeder', views.excel_to_db, name='datafeed'),
+
+    #TEST#
     url(r'^test/$',views.excel_to_db,name='test'),
 ]

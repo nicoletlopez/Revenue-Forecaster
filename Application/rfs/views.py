@@ -6,7 +6,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy,reverse
-from .forms import UserForm,FileForm,CreateForm,XlToDbForm
+from .forms import UserForm,FileForm,CreateForm
 from .models import Project,File, Actual, Forecast, Seg_list
 from django.http import HttpResponse,Http404,HttpResponseRedirect
 from os.path import join, dirname, abspath
@@ -17,8 +17,7 @@ EXCEL_FILE_TYPES=['xlsx','xls']
 
 def start_view(request):
     if request.user.is_authenticated():
-        logout(request)
-        return render(request, 'rfs/login.html', {'error_message': 'Logged out'})
+        return redirect('rfs:index')
     return redirect('rfs:login')
 
 def login_view(request):
@@ -165,11 +164,12 @@ def file_delete_in_details(request, project_id, file_id):
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-def excel_to_db(request):
+def excel_to_db(request,project_id):
     ##django##
-    form = XlToDbForm(request.POST or None)
-    if form.is_valid():
-        excelfile=BASE_DIR+'/projects/'+str(form.cleaned_data.get("file"))
+    #form = XlToDbForm(request.POST or None)
+    project=get_object_or_404(Project,pk=project_id)
+    if request.method=="POST":
+        excelfile=BASE_DIR+'/projects/'+str(request.POST.get("file"))
     ##enddjango##
         xl_workbook = xlrd.open_workbook(excelfile)
         #xl_workbook = xlrd.open_workbook('2015 ROOMS SEGMENTATION.xlsx')  # location and name of the file
@@ -191,7 +191,7 @@ def excel_to_db(request):
         #print('(Column #) type:value')
         unneeded_columns = ['', 'Barter', 'GRAND TOTAL', 'TOTAL GROUP', 'TOTAL INDIVIDUAL', 'SEGMENT NAME',
                             'Qualified Discount', 'Long Staying']
-        year=form.cleaned_data.get("year")
+        year=request.POST.get("year")
         #year = 2015 #"""URGENT: YEAR MUST BE CHANGEABLE"""
         def getDate(month, year):
             thirty_ones = ["January", "March", "May", "July", "August", "October", "December"]
@@ -269,10 +269,12 @@ def excel_to_db(request):
                     pass
             #print()
         #conn.close()
-        context={'form':form,
-                 'file':excelfile,
-                 'year':year,
-                 'message':'program worked but did it insert? >:3'}
-        return render(request,'rfs/read_insert.html',context)
+        context={'project':project,'message':'Om nomo nom! Data Fed!',
+                 'arc_projects': Project.objects.all().filter(status='ARC'),
+                 'all_projects': Project.objects.all().filter(status='ACT')}
+        return render(request,'rfs/datafeeder.html',context)
 
-    return render(request,'rfs/read_insert.html',{'form':form})
+    context={'project':project,
+             'arc_projects': Project.objects.all().filter(status='ARC'),
+             'all_projects': Project.objects.all().filter(status='ACT')}
+    return render(request,'rfs/datafeeder.html',context)

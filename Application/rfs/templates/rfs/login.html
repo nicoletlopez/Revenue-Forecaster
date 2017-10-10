@@ -6,7 +6,7 @@
         <div class="animate form login_form">
           <section class="login_content">
 
-            <form role="form" action="{% url 'rfs:login'%}" method="post" enctype="multipart/form-data">
+            <form action="{% url 'rfs:login'%}" method="post" enctype="multipart/form-data">
                 <h1>RFS Login</h1>
               {% if error_message %}
                         <p><strong>{{ error_message }}</strong></p>

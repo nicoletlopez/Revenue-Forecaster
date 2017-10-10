@@ -52,12 +52,14 @@
                   </li>
 
                   {% url 'rfs:file' project.id as url %}
-                  <li class="{% if project.status == 'ACT' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
-                    <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url %}display:block;{% endif %}{% endif %}">
+                  {% url 'rfs:datafeed' project.id as url2 %}
+                  <li class="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 %}display:block;{% endif %}{% endif %}">
                     {% if all_projects %}
                         {% for project in all_projects %}
                             {% url 'rfs:file' project.id as url %}
-                            <li class="{% if request.path == url %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:datafeed' project.id as url2 %}
+                            <li class="{% if request.path == url or request.path == url2 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
@@ -66,12 +68,13 @@
 
 
 
-                  <li class="{% if project.status == 'ARC' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
-                    <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url %}display:block;{% endif %}{% endif %}">
+                  <li class="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 %}display:block;{% endif %}{% endif %}">
                     {% if arc_projects %}
                         {% for project in arc_projects %}
                             {% url 'rfs:file' project.id as url %}
-                            <li class="{% if request.path == url %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:datafeed' project.id as url2 %}
+                            <li class="{% if request.path == url or request.path == url2 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}

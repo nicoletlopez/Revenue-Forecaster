@@ -1,0 +1,31 @@
+{% extends 'rfs/project.html' %}
+{% block title %}{{ project.project_name }} Project - Data Feeder{% endblock %}
+{% block subtitle %}data feeder{% endblock %}
+
+{% block content %}
+    {% if message %}
+    <div class="alert alert-info alert-dismissible fade in" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
+                    </button><strong>{{ message }}</strong></div>
+    {% endif %}
+    <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+        <label for="yrselect">Select Year</label>
+        <input id="yrselect" type="number" name="year" class="form-control" value="2015" min="2014" max="2016" required="" />
+        </div>
+        <div class="form-group">
+        <label for="filesel">Select Excel File</label>
+        <select id="filesel" class="form-control" name="file">
+            {% for file in project.file_set.all %}
+            <option value="{{ file.excel_file }}">{{ file.excel_file }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success">Feed Data</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
