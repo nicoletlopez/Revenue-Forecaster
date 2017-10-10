@@ -169,8 +169,9 @@ def excel_to_db(request):
     ##django##
     form = XlToDbForm(request.POST or None)
     if form.is_valid():
+        excelfile=BASE_DIR+'/projects/'+str(form.cleaned_data.get("file"))
     ##enddjango##
-        xl_workbook = xlrd.open_workbook(str(BASE_DIR)+'/projects/'+str(form.cleaned_data.get("file")))
+        xl_workbook = xlrd.open_workbook(excelfile)
         #xl_workbook = xlrd.open_workbook('2015 ROOMS SEGMENTATION.xlsx')  # location and name of the file
         xl_sheet = xl_workbook.sheet_by_index(4)
         #print('Sheet name: %s' % xl_sheet.name)
@@ -269,7 +270,7 @@ def excel_to_db(request):
             #print()
         #conn.close()
         context={'form':form,
-                 'file':str(BASE_DIR)+'/projects/'+str(form.cleaned_data.get("file")),
+                 'file':excelfile,
                  'year':year,
                  'message':'program worked but did it insert? >:3'}
         return render(request,'rfs/read_insert.html',context)
