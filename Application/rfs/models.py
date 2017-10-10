@@ -11,7 +11,7 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse('rfs:project',kwargs={'pk':self.pk})
     def __str__(self):
-        return self.project_name+'-'+self.status
+        return self.project_name
 
 def project_directory_path(instance,filename):
     return 'project_{0}/{1}'.format(instance.project.project_name,filename)
@@ -75,7 +75,7 @@ class Actual(models.Model):
     actual_arr = models.FloatField()
     actual_rev = models.FloatField()
     def __str__(self):
-        return str(self.actual_id) + " - %s %s " % (self.seg_id,self.date)
+        return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
     class Meta:
         ordering = ['actual_id']
 

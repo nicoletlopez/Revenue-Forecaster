@@ -15,5 +15,5 @@ urlpatterns=[
     url(r'project/(?P<project_id>[0-9]+)/files/$', views.file_view, name='file'),
     url(r'project/(?P<project_id>[0-9]+)/files/(?P<file_id>[0-9]+)/update/$', views.file_delete, name='file-delete'),
     url(r'project/(?P<project_id>[0-9]+)/delete/(?P<file_id>[0-9]+)/$', views.file_delete_in_details, name='file-del'),
-    url(r'^test/$',views.read_excel,name='test'),
+    url(r'^test/$',views.excel_to_db,name='test'),
 ]

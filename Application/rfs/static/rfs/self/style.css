@@ -1,5 +1,8 @@
 .navBot li  {
     display:inline-block;
 }
-
+.disabledbutton{
+    pointer-events:none;
+    opacity:0.4;
+}
 

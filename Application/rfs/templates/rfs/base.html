@@ -52,7 +52,7 @@
                   </li>
 
                   {% url 'rfs:file' project.id as url %}
-                  <li class="{% if project.status == 'ACT' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects <span class="fa fa-chevron-down"></span></a>
+                  <li class="{% if project.status == 'ACT' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
                     <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url %}display:block;{% endif %}{% endif %}">
                     {% if all_projects %}
                         {% for project in all_projects %}
@@ -66,7 +66,7 @@
 
 
 
-                  <li class="{% if project.status == 'ARC' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects <span class="fa fa-chevron-down"></span></a>
+                  <li class="{% if project.status == 'ARC' %}{% if request.path == url %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
                     <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url %}display:block;{% endif %}{% endif %}">
                     {% if arc_projects %}
                         {% for project in arc_projects %}

@@ -21,14 +21,8 @@
     <ul style="" class="list-unstyled project_files">
     {% if project.file_set.all %}
         {% for file in project.file_set.all %}
-        <li style="display:inline-block;width:250px" class=""><a href="#"><i class="fa fa-file-excel-o"></i>{{ file.excel_file }}</a>
-        <form action="{% url 'rfs:file-del' project.id file.id %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="project_id" value="{{ project.id }}" />
-            <button type="submit" class="btn btn-default btn-xs btn-danger">
-                <span class="glyphicon glyphicon-trash"></span>
-            </button>
-        </form>
+        <li style="" class=""><a href="#">{{ file.excel_file }}</a>
+
         </li>
         {% endfor %}
     {% else %}

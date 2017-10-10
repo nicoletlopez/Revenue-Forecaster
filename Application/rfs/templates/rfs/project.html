@@ -53,8 +53,15 @@
               <div class="clearfix"></div>
             </div>
 
+
             <div class="x_content">
-            {% block content %}{% include 'rfs/project_details.html' %}{% endblock %}
+            {% if project.status == 'ARC' %}
+            <h3>Project will be available if restored</h3>
+            {% else %}
+            {% block content %}
+                {% include 'rfs/project_details.html' %}
+            {% endblock %}
+            {% endif %}
             </div>
           </div>
         </div>
