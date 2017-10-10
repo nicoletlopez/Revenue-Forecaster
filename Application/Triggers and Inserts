@@ -1,5 +1,5 @@
----create table if not exists rfs_seg_list (id integer not null primary key AUTOINCREMENT , tag varchar(30) not null, name varchar(30) not null, seg_type varchar(30) not null,
-  ---check(seg_type = 'GRP' or(seg_type = 'IND')));
+create table if not exists rfs_seg_list (id integer not null primary key AUTOINCREMENT , tag varchar(30) not null, name varchar(30) not null, seg_type varchar(30) not null,
+  check(seg_type = 'GRP' or(seg_type = 'IND')));
 
 CREATE TRIGGER insert_into_ind_seg after insert on rfs_seg_list
   when new.seg_type = 'IND'
