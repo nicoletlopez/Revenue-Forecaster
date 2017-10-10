@@ -253,8 +253,8 @@ def excel_to_db(request):
                 rev = sub[4]
                 date = getDate(month, year)
                 try:
-                    seg_id = Seg_list.objects.filter(name=segment).values('name') #get the seg_id from the seg list as a foreign key in the actual_row's subsegments
-                    actual_row = Actual(date=getDate(month,year),actual_rns=rns,actual_arr=arr,actual_rev=rev,seg_id=seg_id)
+                    seg_id = Seg_list.objects.get(name=segment) #get the seg_id from the seg list as a foreign key in the actual_row's subsegments
+                    actual_row = Actual(date=getDate(month,year),actual_rns=rns,actual_arr=arr,actual_rev=rev,segment=seg_id)
                     actual_row.save()
                     #print("%s %s %s %s %s %s" % (date, segment, month, rns, arr, rev))
                     #seg_id_get_query = "select id from seg_list where name like  '%%%s' limit 1" % segment
