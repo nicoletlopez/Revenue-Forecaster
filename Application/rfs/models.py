@@ -78,6 +78,7 @@ class Actual(models.Model):
         return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
     class Meta:
         ordering = ['actual_id']
+        unique_together=(('actual_rns','actual_arr','actual_rev'))
 
 class Forecast(models.Model):
     forecast_id = models.AutoField(primary_key=True)
@@ -88,3 +89,4 @@ class Forecast(models.Model):
     actual_reference = models.ManyToManyField(Actual)
     def __str__(self):
         return str(self.forecast_id) + " - %s " % self.date
+    unique_together = (('forecast_rns','forecast_arr','forecast_rev','actual_reference'))
