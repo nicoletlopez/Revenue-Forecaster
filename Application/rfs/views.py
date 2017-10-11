@@ -177,6 +177,10 @@ def excel_to_db(request,project_id):
         #print('Sheet name: %s' % xl_sheet.name)
         row = xl_sheet.row(4)
         ind_or_grp = xl_sheet.row(3)
+
+        #Automated year
+        year = xl_sheet.cell(1,1).value.split()[1]
+
         for iog, cell_obj in enumerate(ind_or_grp):
             if cell_obj.value == 'GROUP':
                 group_start = iog
@@ -191,7 +195,7 @@ def excel_to_db(request,project_id):
         #print('(Column #) type:value')
         unneeded_columns = ['', 'Barter', 'GRAND TOTAL', 'TOTAL GROUP', 'TOTAL INDIVIDUAL', 'SEGMENT NAME',
                             'Qualified Discount', 'Long Staying']
-        year=request.POST.get("year")
+        #year=request.POST.get("year")
         #year = 2015 #"""URGENT: YEAR MUST BE CHANGEABLE"""
         def getDate(month, year):
             thirty_ones = ["January", "March", "May", "July", "August", "October", "December"]
@@ -251,7 +255,7 @@ def excel_to_db(request,project_id):
                 rns = sub[2]
                 arr = sub[3]
                 rev = sub[4]
-                date = getDate(month, year)
+                #date = getDate(month, year)
                 try:
                     seg_id = Seg_list.objects.get(name=segment) #get the seg_id from the seg list as a foreign key in the actual_row's subsegments
                     actual_row = Actual(date=getDate(month,year),actual_rns=rns,actual_arr=arr,actual_rev=rev,segment=seg_id)
