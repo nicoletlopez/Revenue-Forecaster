@@ -275,7 +275,8 @@ def excel_to_db(request,project_id):
         #conn.close()
         context={'project':project,'message':'Om nomo nom! Data Fed!',
                  'arc_projects': Project.objects.all().filter(status='ARC'),
-                 'all_projects': Project.objects.all().filter(status='ACT')}
+                 'all_projects': Project.objects.all().filter(status='ACT'),
+                 }
         return render(request,'rfs/datafeeder.html',context)
 
     context={'project':project,
