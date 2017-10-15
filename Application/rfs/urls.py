@@ -15,8 +15,10 @@ urlpatterns=[
     url(r'project/(?P<pk>[0-9]+)/update/$', views.ProjectUpdate.as_view(), name='project-delete'),
     ##FILE URLS##
     url(r'project/(?P<project_id>[0-9]+)/files/$', views.file_view, name='file'),
-    url(r'project/(?P<project_id>[0-9]+)/files/(?P<file_id>[0-9]+)/update/$', views.file_delete, name='file-delete'),
-    url(r'project/(?P<project_id>[0-9]+)/delete/(?P<file_id>[0-9]+)/$', views.file_delete_in_details, name='file-del'),
+    url(r'project/(?P<project_id>[0-9]+)/files/(?P<file_id>[0-9]+)/update/$', views.file_update, name='file-delete'),
+    url(r'project/(?P<project_id>[0-9]+)/files/archived/$',views.arc_file_view,name='arc-file'),
+    url(r'project/(?P<project_id>[0-9]+)/files/archived/(?P<file_id>[0-9]+)/update/$',views.arc_file_update,name='arc-file-update'),
+    #url(r'project/(?P<project_id>[0-9]+)/delete/(?P<file_id>[0-9]+)/$', views.file_delete_in_details, name='file-del'),
     ##DATA FEEDER URLS##
     url(r'project/(?P<project_id>[0-9]+)/datafeeder', views.excel_to_db, name='datafeed'),
 
