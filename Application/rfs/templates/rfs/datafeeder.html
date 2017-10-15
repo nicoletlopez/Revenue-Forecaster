@@ -8,6 +8,11 @@
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
                     </button><strong>{{ message }}</strong></div>
     {% endif %}
+
+    <h3>Data Feeder</h3>
+    {% if year_detect %}
+        <h5>Year detected: <strong>{{ year_detect }}</strong></h5>
+    {% endif %}
     <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
     <!--
@@ -19,15 +24,21 @@
         <div class="form-group">
         <label for="filesel">Select Excel File</label>
         <select id="filesel" class="form-control" name="file">
-            {% for file in project.file_set.all %}
+        {% if act_files %}
+            {% for file in act_files %}
             <option value="{{ file.excel_file }}">{{ file.excel_file }}</option>
             {% endfor %}
+        {% endif %}
         </select>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+        <div class="col-sm-offset-2 col-sm-10">
+            {% if act_files %}
                 <button type="submit" class="btn btn-success">Feed Data</button>
-            </div>
+            {% else %}
+                <button type="submit" class="btn btn-success" disabled>Feed Data</button>
+            {% endif %}
+        </div>
         </div>
     </form>
 {% endblock %}
