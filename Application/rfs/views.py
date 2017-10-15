@@ -95,8 +95,6 @@ class ProjectUpdate(LoginRequiredMixin, UpdateView):
 
 ##FILE VIEW###################
 
-
-
 def file_view(request, project_id):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('rfs:login'))
@@ -189,12 +187,7 @@ def file_delete_in_details(request, project_id, file_id):
         file.delete()
         return HttpResponseRedirect(reverse('rfs:project', args=[project_id]))
 
-class ActualView(generic.ListView):
-    template_name = 'rfs/actual-data.html'
-    context_object_name = 'actual_data_list'
 
-    def get_queryset(self):
-        return Actual.objects.all()
 
 ###########EXCELREADER#############
 def excel_to_db(request,project_id):
@@ -314,6 +307,7 @@ def excel_to_db(request,project_id):
                  'all_projects': Project.objects.all().filter(status='ACT'),
                  'act_files': File.objects.filter(status='ACT', pk=project_id),
                  'year_detect':year,
+                 'actual_data_list': Actual.objects.all(),
                  }
         return render(request,'rfs/datafeeder.html',context)
 
@@ -321,5 +315,6 @@ def excel_to_db(request,project_id):
              'arc_projects': Project.objects.all().filter(status='ARC'),
              'all_projects': Project.objects.all().filter(status='ACT'),
              'act_files': File.objects.filter(status='ACT', pk=project_id),
+             'actual_data_list':Actual.objects.all(),
              }
     return render(request,'rfs/datafeeder.html',context)

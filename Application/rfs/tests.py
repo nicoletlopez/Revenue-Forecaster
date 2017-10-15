@@ -13,4 +13,4 @@ import datetime, xlrd,numpy as np
 from xlrd.sheet import ctype_text
 
 def test(request):
-    return render(request,'rfs/data_table.html')
+    return render(request,'rfs/actual_table.html')

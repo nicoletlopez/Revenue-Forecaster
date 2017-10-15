@@ -23,5 +23,5 @@ urlpatterns=[
     url(r'project/(?P<project_id>[0-9]+)/datafeeder', views.excel_to_db, name='datafeed'),
 
     #TEST#
-    url(r'^test/$',views.ActualView.as_view(),name='actual-view'),
+    #url(r'^test/$',views.ActualView.as_view(),name='actual-view'),
 ]
