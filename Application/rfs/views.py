@@ -93,9 +93,6 @@ class ProjectUpdate(LoginRequiredMixin, UpdateView):
     fields=['status']
     #success_url=reverse_lazy('rfs:project',kwargs={'pk':kwargs['asas']})
 
-##FILE VIEW###################
-
-
 
 def file_view(request, project_id):
     if not request.user.is_authenticated():
@@ -110,7 +107,7 @@ def file_view(request, project_id):
                 if f.excel_file == form.cleaned_data.get("excel_file"):
                     context = {
                         'all_projects': projects,
-                        'act_files': File.objects.filter(status='ACT',pk=project_id),
+                        'all_files': File.objects.all(),
                         'project': project,
                         'form': form,
                         'error_message': 'You already added that file',
@@ -125,7 +122,7 @@ def file_view(request, project_id):
             if file_type not in EXCEL_FILE_TYPES:
                 context = {
                     'all_projects': projects,
-                    'act_files': File.objects.filter(status='ACT',pk=project_id),
+                    'all_files': File.objects.all(),
                     'project': project,
                     'form': form,
                     'error_message': 'File must be XLS, XLSX',
@@ -137,48 +134,24 @@ def file_view(request, project_id):
             return render(request, 'rfs/file.html',
                           {'project': project,
                            'all_projects': projects,
-                           'act_files': File.objects.filter(status='ACT',pk=project_id),
                            'form': form,
                            'arc_projects': Project.objects.all().filter(status='ARC'),
                            })
         context = {
             'all_projects': projects,
-            'act_files': File.objects.filter(status='ACT',pk=project_id),
+            'all_files': File.objects.all(),
             'project': project,
             'form': form,
             'arc_projects': Project.objects.all().filter(status='ARC'),
         }
         return render(request, 'rfs/file.html', context)
 
-def arc_file_view(request, project_id):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('rfs:login'))
-    else:
-        project=get_object_or_404(Project,pk=project_id)
-        context={
-            'all_projects': Project.objects.all().filter(status='ACT'),
-            'project':project,
-            'arc_files':File.objects.filter(status='ARC',pk=project_id),
-            'arc_projects': Project.objects.all().filter(status='ARC'),
-        }
-        return render(request,'rfs/file_archived.html',context)
-
-def arc_file_update(request,project_id,file_id):
+def file_delete(request, project_id, file_id):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('rfs:login'))
     else:
         file=File.objects.get(pk=file_id)
-        file.status=str(request.POST.get("status"))
-        file.save()
-        return HttpResponseRedirect(reverse('rfs:arc-file', args=[project_id]))
-
-def file_update(request, project_id, file_id):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('rfs:login'))
-    else:
-        file=File.objects.get(pk=file_id)
-        file.status=str(request.POST.get("status"))
-        file.save()
+        file.delete()
         return HttpResponseRedirect(reverse('rfs:file', args=[project_id]))
 
 def file_delete_in_details(request, project_id, file_id):
@@ -308,18 +281,13 @@ def excel_to_db(request,project_id):
                     pass
             #print()
         #conn.close()
-        context={'project':project,
-                 'message':'Om nomo nom! Data Fed!',
+        context={'project':project,'message':'Om nomo nom! Data Fed!',
                  'arc_projects': Project.objects.all().filter(status='ARC'),
                  'all_projects': Project.objects.all().filter(status='ACT'),
-                 'act_files': File.objects.filter(status='ACT', pk=project_id),
-                 'year_detect':year,
                  }
         return render(request,'rfs/datafeeder.html',context)
 
     context={'project':project,
              'arc_projects': Project.objects.all().filter(status='ARC'),
-             'all_projects': Project.objects.all().filter(status='ACT'),
-             'act_files': File.objects.filter(status='ACT', pk=project_id),
-             }
+             'all_projects': Project.objects.all().filter(status='ACT')}
     return render(request,'rfs/datafeeder.html',context)
