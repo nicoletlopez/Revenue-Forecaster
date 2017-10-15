@@ -12,6 +12,8 @@ from django.http import HttpResponse,Http404,HttpResponseRedirect
 from os.path import join, dirname, abspath
 import datetime, xlrd,numpy as np
 from xlrd.sheet import ctype_text
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EXCEL_FILE_TYPES=['xlsx','xls']
 
@@ -160,13 +162,18 @@ def file_delete_in_details(request, project_id, file_id):
         file.delete()
         return HttpResponseRedirect(reverse('rfs:project', args=[project_id]))
 
-###########EXCELREADER#############
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+class ActualView(generic.ListView):
+    template_name = 'rfs/actual-data.html'
+    context_object_name = 'actual_data_list'
 
+    def get_queryset(self):
+        return Actual.objects.all()
+
+###########EXCELREADER#############
 def excel_to_db(request,project_id):
     ##django##
     #form = XlToDbForm(request.POST or None)
+
     project=get_object_or_404(Project,pk=project_id)
     if request.method=="POST":
         excelfile=BASE_DIR+'/projects/'+str(request.POST.get("file"))
@@ -197,6 +204,7 @@ def excel_to_db(request,project_id):
                             'Qualified Discount', 'Long Staying']
         #year=request.POST.get("year")
         #year = 2015 #"""URGENT: YEAR MUST BE CHANGEABLE"""
+
         def getDate(month, year):
             thirty_ones = ["January", "March", "May", "July", "August", "October", "December"]
             # thirties = ["February","April","June","September","November"]
