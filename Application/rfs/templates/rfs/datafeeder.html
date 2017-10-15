@@ -2,6 +2,9 @@
 {% block title %}{{ project.project_name }} Project - Data Feeder{% endblock %}
 {% block subtitle %}data feeder{% endblock %}
 
+<!--Enable active selector in navbar-->
+{% comment %}{% block datafeed-tab-active%} active {% endblock %}{% endcomment %}
+
 {% block content %}
     {% if message %}
     <div class="alert alert-info alert-dismissible fade in" role="alert">

@@ -2,6 +2,9 @@
 {% block title %}{{ project.project_name }} Project - Archived Files{% endblock %}
 {% block subtitle %}archived files{% endblock %}
 
+<!--Enable active selector in navbar-->
+{% comment %}{% block archive-tab-active%} active {% endblock %}{% endcomment %}
+
 {% block content %}
 <h3>Archived Files</h3>
 <ul class="list-unstyled project_files">

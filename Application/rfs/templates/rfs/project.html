@@ -16,11 +16,11 @@
             <div class="x_title">
               <div class="navbar">
                 <div class="container">
-                  <ul style="height:40px" class="nav navbar-nav navbar navBot">
-                      <li><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
-                      <li><a href="{% url 'rfs:file' project.id %}"><i class="fa fa-file"> </i> Files </a></li>
-                      <li><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
-                      <li><a href="{% url 'rfs:arc-file' project.id %}"><i class="fa fa-archive"> </i> Archived Files </a></li>
+                  <ul style="height:40px" class="nav nav-pills navbar-nav navbar navBot">
+                      <li class="{% if request.resolver_match.url_name == 'project' %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
+                      <li class="{% if request.resolver_match.url_name == 'file' %}active{% endif %}"><a href="{% url 'rfs:file' project.id %}"><i class="fa fa-file"> </i> Files </a></li>
+                      <li class="{% if request.resolver_match.url_name == 'datafeed' %}active{% endif %}"><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
+                      <li class="{% if request.resolver_match.url_name == 'arc-file' %}active{% endif %}"><a href="{% url 'rfs:arc-file' project.id %}"><i class="fa fa-archive"> </i> Archived Files </a></li>
                   </ul>
               <ul class="nav navbar-nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
