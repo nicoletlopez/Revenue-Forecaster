@@ -1,4 +1,6 @@
+
 {% include 'rfs/project_graphs.html' %}
+
 <div class="col-md-3 col-sm-3 col-xs-12">
 
 <section class="panel">
@@ -17,18 +19,7 @@
       {% endif %}
 
     <br />
-    <h5>Project files</h5>
-    <ul style="" class="list-unstyled project_files">
-    {% if project.file_set.all %}
-        {% for file in project.file_set.all %}
-        <li style="" class=""><a href="#">{{ file.excel_file }}</a>
 
-        </li>
-        {% endfor %}
-    {% else %}
-         <li>No files uploaded.</li>
-    {% endif %}
-    </ul>
 
     <br />
 
