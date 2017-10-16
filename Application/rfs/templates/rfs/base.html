@@ -13,7 +13,13 @@
     <link href="{% static 'rfs/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/build/css/custom.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/self/style.css' %}" rel="stylesheet">
+
     <link href="{% static 'rfs/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'rfs/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'rfs/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'rfs/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'rfs/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
+
 
 </head>
 <body class="nav-md">
@@ -54,13 +60,15 @@
 
                   {% url 'rfs:file' project.id as url %}
                   {% url 'rfs:datafeed' project.id as url2 %}
-                  <li class="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
-                    <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 %}display:block;{% endif %}{% endif %}">
+                  {% url 'rfs:arc-file' project.id as url3 %}
+                  <li class="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 %}display:block;{% endif %}{% endif %}">
                     {% if all_projects %}
                         {% for project in all_projects %}
                             {% url 'rfs:file' project.id as url %}
                             {% url 'rfs:datafeed' project.id as url2 %}
-                            <li class="{% if request.path == url or request.path == url2 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:arc-file' project.id as url3 %}
+                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
@@ -69,13 +77,14 @@
 
 
 
-                  <li class="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
-                    <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 %}display:block;{% endif %}{% endif %}">
+                  <li class="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 %}display:block;{% endif %}{% endif %}">
                     {% if arc_projects %}
                         {% for project in arc_projects %}
                             {% url 'rfs:file' project.id as url %}
                             {% url 'rfs:datafeed' project.id as url2 %}
-                            <li class="{% if request.path == url or request.path == url2 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:arc-file' project.id as url3 %}
+                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
@@ -139,5 +148,12 @@
     <script src="{% static 'rfs/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js' %}"></script>
+
+    <script src="{% static 'rfs/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js' %}"></script>
+
+    <script src="{% static 'rfs/vendors/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js' %}"></script>
+    <script src="{% static 'rfs/vendors/datatables.net-scroller/js/dataTables.scroller.min.js' %}"></script>
  </body>
 </html>

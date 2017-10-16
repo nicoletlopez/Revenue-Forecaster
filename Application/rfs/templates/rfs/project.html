@@ -17,10 +17,14 @@
               <div class="navbar">
                 <div class="container">
                   <ul style="height:40px" class="nav nav-pills navbar-nav navbar navBot">
+                  {% if project.status == 'ACT' %}
                       <li class="{% if request.resolver_match.url_name == 'project' %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
                       <li class="{% if request.resolver_match.url_name == 'file' %}active{% endif %}"><a href="{% url 'rfs:file' project.id %}"><i class="fa fa-file"> </i> Files </a></li>
                       <li class="{% if request.resolver_match.url_name == 'datafeed' %}active{% endif %}"><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
                       <li class="{% if request.resolver_match.url_name == 'arc-file' %}active{% endif %}"><a href="{% url 'rfs:arc-file' project.id %}"><i class="fa fa-archive"> </i> Archived Files </a></li>
+                  {% else %}
+                      <h3>Project will be available when restored.</h3>
+                  {% endif %}
                   </ul>
               <ul class="nav navbar-nav navbar-right panel_toolbox">
                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -43,9 +47,7 @@
                                         <input type="hidden" name="status" value="ACT">
                                         <button type="submit" class="btn btn-success btn-block btn-sm">Restore project</button>
                                         </form>
-
                                 {% endif %}
-
                             </li>
                         </ul>
                   </li>
@@ -58,7 +60,6 @@
 
             <div class="x_content">
             {% if project.status == 'ARC' %}
-            <h3>Project will be available if restored</h3>
             {% else %}
             {% block content %}
                 {% include 'rfs/project_details.html' %}
@@ -70,7 +71,7 @@
           </div>
         </div>
       {% block 2ndblock %}
-          {% endblock %}
+      {% endblock %}
       </div>
     </div>
 {% endblock %}
