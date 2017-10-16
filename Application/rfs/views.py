@@ -73,7 +73,8 @@ class ProjectDetail(LoginRequiredMixin,DetailView):
         context['all_projects']=Project.objects.all().filter(status='ACT')
         context['all_files']=File.objects.all()
         context['arc_projects']=Project.objects.all().filter(status='ARC')
-        #context['act_files']=File.objects.filter(status='ACT', pk=self.kwargs['pk'])
+        context['act_files']=File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
+        context['arc_files']= File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
         return context
 
 class ProjectCreate(LoginRequiredMixin,CreateView):
@@ -110,11 +111,12 @@ def file_view(request, project_id):
                 if f.excel_file == form.cleaned_data.get("excel_file"):
                     context = {
                         'all_projects': projects,
-                        'act_files': File.objects.filter(status='ACT',pk=project_id),
+                        'act_files': File.objects.filter(status='ACT',project_id=project_id),
                         'project': project,
                         'form': form,
                         'error_message': 'You already added that file',
                         'arc_projects': Project.objects.all().filter(status='ARC'),
+                        'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                     }
                     return render(request, 'rfs/file.html', context)
             file = form.save(commit=False)
@@ -125,11 +127,12 @@ def file_view(request, project_id):
             if file_type not in EXCEL_FILE_TYPES:
                 context = {
                     'all_projects': projects,
-                    'act_files': File.objects.filter(status='ACT',pk=project_id),
+                    'act_files': File.objects.filter(status='ACT',project_id=project_id),
                     'project': project,
                     'form': form,
                     'error_message': 'File must be XLS, XLSX',
                     'arc_projects': Project.objects.all().filter(status='ARC'),
+                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                 }
                 return render(request, 'rfs/file.html', context)
 
@@ -137,13 +140,15 @@ def file_view(request, project_id):
             return render(request, 'rfs/file.html',
                           {'project': project,
                            'all_projects': projects,
-                           'act_files': File.objects.filter(status='ACT',pk=project_id),
+                           'act_files': File.objects.filter(status='ACT',project_id=project_id),
                            'form': form,
                            'arc_projects': Project.objects.all().filter(status='ARC'),
+                           'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                            })
         context = {
             'all_projects': projects,
-            'act_files': File.objects.filter(status='ACT',pk=project_id),
+            'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+            'act_files': File.objects.filter(status='ACT',project_id=project_id),
             'project': project,
             'form': form,
             'arc_projects': Project.objects.all().filter(status='ARC'),
@@ -158,8 +163,9 @@ def arc_file_view(request, project_id):
         context={
             'all_projects': Project.objects.all().filter(status='ACT'),
             'project':project,
-            'arc_files':File.objects.filter(status='ARC',pk=project_id),
+            'arc_files':File.objects.filter(status='ARC',project_id=project_id),
             'arc_projects': Project.objects.all().filter(status='ARC'),
+            'act_files': File.objects.filter(status='ACT',project_id=project_id),
         }
         return render(request,'rfs/file_archived.html',context)
 
@@ -180,16 +186,6 @@ def file_update(request, project_id, file_id):
         file.status=str(request.POST.get("status"))
         file.save()
         return HttpResponseRedirect(reverse('rfs:file', args=[project_id]))
-
-def file_delete_in_details(request, project_id, file_id):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('rfs:login'))
-    else:
-        file = File.objects.get(pk=file_id)
-        file.delete()
-        return HttpResponseRedirect(reverse('rfs:project', args=[project_id]))
-
-
 
 ###########EXCELREADER#############
 def excel_to_db(request,project_id):
@@ -266,7 +262,7 @@ def excel_to_db(request,project_id):
                 rev = sub[4]
                 try:
                     seg_id = Seg_list.objects.get(name=segment)
-                    actual_row = Actual(date=getDate(month,year),actual_rns=rns,actual_arr=arr,actual_rev=rev,segment=seg_id)
+                    actual_row = Actual(date=getDate(month,year),actual_rns=rns,actual_arr=arr,actual_rev=rev,segment=seg_id,project_id=project_id)
                     actual_row.save()
                 except(Exception):
                     pass
@@ -274,15 +270,17 @@ def excel_to_db(request,project_id):
                  'message':'Om nomo nom! Data Fed!',
                  'arc_projects': Project.objects.all().filter(status='ARC'),
                  'all_projects': Project.objects.all().filter(status='ACT'),
-                 'act_files': File.objects.filter(status='ACT', pk=project_id),
+                 'act_files': File.objects.filter(status='ACT', project_id=project_id),
                  'year_detect':year,
-                 'actual_data_list': Actual.objects.all(),
+                 'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                 'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                  }
         return render(request,'rfs/datafeeder.html',context)
     context={'project':project,
              'arc_projects': Project.objects.all().filter(status='ARC'),
              'all_projects': Project.objects.all().filter(status='ACT'),
-             'act_files': File.objects.filter(status='ACT', pk=project_id),
-             'actual_data_list':Actual.objects.all(),
+             'act_files': File.objects.filter(status='ACT', project_id=project_id),
+             'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+             'arc_files': File.objects.filter(status='ARC', project_id=project_id),
              }
     return render(request,'rfs/datafeeder.html',context)
