@@ -28,5 +28,5 @@ admin.site.register(Grp_seg)
 admin.site.register(Actual, ActualList)
 admin.site.register(Forecast, ForecastList)
 
-admin.site.site_header = 'Django Admin'
+admin.site.site_header = 'RFS Admin'
 admin.site.index_title = 'Revenue Forecasting System'
