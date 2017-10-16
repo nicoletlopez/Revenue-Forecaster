@@ -19,7 +19,7 @@ def project_directory_path(instance,filename):
 class File(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
     excel_file=models.FileField(upload_to=project_directory_path)
-    status_types = (('ACH', 'Archived'), ('ACT', 'Active'))
+    status_types = (('ARC', 'Archived'), ('ACT', 'Active'))
     status = models.CharField(max_length=3, choices=status_types, default='ACT')
 
     def get_absolute_url(self):
@@ -66,6 +66,7 @@ class Grp_seg(models.Model):
 
 class Actual(models.Model):
     actual_id = models.AutoField(primary_key=True,)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     segment = models.ForeignKey(Seg_list, on_delete=models.CASCADE,blank=True)
     date = models.DateField()
     #budget_rns = models.FloatField()
