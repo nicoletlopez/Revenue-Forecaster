@@ -8,7 +8,11 @@ urlpatterns=[
     url(r'^$', views.start_view, name='start'),
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', views.logout_user, name='logout'),
+
+    ########
     url(r'^dashboard/$', views.index_view, name='index'),
+    url(r'dashboard/project/(?P<project_id>[0-9]+)/update/$', views.project_update_index, name='index-project-update'),
+
     ##PROJECT URLS##
     url(r'project/(?P<pk>[0-9]+)/$',views.ProjectDetail.as_view(),name='project'),
     url(r'project/create/$',views.ProjectCreate.as_view(),name='project-create'),
