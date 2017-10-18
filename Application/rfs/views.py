@@ -34,8 +34,7 @@ def login_view(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return render(request, 'rfs/base.html', {'all_projects': Project.objects.all().filter(status='ACT'),
-                                                             'user':request.user.username,})
+                    return redirect('rfs:index')
                 else:
                     return render(request, 'rfs/login.html', {'error_message': 'Your account has been disabled'})
             else:
