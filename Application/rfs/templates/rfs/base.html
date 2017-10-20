@@ -6,6 +6,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--declarations-->
+{% url 'rfs:file' project.id as url %}
+{% url 'rfs:datafeed' project.id as url2 %}
+{% url 'rfs:arc-file' project.id as url3 %}
+{% url 'rfs:project' project.id as url4 %}
+
     <title>{% block title %}RFS - Index{% endblock %}</title>
 
     {% load staticfiles %}
@@ -13,14 +19,16 @@
     <link href="{% static 'rfs/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/build/css/custom.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/self/style.css' %}" rel="stylesheet">
-
+{% if request.path == url2 %}
     <link href="{% static 'rfs/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
-
-
+{% endif %}
+{% if request.path == url4 %}
+    <link href="{% static 'rfs/vendors/nprogress/nprogress.css' %}" rel="stylesheet">
+{% endif %}
 </head>
 <body class="nav-md">
 <!--INDEX BLOCK-->
@@ -58,9 +66,7 @@
                   <li><a href="{% url 'rfs:project-create' %}"><i class="fa fa-plus"></i> Create a Project</a>
                   </li>
 
-                  {% url 'rfs:file' project.id as url %}
-                  {% url 'rfs:datafeed' project.id as url2 %}
-                  {% url 'rfs:arc-file' project.id as url3 %}
+
                   <li class="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
                     <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 %}display:block;{% endif %}{% endif %}">
                     {% if all_projects %}
@@ -142,8 +148,14 @@
 
     <script src="{% static 'rfs/self/script.js' %}"></script>
 
+    <script src="{% static  'rfs/vendors/fastclick/lib/fastclick.js' %}"></script>
 
+{% if request.path == url4 %}
+    <script src="{% static 'rfs/vendors/nprogress/nprogress.js' %}"></script>
+    <script src="{% static 'rfs/vendors/echarts/dist/echarts.min.js' %}"></script>
+{% endif %}
 <!--Data Tables-->
+{% if request.path == url2 %}
     <script src="{% static 'rfs/vendors/datatables.net/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
@@ -155,5 +167,8 @@
     <script src="{% static 'rfs/vendors/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-scroller/js/dataTables.scroller.min.js' %}"></script>
+{% endif %}
+
+
  </body>
 </html>
