@@ -1,3 +1,5 @@
+import numpy
+
 series = [18561, 14229, 15881, 18939, 17107, 13042, 6652, 5654, 9771, 15759, 20965, 27088, 21089, 17311, 19192, 19429,
           21000, 13573, 16678, 17343, 14320, 15514, 19143, 31602, 23904, 21119, 19746, 22644, 19025, 17196, 17582,
           16439, 16301, 19200, 20529]
@@ -44,7 +46,16 @@ def triple_exponential_smoothing(series, slen, alpha, beta, gamma, n_preds):
             trend = beta * (smooth - last_smooth) + (1 - beta) * trend
             seasonals[i % slen] = gamma * (val - smooth) + (1 - gamma) * seasonals[i % slen]
             result.append(smooth + trend + seasonals[i % slen])
-    return result[len(result)-1]
+    return result[len(result) - 1]
+
+
+def sum_squared_error(series):
+    m = numpy.mean(series)
+    sse = 0
+    for i in range(len(series)):
+        dev = series[i] - m
+        sse += (dev * dev)
+    return sse
 
 
 print(triple_exponential_smoothing(series, 12, 0.2, 0.1, 0.25, 1))
