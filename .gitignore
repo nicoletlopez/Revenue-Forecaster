@@ -1,7 +1,11 @@
 # Created by .ignore support plugin (hsz.mobi)
 /Application/rfsa2.sqlite3
 /Application/projects/
-/Application/.idea/
 /Application/rfs/migrations/
-/.idea
+.idea/
+
+
+#FILES
 *.pyc
+
+
