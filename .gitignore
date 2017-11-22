@@ -3,3 +3,5 @@
 /Application/projects/
 /Application/.idea/
 /Application/rfs/migrations/
+/.idea
+*.pyc
