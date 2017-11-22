@@ -11,6 +11,9 @@ sample_data = \
     [18561,14229,15881,18939,17107,13042,6652,5654,9771,15759,20965,27088,21089,17311,19192,19429,21000,13573,16678,17343,14320,15514,19143,31602,
                23904,21119,19746,22644,19025,17196,17582,16439,16301,19200,20529
     ]
+actual_value = 29143 #for period number 36
+
+periods_predicted = 1
 
 #determine all the possible combinations of the constants (100^3 values)
 constant_values = []
@@ -29,7 +32,7 @@ for alpha in constant_values:
             counter +=1
 
 # number of period predicted (12 means that we predict the next 12 periods)
-periods_predicted = 1
+
 
 #use all possible values as arguments in the holt-winters method
 prediction_list = []
@@ -58,8 +61,17 @@ print("Lowest SSE value: %s \n "
       "\t Beta: %s \n"
       "\t Gamma: %s" % (lowest_sse_value,lowest_sse_value_index,alpha_beta_gamma_set[0],alpha_beta_gamma_set[1],alpha_beta_gamma_set[2]))
 print("Periods Predicted: ")
-print(prediction_list[lowest_sse_value_index][-periods_predicted:])
+for predicted_period in prediction_list[lowest_sse_value_index][-periods_predicted:]:
+    print(predicted_period)
+print("Actual Value: %s" % actual_value)
 
+#UNCOMMENT ONLY IF N_PRED == 1
+try:
+    percentage_error = (1 - (prediction_list[lowest_sse_value_index][-periods_predicted:][0])/actual_value) * 100
+    print("Percentage Error: %s " %percentage_error)
+except Exception:
+    print("SORRY, this feature is still under development")
+    print("To view the percentage error, please set period_predicted variable to 1")
 
 
 
