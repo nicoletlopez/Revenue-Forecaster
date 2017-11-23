@@ -1,4 +1,4 @@
-from PythonScripts.forecasting import forecasting as f
+from PythonScripts.Forecasting import forecasting as f
 
 fcast = f.Forecast()
 
