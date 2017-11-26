@@ -5,4 +5,4 @@ Procedure:
 1. Create a project
 2. Upload an excel file with the correct format
 3. Use the file for the data feeder
-4. forecast fed data --in progress
+4. Forecast fed data --in progress
