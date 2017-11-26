@@ -1,4 +1,4 @@
-from PythonScripts.Forecasting import forecasting as f
+from PythonScripts.forecasting import forecasting as f
 
 fcast = f.Forecast()
 """sample_data = [30,21,29,31,40,48,53,47,37,39,31,29,17,9,20,24,27,35,41,38,
