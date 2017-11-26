@@ -1,5 +1,10 @@
+{% extends 'rfs/project.html' %}
+{% block title %}{{ project.project_name }} Project - Details{% endblock %}
+{% block subtitle %}details{% endblock %}
 
+{% block content %}
 {% include 'rfs/project_graphs.html' %}
+
 
 <div class="col-md-3 col-sm-3 col-xs-12">
 
@@ -34,3 +39,4 @@
 </section>
 
 </div>
+{% endblock content %}

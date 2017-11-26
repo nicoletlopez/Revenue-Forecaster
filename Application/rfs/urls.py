@@ -14,7 +14,9 @@ urlpatterns=[
     url(r'dashboard/project/(?P<project_id>[0-9]+)/update/$', views.project_update_index, name='index-project-update'),
 
     ##PROJECT URLS##
-    url(r'project/(?P<pk>[0-9]+)/$',views.ProjectDetail.as_view(),name='project'),
+    url(r'project/(?P<pk>[0-9]+)/$',views.ProjectDashboard.as_view(),name='project'),
+    url(r'project/(?P<pk>[0-9]+)/details/$',views.ProjectDetails.as_view(),name='project-details'),
+
     url(r'project/create/$',views.ProjectCreate.as_view(),name='project-create'),
     url(r'project/(?P<pk>[0-9]+)/update/$', views.ProjectUpdate.as_view(), name='project-delete'),
     ##FILE URLS##
@@ -28,4 +30,5 @@ urlpatterns=[
 
     #TEST#
     #url(r'^test/$',views.ActualView.as_view(),name='actual-view'),
+
 ]

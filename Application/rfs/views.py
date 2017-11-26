@@ -70,19 +70,36 @@ def project_update_index(request, project_id):
 
 
 ##########################PROJECT VIEWS#######################
-class ProjectDetail(LoginRequiredMixin,DetailView):
+
+
+class ProjectDashboard(LoginRequiredMixin,DetailView):
     login_url = 'rfs:login'
     redirect_field_name = ''
     model=Project
     template_name='rfs/project.html'
 
     def get_context_data(self,**kwargs):
-        context=super(ProjectDetail,self).get_context_data(**kwargs)
+        context=super(ProjectDashboard,self).get_context_data(**kwargs)
         context['all_projects']=Project.objects.all().filter(status='ACT')
         context['all_files']=File.objects.all()
         context['arc_projects']=Project.objects.all().filter(status='ARC')
         context['act_files']=File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
         context['arc_files']= File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
+        return context
+
+class ProjectDetails(LoginRequiredMixin,DetailView):
+    login_url = 'rfs:login'
+    redirect_field_name = ''
+    model = Project
+    template_name = 'rfs/project_details.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectDetails, self).get_context_data(**kwargs)
+        context['all_projects'] = Project.objects.all().filter(status='ACT')
+        context['all_files'] = File.objects.all()
+        context['arc_projects'] = Project.objects.all().filter(status='ARC')
+        context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
+        context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
         return context
 
 class ProjectCreate(LoginRequiredMixin,CreateView):
