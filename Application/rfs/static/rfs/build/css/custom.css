@@ -144,7 +144,7 @@ html , body{
     padding: 0 0 4px 0
 }
 .left_col {
-    background: #2A3F54
+    background: #417690
 }
 .nav-sm .container.body .col-md-3.left_col {
     min-height: 100%;
@@ -180,7 +180,7 @@ html , body{
     margin: 13px 0 0 3px
 }
 .site_title i {
-    border: 1px solid #EAEAEA;
+    /*border: 1px solid #EAEAEA;*/
     padding: 5px 6px;
     border-radius: 50%
 }
@@ -360,7 +360,7 @@ body .container.body .right_col {
 .nav_title {
     width: 230px;
     float: left;
-    background: #2A3F54;
+    background: #417690;
     border-radius: 0;
     height: 57px
 }
@@ -492,7 +492,7 @@ body .container.body .right_col {
 }
 body {
     color: #73879C;
-    background: #2A3F54;
+    background: #417690;
     font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
     font-size: 13px;
     font-weight: 400;
@@ -802,7 +802,7 @@ a:focus {
 }
 .nav.side-menu>li.active>a {
     text-shadow: rgba(0, 0, 0, 0.25) 0 -1px 0;
-    background: linear-gradient(#334556, #2C4257), #2A3F54;
+    background: linear-gradient(#334556, #2C4257), #417690;
     box-shadow: rgba(0, 0, 0, 0.25) 0 1px 0, inset rgba(255, 255, 255, 0.16) 0 1px 0
 }
 .navbar-brand,
@@ -1672,7 +1672,7 @@ span.right {
     padding: 5px 0 0 0;
     position: fixed;
     width: 230px;
-    background: #2A3F54;
+    background: #417690;
 	z-index:999;
 }
 .sidebar-footer a {
@@ -4175,11 +4175,11 @@ ul.notifications {
     margin-top: 4px;
 }
 @media (max-width: 460px) {
-    .dataTables_wrapper .col-sm-6 {
+    .dataTables_wrapper .col-sm-6 .col-md-6 {
         width: 100%;
         margin-bottom: 5px;
     }
-    .dataTables_wrapper .col-sm-6 .dataTables_filter {
+    .dataTables_wrapper .col-sm-6 .col-md-6 .dataTables_filter {
         float: none;
     }
 }

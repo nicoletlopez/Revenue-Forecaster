@@ -11,8 +11,9 @@
 {% url 'rfs:datafeed' project.id as url2 %}
 {% url 'rfs:arc-file' project.id as url3 %}
 {% url 'rfs:project-details' project.id as url4 %}
-
-    <title>{% block title %}RFS - Index{% endblock %}</title>
+{% url 'rfs:index' as url5 %}
+{% url 'rfs:upload_file_to' as url6 %}
+    <title>{% block title %}RFS - Home{% endblock %}</title>
 
     {% load staticfiles %}
     <link href="{% static 'rfs/vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -28,7 +29,7 @@
     <!-- bootstrap-daterangepicker -->
     <link href="{% static 'rfs/vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
 
-{% if request.path == url2 %}
+{% if request.path == url2 or request.path == url5 or request.path == url6 %}
     <link href="{% static 'rfs/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
@@ -67,12 +68,11 @@
                 <h3>General</h3>
                   <ul class="nav side-menu">
                  <!--add menus here-->
-                  <li><a href="{% url 'rfs:index' %}"><i class="fa fa-dashboard"></i> Dashboard</a>
+                  <li><a href="{% url 'rfs:index' %}"><i class="fa fa-home"></i> Home</a>
                   </li>
                   <li><a href="{% url 'rfs:project-create' %}"><i class="fa fa-plus"></i> Create a Project</a>
                   </li>
-
-
+              {% if all_projects %}
                   <li class="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
                     <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}display:block;{% endif %}{% endif %}">
                     {% if all_projects %}
@@ -87,9 +87,9 @@
                     {% endif %}
                     </ul>
                   </li>
+                {% endif %}
 
-
-
+                {% if arc_projects %}
                   <li class="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
                     <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}display:block;{% endif %}{% endif %}">
                     {% if arc_projects %}
@@ -104,7 +104,7 @@
                     {% endif %}
                     </ul>
                   </li>
-
+                  {% endif %}
                   </ul>
 
               </div>
@@ -142,7 +142,6 @@
         <!--PAGE BODY-->
       <div class="right_col" role="main">
         {% block body %}
-            {% include 'rfs/index.html' %}
         {% endblock %}
         <!--PAGE BODY-->
       </div>
@@ -187,7 +186,7 @@
 
 
 <!--Data Tables-->
-{% if request.path == url2 %}
+{% if request.path == url2 or request.path == url5 or request.path == url6 %}
     <script src="{% static 'rfs/vendors/datatables.net/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>

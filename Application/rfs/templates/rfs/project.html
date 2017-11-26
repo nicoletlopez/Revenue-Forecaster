@@ -3,8 +3,6 @@
 {% block body %}
 <!-- page content -->
 <div class="">
-
-
       <div class="clearfix"></div>
       <div class="row">
         <div class="col-md-12">
@@ -21,6 +19,12 @@
                       <li class="{% if request.resolver_match.url_name == 'arc-file' %}active{% endif %}"><a href="{% url 'rfs:arc-file' project.id %}"><i class="fa fa-archive"> </i> Archived Files <span style="color:white;" class="badge bg-green">{{ arc_files.count }}</span></a></li>
                   {% else %}
                       <h3>Project will be available when restored.</h3>
+                          <form action="{% url 'rfs:project-delete' project.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="project_id" value="{{ project.id }}">
+                        <input type="hidden" name="status" value="ACT">
+                        <button type="submit" class="btn btn-success">Restore project</button>
+                        </form>
                   {% endif %}
                   </ul>
               <ul class="nav navbar-nav navbar-right panel_toolbox">

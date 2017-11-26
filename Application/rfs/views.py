@@ -49,15 +49,24 @@ def logout_user(request):
     }
     return render(request,'rfs/login.html',context)
 
-
 def index_view(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('rfs:login'))
     else:
         context={'all_projects':Project.objects.all().filter(status='ACT'),
-                 'arc_projects':Project.objects.all().filter(status='ARC'),}
-        template_name='rfs/base.html'
+                 'arc_projects':Project.objects.all().filter(status='ARC'),
+                }
+        template_name='rfs/home.html'
         return render(request,template_name,context)
+
+def upload_file_to(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('rfs:login'))
+    else:
+        context = {'all_projects': Project.objects.all().filter(status='ACT'),
+                   'arc_projects': Project.objects.all().filter(status='ARC'),
+                   }
+        return render(request,'rfs/upload_file_to.html',context)
 
 def project_update_index(request, project_id):
     if not request.user.is_authenticated():
