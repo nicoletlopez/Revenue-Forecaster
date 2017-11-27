@@ -12,7 +12,8 @@ class Project(models.Model):
         return reverse('rfs:project',kwargs={'pk':self.pk})
     def __str__(self):
         return self.project_name
-
+    class Meta:
+        ordering = ['-id']
 def project_directory_path(instance,filename):
     return 'project_{0}/{1}'.format(instance.project.project_name,filename)
 
