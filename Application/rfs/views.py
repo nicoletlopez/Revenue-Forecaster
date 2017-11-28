@@ -15,6 +15,7 @@ from os.path import join, dirname, abspath
 import datetime, xlrd,numpy as np
 from xlrd.sheet import ctype_text
 import os
+from PythonScripts.forecasting import HoltWinters as hw
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EXCEL_FILE_TYPES=['xlsx','xls']
