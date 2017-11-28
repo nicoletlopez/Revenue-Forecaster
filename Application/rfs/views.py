@@ -1,4 +1,6 @@
 #from __future__ import print_function
+import pdb #pdb.set_trace()
+from django.core import serializers
 from django.views import generic
 from django.views.generic import View,TemplateView,DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -16,6 +18,9 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EXCEL_FILE_TYPES=['xlsx','xls']
+
+json_serializer=serializers.get_serializer("json")()
+
 
 def start_view(request):
     if request.user.is_authenticated():
@@ -87,6 +92,7 @@ class ProjectDashboard(LoginRequiredMixin,DetailView):
     model=Project
     template_name='rfs/project.html'
 
+
     def get_context_data(self,**kwargs):
         context=super(ProjectDashboard,self).get_context_data(**kwargs)
         context['all_projects']=Project.objects.all().filter(status='ACT')
@@ -94,6 +100,11 @@ class ProjectDashboard(LoginRequiredMixin,DetailView):
         context['arc_projects']=Project.objects.all().filter(status='ARC')
         context['act_files']=File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
         context['arc_files']= File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
+        ############
+        context['json_actual_arr']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_arr'))
+        context['json_actual_rns']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_rns'))
+        context['json_actual_rev']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_rev'))
+        context['json_date'] = json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('date'))
         return context
 
 class ProjectDetails(LoginRequiredMixin,DetailView):
@@ -303,6 +314,7 @@ def excel_to_db(request,project_id):
                         actual_row.save()
                     except(Exception):
                         pass
+
             context={'project':project,
                      'message':'Om nomo nom! Data Fed!',
                      'arc_projects': Project.objects.all().filter(status='ARC'),

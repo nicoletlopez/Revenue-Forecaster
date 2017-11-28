@@ -66,28 +66,28 @@ class Grp_seg(models.Model):
         ordering = ['grp_id']
 
 class Actual(models.Model):
-    actual_id = models.AutoField(primary_key=True,)
+    actual_id = models.AutoField(primary_key=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     segment = models.ForeignKey(Seg_list, on_delete=models.CASCADE,blank=True)
     date = models.DateField()
     #budget_rns = models.FloatField()
     #budget_arr = models.FloatField()
     #budget_rev = models.FloatField()
-    actual_rns = models.FloatField()
-    actual_arr = models.FloatField()
-    actual_rev = models.FloatField()
+    actual_rns = models.DecimalField(max_digits=15,decimal_places=2)
+    actual_arr = models.DecimalField(max_digits=15,decimal_places=2)
+    actual_rev = models.DecimalField(max_digits=15,decimal_places=2)
     def __str__(self):
         return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
     class Meta:
         ordering = ['actual_id']
-        unique_together=(('actual_rns','actual_arr','actual_rev'))
+        #unique_together=(('actual_rns','actual_arr','actual_rev'))
 
 class Forecast(models.Model):
     forecast_id = models.AutoField(primary_key=True)
     date = models.DateField()
-    forecast_rns = models.FloatField()
-    forecast_arr = models.FloatField()
-    forecast_rev = models.FloatField()
+    forecast_rns = models.DecimalField(max_digits=15,decimal_places=2)
+    forecast_arr = models.DecimalField(max_digits=15,decimal_places=2)
+    forecast_rev = models.DecimalField(max_digits=15,decimal_places=2)
     actual_reference = models.ManyToManyField(Actual)
     def __str__(self):
         return str(self.forecast_id) + " - %s " % self.date
