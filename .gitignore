@@ -6,9 +6,14 @@
 
 #Files
 *.pyc
+<<<<<<< HEAD
 PythonScripts/JUSTIN/.idea/workspace.xml
 PythonScripts/JUSTIN/.idea/JUSTIN.iml
 PythonScripts/JUSTIN/.idea/modules.xml
 PythonScripts/JUSTIN/.idea/misc.xml
 *.xml
 PythonScripts/.idea/PythonScripts.iml
+=======
+*.sqlite3
+
+>>>>>>> parent of 9f03167... Merge pull request #16 from nicoletlopez/Andrey
