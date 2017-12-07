@@ -1,4 +1,10 @@
 {% block content %}
+    <script>
+    var actual_arr='{{ json_actual_arr|escapejs }}';
+    var actual_rns='{{ json_actual_rns|escapejs }}';
+    var actual_rev='{{ json_actual_rev|escapejs }}';
+    var data_date='{{ json_date|escapejs }}';
+    </script>
 <div class="row tile_count">
             <div class="col-md-3 col-sm-3 col-xs-6 tile_stats_count">
               <span class="count_top"><i class="fa fa-money"></i> Revenue</span>

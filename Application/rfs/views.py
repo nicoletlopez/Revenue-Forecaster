@@ -1,9 +1,5 @@
 #from __future__ import print_function
 import pdb #pdb.set_trace()
-
-
-import json
-from django.core.serializers.json import DjangoJSONEncoder
 from django.core import serializers
 from django.views import generic
 from django.views.generic import View,TemplateView,DetailView
@@ -98,9 +94,7 @@ class ProjectDashboard(LoginRequiredMixin,DetailView):
     template_name='rfs/project.html'
 
 
-
     def get_context_data(self,**kwargs):
-
         context=super(ProjectDashboard,self).get_context_data(**kwargs)
         context['all_projects']=Project.objects.all().filter(status='ACT')
         context['all_files']=File.objects.all()
@@ -111,9 +105,7 @@ class ProjectDashboard(LoginRequiredMixin,DetailView):
         context['json_actual_arr']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_arr'))
         context['json_actual_rns']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_rns'))
         context['json_actual_rev']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_rev'))
-        #context['json_date'] = json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),fields=('date'))
-        context['json_date']=json.dumps(list(Actual.objects.filter(project_id=self.kwargs['pk']).values('date')),cls=DjangoJSONEncoder)
-
+        context['json_date'] = json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('date'))
         return context
 
 class ProjectDetails(LoginRequiredMixin,DetailView):
