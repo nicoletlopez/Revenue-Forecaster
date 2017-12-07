@@ -2,9 +2,9 @@
 
 <script>
 {% block jquery %}
-    var endpoint = '/ajax/api/chart/data/'
+    var endpoint = '{% url "ajax:data" %}'
     var defaultdata = []
-    var labels = ["Orange", "Blue", "Yellow", "Green", "Purple", "Orange"]
+    var labels = ["Users", "Blue", "Yellow", "Green", "Purple", "Orange"]
     $.ajax({
         method:"GET",
         url: endpoint,
@@ -23,7 +23,7 @@
         var ctx = document.getElementById("myChart")
         var ctx2 = document.getElementById("myChart2")
         var myChart = new Chart(ctx, {
-        type: 'polarArea',
+        type: 'line',
         data: {
             datasets: [{
                 labels: labels,

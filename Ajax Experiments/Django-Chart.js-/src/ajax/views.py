@@ -39,3 +39,4 @@ class ChartData(APIView):
             "default": default_items,
         }
         return Response(data)
+
