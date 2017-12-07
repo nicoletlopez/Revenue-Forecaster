@@ -1,6 +1,62 @@
+{% extends 'rfs/project.html' %}
+{% block title %}{{ project.project_name }} Project - Details{% endblock %}
+{% block subtitle %}details{% endblock %}
 
-{% include 'rfs/project_graphs.html' %}
-
+{% block content %}
+<div class="col-md-9 col-sm-9 col-xs-12">
+    <div>
+        <h4>Recent Activity</h4>
+        <!-- end of user messages -->
+        <ul class="messages">
+                          <li>
+                            <div class="message_date">
+                              <h3 class="date text-info">24</h3>
+                              <p class="month">May</p>
+                            </div>
+                            <div class="message_wrapper">
+                              <h4 class="heading">Desmond Davison</h4>
+                              <blockquote class="message">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth.</blockquote>
+                              <br />
+                              <p class="url">
+                                <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
+                                <a href="#"><i class="fa fa-paperclip"></i> User Acceptance Test.doc </a>
+                              </p>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="message_date">
+                              <h3 class="date text-error">21</h3>
+                              <p class="month">May</p>
+                            </div>
+                            <div class="message_wrapper">
+                              <h4 class="heading">Brian Michaels</h4>
+                              <blockquote class="message">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth.</blockquote>
+                              <br />
+                              <p class="url">
+                                <span class="fs1" aria-hidden="true" data-icon=""></span>
+                                <a href="#" data-original-title="">Download</a>
+                              </p>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="message_date">
+                              <h3 class="date text-info">24</h3>
+                              <p class="month">May</p>
+                            </div>
+                            <div class="message_wrapper">
+                              <h4 class="heading">Desmond Davison</h4>
+                              <blockquote class="message">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth.</blockquote>
+                              <br />
+                              <p class="url">
+                                <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
+                                <a href="#"><i class="fa fa-paperclip"></i> User Acceptance Test.doc </a>
+                              </p>
+                            </div>
+                          </li>
+                        </ul>
+        <!-- end of user messages -->
+    </div>
+</div>
 <div class="col-md-3 col-sm-3 col-xs-12">
 
 <section class="panel">
@@ -34,3 +90,4 @@
 </section>
 
 </div>
+{% endblock content %}
