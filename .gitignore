@@ -1,14 +1,9 @@
-#Directories
-/.idea
+# Created by .ignore support plugin (hsz.mobi)
+/Application/projects/
+/Application/rfs/migrations/
+.idea/
 
 
-
-
-#Files
+#FILES
 *.pyc
-PythonScripts/JUSTIN/.idea/workspace.xml
-PythonScripts/JUSTIN/.idea/JUSTIN.iml
-PythonScripts/JUSTIN/.idea/modules.xml
-PythonScripts/JUSTIN/.idea/misc.xml
-*.xml
-PythonScripts/.idea/PythonScripts.iml
+*.sqlite3
