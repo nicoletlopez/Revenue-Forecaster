@@ -1,9 +1,14 @@
-# Created by .ignore support plugin (hsz.mobi)
-/Application/projects/
-/Application/rfs/migrations/
-.idea/
+#Directories
+/.idea
 
 
-#FILES
+
+
+#Files
 *.pyc
-*.sqlite3
+PythonScripts/JUSTIN/.idea/workspace.xml
+PythonScripts/JUSTIN/.idea/JUSTIN.iml
+PythonScripts/JUSTIN/.idea/modules.xml
+PythonScripts/JUSTIN/.idea/misc.xml
+*.xml
+PythonScripts/.idea/PythonScripts.iml
