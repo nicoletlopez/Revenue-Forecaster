@@ -19,7 +19,7 @@ from os.path import join, dirname, abspath
 import datetime, xlrd,numpy as np
 from xlrd.sheet import ctype_text
 import os
-from .libraries.forecasting import HoltWinters as hw
+from PythonScripts.forecasting import HoltWinters as hw
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EXCEL_FILE_TYPES=['xlsx','xls']
@@ -352,4 +352,3 @@ def excel_to_db(request,project_id):
                  'message':'Excel format wrong. Please choose a correct one'
                  }
         return render(request,'rfs/datafeeder.html',context)
-###########TRIPLE SMOOTHING#############

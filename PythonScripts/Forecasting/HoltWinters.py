@@ -76,12 +76,11 @@ class HoltWinters():
         for tuple in fitting_list_tuple:
             sse_list.append(self.sse(tuple))
 
-        mad_list = []
+        """mad_list = []
         for tuple in fitting_list_tuple:
-            mad_list.append(self.mad(tuple))
+            mad_list.append(self.mad(tuple))"""
 
         #FOR SSE
-        print("SSE")
         min_sse = min(sse_list)
         min_sse_index = sse_list.index(min_sse)
         alpha_beta_gamma_list = value_dictionary[min_sse_index]
@@ -94,8 +93,7 @@ class HoltWinters():
         print(prediction_list_sse)
 
         #FOR MAD
-        print("MAD")
-        min_mad = min(mad_list)
+        """min_mad = min(mad_list)
         min_mad_index = mad_list.index(min_mad)
         alpha_beta_gamma_list = value_dictionary[min_mad_index]
         print(alpha_beta_gamma_list)
@@ -104,14 +102,8 @@ class HoltWinters():
                                                                 alpha_beta_gamma_list[1],
                                                                 alpha_beta_gamma_list[2],)
         prediction_list_mad = prediction_list_mad[-n_preds:]
-        print(prediction_list_mad)
-
-        print("Lowest SSE %s" % min_sse)
-        print("Lowest MAD %s" % min_mad)
-
+        print(prediction_list_mad)"""
         return prediction_list_sse
-
-
     def sse(self, prediction_list):
         m = np.mean(prediction_list)
         sse = 0
@@ -131,10 +123,10 @@ class HoltWinters():
         mad = mad / len(prediction_list)
         return mad
 
-"""f = HoltWinters()
+f = HoltWinters()
 sample_data = \
     [
         18561,14229,15881,18939,17107,13042,6652,5654,9771,15759,20965,27088,21089,17311,19192,19429,21000,13573,16678,17343,14320,15514,19143,31602,
-        23904,21119,19746,22644,19025,17196,17582,16439,16301,19200,20529,29143
+        23904,21119,19746,22644,19025,17196,17582,16439,16301,19200,20529,#29143
     ]
-prediction_list = f.optimize(sample_data,12,1)"""
+prediction_list = f.optimize(sample_data,12,12)
