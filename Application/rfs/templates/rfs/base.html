@@ -10,24 +10,31 @@
 {% url 'rfs:file' project.id as url %}
 {% url 'rfs:datafeed' project.id as url2 %}
 {% url 'rfs:arc-file' project.id as url3 %}
-{% url 'rfs:project' project.id as url4 %}
-
-    <title>{% block title %}RFS - Index{% endblock %}</title>
+{% url 'rfs:project-details' project.id as url4 %}
+{% url 'rfs:index' as url5 %}
+{% url 'rfs:upload_file_to' as url6 %}
+    <title>{% block title %}RFS - Home{% endblock %}</title>
 
     {% load staticfiles %}
     <link href="{% static 'rfs/vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/build/css/custom.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/self/style.css' %}" rel="stylesheet">
-{% if request.path == url2 %}
+    <link href="{% static 'rfs/vendors/nprogress/nprogress.css' %}" rel="stylesheet">
+
+    <link href="{% static 'rfs/vendors/iCheck/skins/flat/green.css' %}" rel="stylesheet">
+    <link href="{% static 'rfs/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css' %}" rel="stylesheet">
+    <link href="{% static 'rfs/vendors/jqvmap/dist/jqvmap.min.css' %}" rel="stylesheet"/>
+
+    <!-- bootstrap-daterangepicker -->
+    <link href="{% static 'rfs/vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+
+{% if request.path == url2 or request.path == url5 or request.path == url6 %}
     <link href="{% static 'rfs/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'rfs/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
-{% endif %}
-{% if request.path == url4 %}
-    <link href="{% static 'rfs/vendors/nprogress/nprogress.css' %}" rel="stylesheet">
 {% endif %}
 </head>
 <body class="nav-md">
@@ -36,8 +43,8 @@
       <div class="main_container">
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
-              <a href="{% url 'rfs:index' %}" class="site_title"><i class="fa fa-paw"></i> <span>RFS</span></a>
+              <div class="navbar nav_title" style="border: 0;">
+              <a href="{% url 'rfs:index' %}" class="site_title"><i class="fa fa-line-chart"></i> <span>RFS</span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -61,42 +68,43 @@
                 <h3>General</h3>
                   <ul class="nav side-menu">
                  <!--add menus here-->
-                  <li><a href="{% url 'rfs:index' %}"><i class="fa fa-dashboard"></i> Dashboard</a>
+                  <li><a href="{% url 'rfs:index' %}"><i class="fa fa-home"></i> Home</a>
                   </li>
                   <li><a href="{% url 'rfs:project-create' %}"><i class="fa fa-plus"></i> Create a Project</a>
                   </li>
-
-
-                  <li class="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
-                    <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 %}display:block;{% endif %}{% endif %}">
+              {% if all_projects %}
+                  <li class="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}active{% endif %}{% endif %}"><a><i class="fa fa-folder"></i> Projects {% if all_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ACT' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}display:block;{% endif %}{% endif %}">
                     {% if all_projects %}
                         {% for project in all_projects %}
                             {% url 'rfs:file' project.id as url %}
                             {% url 'rfs:datafeed' project.id as url2 %}
                             {% url 'rfs:arc-file' project.id as url3 %}
-                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:project-details' project.id as url4 %}
+                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
                     </ul>
                   </li>
+                {% endif %}
 
-
-
-                  <li class="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
-                    <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 %}display:block;{% endif %}{% endif %}">
+                {% if arc_projects %}
+                  <li class="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}active{% endif %}{% endif %}"><a><i class="fa fa-archive"></i> Archived Projects {% if arc_projects %}<span class="fa fa-chevron-down"></span>{% endif %}</a>
+                    <ul class="nav child_menu" style="{% if project.status == 'ARC' %}{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}display:block;{% endif %}{% endif %}">
                     {% if arc_projects %}
                         {% for project in arc_projects %}
                             {% url 'rfs:file' project.id as url %}
                             {% url 'rfs:datafeed' project.id as url2 %}
                             {% url 'rfs:arc-file' project.id as url3 %}
-                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:project-details' project.id as url4 %}
+                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 %}current-page{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
                     </ul>
                   </li>
-
+                  {% endif %}
                   </ul>
 
               </div>
@@ -134,7 +142,6 @@
         <!--PAGE BODY-->
       <div class="right_col" role="main">
         {% block body %}
-            {% include 'rfs/index.html' %}
         {% endblock %}
         <!--PAGE BODY-->
       </div>
@@ -144,18 +151,42 @@
     <!-- Bootstrap -->
     <script src="{% static 'rfs/vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
     <!-- Custom Theme Scripts -->
-    <script src="{% static 'rfs/build/js/custom.min.js' %}"></script>
-
+    <script src="{% static 'rfs/build/js/custom.js' %}"></script>
     <script src="{% static 'rfs/self/script.js' %}"></script>
 
+    <!-- FastClick -->
     <script src="{% static  'rfs/vendors/fastclick/lib/fastclick.js' %}"></script>
-
-{% if request.path == url4 %}
+    <!-- NProgress -->
     <script src="{% static 'rfs/vendors/nprogress/nprogress.js' %}"></script>
     <script src="{% static 'rfs/vendors/echarts/dist/echarts.min.js' %}"></script>
-{% endif %}
+    <!-- Chart.js -->
+    <script src="{% static 'rfs/vendors/Chart.js/dist/Chart.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/gauge.js/dist/gauge.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/iCheck/icheck.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/skycons/skycons.js' %}"></script>
+    <!-- Flot -->
+    <script src="{% static 'rfs/vendors/Flot/jquery.flot.js' %}"></script>
+    <script src="{% static 'rfs/vendors/Flot/jquery.flot.pie.js' %}"></script>
+    <script src="{% static 'rfs/vendors/Flot/jquery.flot.time.js' %}"></script>
+    <script src="{% static 'rfs/vendors/Flot/jquery.flot.stack.js' %}"></script>
+    <script src="{% static 'rfs/vendors/Flot/jquery.flot.resize.js' %}"></script>
+    <!-- Flot plugins -->
+    <script src="{% static 'rfs/vendors/flot.orderbars/js/jquery.flot.orderBars.js' %}"></script>
+    <script src="{% static 'rfs/vendors/flot-spline/js/jquery.flot.spline.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/flot.curvedlines/curvedLines.js' %}"></script>
+    <!-- jQuery Sparklines -->
+    <script src="{% static 'rfs/vendors/jquery-sparkline/dist/jquery.sparkline.min.js' %}"></script>
+    <!-- DateJS -->
+    <script src="{% static 'rfs/vendors/DateJS/build/date.js' %}"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="{% static 'rfs/vendors/moment/min/moment.min.js' %}"></script>
+    <script src="{% static 'rfs/vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+
+
+
 <!--Data Tables-->
-{% if request.path == url2 %}
+{% if request.path == url2 or request.path == url5 or request.path == url6 %}
     <script src="{% static 'rfs/vendors/datatables.net/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
     <script src="{% static 'rfs/vendors/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
