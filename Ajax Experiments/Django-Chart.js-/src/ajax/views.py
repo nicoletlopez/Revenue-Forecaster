@@ -5,10 +5,9 @@ from django.http import JsonResponse
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-
+from .models import Actual
 User = get_user_model()
-
+q = Actual.objects.values('actual_arr')
 class HomeView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'charts.html', {})
@@ -28,8 +27,13 @@ class ChartData(APIView):
 
     def get(self, request, format=None):
         qs_count = User.objects.all().count()
-        labels = ["Users", "Red", "Blue", "Yellow", "Green", "Purple", "Orange"]
-        default_items = [qs_count, 1234, 1233, 32, 12]
+        labels = ["Users", "Red", "Blue", "Yellow"]
+        q = Actual.objects.values('actual_rev')
+        default_items = []
+        for item in q:
+            for key, value in item.items():
+                default_items.append(value)
+        print(default_items)
         data = {
             "labels": labels,
             "default": default_items,

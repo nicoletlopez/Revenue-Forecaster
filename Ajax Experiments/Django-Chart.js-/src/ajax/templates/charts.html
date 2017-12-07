@@ -2,9 +2,9 @@
 
 <script>
 {% block jquery %}
-    var endpoint = '/api/chart/data/'
+    var endpoint = '/ajax/api/chart/data/'
     var defaultdata = []
-    var labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"]
+    var labels = ["Orange", "Blue", "Yellow", "Green", "Purple", "Orange"]
     $.ajax({
         method:"GET",
         url: endpoint,
@@ -101,7 +101,7 @@
 {% block content %}
 
 <div class='row'>
-    <div class='col-sm-12' url-endpoint='{% url "api-data" %}'>
+    <div class='col-sm-12' url-endpoint='{% url "ajax:api-data" %}'>
         <h1>Hello World</h1>
         <div class="col-sm-6">
             <canvas id="myChart" width="400" height="400"></canvas>
