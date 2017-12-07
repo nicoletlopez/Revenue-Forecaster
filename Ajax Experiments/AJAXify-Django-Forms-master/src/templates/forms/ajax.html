@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class='col-6 offset-md-3'>
+    <h1>Your Form</h1>
+    <form class='my-ajax-form' method='POST' action='.' data-url='{{ request.build_absolute_uri|safe }}'>
+        {{form.as_p|safe}}
+        <button type='submit'>Submit</button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(document).ready(function () {
+    var $myForm = $(".my-ajax-form")
+    $myForm.submit(function (event) {
+        event.preventDefault()
+        var $formData = $(this).serialize()
+        var $endpoint = $myForm.attr('data-url') || window.location.href
+        console.log($formData)
+        console.log($endpoint)
+        $.ajax({
+            method: "POST",
+            url: $endpoint,
+            data: $formData,
+            success:handleFormSuccess(),
+            error:handleFormError()
+        })
+
+        function handleFormSuccess(data, textStatus, jqXHR) {
+            console.log(data)
+            console.log(textStatus)
+            console.log(jqXHR)
+            $myForm[0].reset();
+        }
+
+        function handleFormError(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+        }
+    })
+
+
+})
+</script>
+
+{% endblock %}
