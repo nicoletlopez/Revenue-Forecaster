@@ -33,4 +33,7 @@ urlpatterns=[
     #TEST#
     #url(r'^test/$',views.ActualView.as_view(),name='actual-view'),
 
+    #url for forecast menu
+
+
 ]

@@ -63,14 +63,17 @@ class HoltWinters():
 
         predicted_list = []
         for constant_set_key in value_dictionary:
-            predicted_list.append(
-                self.triple_exponential_smoothing(series, slen,n_preds, value_dictionary[constant_set_key][0],
+            #print("%s %s %s" % (value_dictionary[constant_set_key][0],value_dictionary[constant_set_key][1],value_dictionary[constant_set_key][2]))
+            prediction_row =  self.triple_exponential_smoothing(series, slen,n_preds, value_dictionary[constant_set_key][0],
                                                    value_dictionary[constant_set_key][0],
-                                                   value_dictionary[constant_set_key][0],))
+                                                   value_dictionary[constant_set_key][0])
+            #print(prediction_row)
+            predicted_list.append(prediction_row)
 
         fitting_list_tuple = []
         for fitting_set in predicted_list:
             fitting_list_tuple.append(fitting_set[0:len(series)])
+            #print(len(fitting_set))
 
         sse_list = []
         for tuple in fitting_list_tuple:
@@ -83,6 +86,7 @@ class HoltWinters():
         #FOR SSE
         min_sse = min(sse_list)
         min_sse_index = sse_list.index(min_sse)
+        print(min_sse_index)
         alpha_beta_gamma_list = value_dictionary[min_sse_index]
         print(alpha_beta_gamma_list)
         prediction_list_sse = self.triple_exponential_smoothing(series,slen,n_preds,
