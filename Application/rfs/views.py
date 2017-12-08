@@ -3,6 +3,8 @@ import pdb #pdb.set_trace()
 
 
 import json
+import re
+
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core import serializers
 from django.views import generic
@@ -253,7 +255,13 @@ def excel_to_db(request,project_id):
             xl_sheet = xl_workbook.sheet_by_index(4)
             row = xl_sheet.row(4)
             ind_or_grp = xl_sheet.row(3)
-            year = xl_sheet.cell(1,1).value.split()[1]
+            def get_year(cellString):
+                return re.search(r"(\d{4})", cellString).group(0)
+            year = get_year(xl_sheet.cell(1, 1).value)
+
+
+            #year = xl_sheet.cell(1,1).value.split()[1]
+
             for iog, cell_obj in enumerate(ind_or_grp):
                 if cell_obj.value == 'GROUP':
                     group_start = iog
