@@ -1,5 +1,11 @@
 #from __future__ import print_function
 import pdb #pdb.set_trace()
+
+
+import json
+import re
+
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core import serializers
 from django.views import generic
 from django.views.generic import View,TemplateView,DetailView
@@ -15,7 +21,7 @@ from os.path import join, dirname, abspath
 import datetime, xlrd,numpy as np
 from xlrd.sheet import ctype_text
 import os
-from PythonScripts.forecasting import HoltWinters as hw
+from .libraries.forecasting import HoltWinters as hw
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EXCEL_FILE_TYPES=['xlsx','xls']
@@ -94,7 +100,9 @@ class ProjectDashboard(LoginRequiredMixin,DetailView):
     template_name='rfs/project.html'
 
 
+
     def get_context_data(self,**kwargs):
+
         context=super(ProjectDashboard,self).get_context_data(**kwargs)
         context['all_projects']=Project.objects.all().filter(status='ACT')
         context['all_files']=File.objects.all()
@@ -105,7 +113,9 @@ class ProjectDashboard(LoginRequiredMixin,DetailView):
         context['json_actual_arr']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_arr'))
         context['json_actual_rns']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_rns'))
         context['json_actual_rev']=json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('actual_rev'))
-        context['json_date'] = json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),ensure_ascii=False,fields=('date'))
+        #context['json_date'] = json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),fields=('date'))
+        context['json_date']=json.dumps(list(Actual.objects.filter(project_id=self.kwargs['pk']).values('date')),cls=DjangoJSONEncoder)
+
         return context
 
 class ProjectDetails(LoginRequiredMixin,DetailView):
@@ -245,7 +255,13 @@ def excel_to_db(request,project_id):
             xl_sheet = xl_workbook.sheet_by_index(4)
             row = xl_sheet.row(4)
             ind_or_grp = xl_sheet.row(3)
-            year = xl_sheet.cell(1,1).value.split()[1]
+            def get_year(cellString):
+                return re.search(r"(\d{4})", cellString).group(0)
+            year = get_year(xl_sheet.cell(1, 1).value)
+
+
+            #year = xl_sheet.cell(1,1).value.split()[1]
+
             for iog, cell_obj in enumerate(ind_or_grp):
                 if cell_obj.value == 'GROUP':
                     group_start = iog
@@ -344,3 +360,4 @@ def excel_to_db(request,project_id):
                  'message':'Excel format wrong. Please choose a correct one'
                  }
         return render(request,'rfs/datafeeder.html',context)
+###########TRIPLE SMOOTHING#############
