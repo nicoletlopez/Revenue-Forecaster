@@ -21,6 +21,10 @@ ind_actual = np.zeros((13, 12),
                       dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float), ('rev', float)])
 grp_actual = np.zeros((5, 12), dtype=[('rns', 'f8'), ('arr', 'f8'), ('rev', 'f8')])
 
+ind_actual_last_year = np.zeros((13, 12),
+                      dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float), ('rev', float)])
+grp_actual_last_year = np.zeros((5, 12), dtype=[('rns', 'f8'), ('arr', 'f8'), ('rev', 'f8')])
+
 month_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
               'November', 'December']
 print('(Column #) type:value')
@@ -34,9 +38,10 @@ print(year)
 #print(year)
 
 
-ss = 0
+subsegment_column = 0
 m = 0
-erow = 7
+actual_row = 7
+actual_row_last_year = 9
 for idx, cell_obj in enumerate(row):
     # only gets the subsegment
     subsegment = cell_obj.value  # use .value to get the value (duh)
@@ -47,8 +52,10 @@ for idx, cell_obj in enumerate(row):
         monx = 0
         for month in month_list:  # get the month (January, February etc)
             #print(month)
-            ind_actual[ss, m]['subsegment'] = subsegment
-            ind_actual[ss, m]['month'] = month
+            ind_actual[subsegment_column, m]['subsegment'] = subsegment
+            ind_actual_last_year[subsegment_column, m]['subsegment'] = subsegment
+            ind_actual[subsegment_column, m]['month'] = month
+            ind_actual_last_year[subsegment_column, m]['month'] = month
             mon = mon + monx
             for x in range(0, 3):  # get the column headers (Room Nights Sold, Average Rm Rate(PHP), Revenue (PHP'000)
                 ecolumn = idx + x
@@ -58,17 +65,21 @@ for idx, cell_obj in enumerate(row):
                     val = 'arr'
                 else:
                     val = 'rev'
-                our = xl_sheet.cell(erow, ecolumn).value
+                our = xl_sheet.cell(actual_row, ecolumn).value
+                our2 = xl_sheet.cell(actual_row_last_year, ecolumn).value
                 if isinstance(our,str):
                     our = 0.0
                 #print(type(our))
-                ind_actual[ss, m][val] = our
+                ind_actual[subsegment_column, m][val] = our
+                ind_actual_last_year[subsegment_column, m][val] = our2
                 # print(m)
                 # print(erow)
-            erow += 4
+            actual_row += 4
+            actual_row_last_year += 4
             m += 1
-        ss += 1
-        erow = 7
+        subsegment_column += 1
+        actual_row = 7
+        actual_row_last_year += 4
         m = 0
 
 def getDate(month,year):
