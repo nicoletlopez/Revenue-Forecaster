@@ -66,14 +66,14 @@ for idx, cell_obj in enumerate(row):
                 our = xl_sheet.cell(actual_row, ecolumn).value
                 our2 = xl_sheet.cell(actual_row_last_year, ecolumn).value
                 #print("our: %s" %our)
-                print("our2: %s" %our2)
+                #print("our2: %s" %our2)
                 if isinstance(our,str):
                     our = 0.0
                 if isinstance(our2,str):
                     our2 = 0.0
                 #print(type(our))
                 ind_actual[subsegment_column, m][val] = our
-                #ind_actual_last_year[subsegment_column, m][val] = our2
+                ind_actual_last_year[subsegment_column, m][val] = our2
                 # print(m)
                 # print(erow)
             actual_row += 4
@@ -83,6 +83,8 @@ for idx, cell_obj in enumerate(row):
         actual_row = 7
         actual_row_last_year = 9
         m = 0
+
+print(ind_actual_last_year)
 
 def getDate(month,year):
     thirty_ones = ["January","March","May","July","August","October","December"]
@@ -111,13 +113,13 @@ for main in ind_actual:
             seg_id_get_query = "select id from seg_list where name like  '%%%s' limit 1" % segment
             cur.execute(seg_id_get_query)
             seg_id = cur.fetchone()[0]
-            print("%s %s %s %s %s %s" % (date, segment, month, rns, arr, rev))
+            #print("%s %s %s %s %s %s" % (date, segment, month, rns, arr, rev))
             insert_query = "insert into actual (date,rns,arr,rev,seg_id) values('%s',%s,%s,%s,%s)" % (
             date, rns, arr, rev, seg_id)
             cur.execute(insert_query)
             conn.commit()
         except(Exception):
-            print(Exception.__traceback__)
+            #print(Exception.__traceback__)
             pass
-    print()
+    #print()
 conn.close()
