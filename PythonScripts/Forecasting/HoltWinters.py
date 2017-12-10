@@ -30,7 +30,7 @@ class HoltWinters():
 
         #generate dictionary of all possible alpha, beta, gamma combinations
         value_dictionary = {}
-        counter = 1
+        counter = 0
         for alpha in constants_list:
             for beta in constants_list:
                 for gamma in constants_list:
@@ -65,8 +65,8 @@ class HoltWinters():
         for constant_set_key in value_dictionary:
             #print("%s %s %s" % (value_dictionary[constant_set_key][0],value_dictionary[constant_set_key][1],value_dictionary[constant_set_key][2]))
             prediction_row =  self.triple_exponential_smoothing(series, slen,n_preds, value_dictionary[constant_set_key][0],
-                                                   value_dictionary[constant_set_key][0],
-                                                   value_dictionary[constant_set_key][0])
+                                                   value_dictionary[constant_set_key][1],
+                                                   value_dictionary[constant_set_key][2])
             #print(prediction_row)
             predicted_list.append(prediction_row)
 
@@ -86,9 +86,10 @@ class HoltWinters():
         #FOR SSE
         min_sse = min(sse_list)
         min_sse_index = sse_list.index(min_sse)
-        print(min_sse_index)
+        print("Min SSE: %s" % min_sse)
+        print("Min SSE index: %s" % min_sse_index)
         alpha_beta_gamma_list = value_dictionary[min_sse_index]
-        print(alpha_beta_gamma_list)
+        print("Constants: %s" % alpha_beta_gamma_list)
         prediction_list_sse = self.triple_exponential_smoothing(series,slen,n_preds,
                                                             alpha_beta_gamma_list[0],
                                                             alpha_beta_gamma_list[1],

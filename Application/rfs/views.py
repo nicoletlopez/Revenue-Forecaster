@@ -1,27 +1,30 @@
 #from __future__ import print_function
-import pdb #pdb.set_trace()
 
 
 import json
+import os
 import re
 
-from django.core.serializers.json import DjangoJSONEncoder
-from django.core import serializers
-from django.views import generic
-from django.views.generic import View,TemplateView,DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render,redirect,get_object_or_404
-from django.contrib.auth import authenticate,login,logout
+# custom libraries
+from .libraries.fitting import ConstantFitting
+from .libraries.holtwinters import HoltWinters
+from .libraries.xlread import excelread
+# end custom libraries
+import numpy as np
+import xlrd
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse_lazy,reverse
-from .forms import UserForm,FileForm,CreateForm
-from .models import Project,File, Actual, Forecast, Seg_list
-from django.http import HttpResponse,Http404,HttpResponseRedirect
-from os.path import join, dirname, abspath
-import datetime, xlrd,numpy as np
-from xlrd.sheet import ctype_text
-import os
-from .libraries.forecasting import HoltWinters as hw
+from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import DetailView
+from django.views.generic.edit import CreateView, UpdateView
+
+from .forms import FileForm, CreateForm, ForecastOptionsForm
+from .models import Project, File, Actual, Seg_list
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EXCEL_FILE_TYPES=['xlsx','xls']
@@ -361,3 +364,6 @@ def excel_to_db(request,project_id):
                  }
         return render(request,'rfs/datafeeder.html',context)
 ###########TRIPLE SMOOTHING#############
+def forecast_form(request):
+    forecast_options_form = ForecastOptionsForm()
+    return render(request,'rfs/forecast-form.html',{'form':forecast_options_form})

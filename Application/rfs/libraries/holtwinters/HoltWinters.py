@@ -1,5 +1,5 @@
 import numpy as np
-from PythonScripts.forecasting import ConstantFitting as cfitting
+from ..fitting import ConstantFitting as cfitting
 
 class HoltWinters2(object):
     def __init__(self,series,slen=12,n_preds=1):

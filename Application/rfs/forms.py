@@ -1,6 +1,21 @@
 from django.contrib.auth.models import User
 from django import forms
-from .models import Project,File
+from .models import Project,File, Actual
+
+#choice fields for the ForecastOptionsForm class
+METRIC_CHOICE = \
+    (
+        ('rev','Revenue'),
+        ('arr','Average Room Rate'),
+        ('occ','Occupancy Rate'),
+        ('revpar','Revenue per Available Room')
+    )
+FITTING_METHOD = \
+    (
+        ('mse','MSE (Mean Squared Error)'),
+        ('sse','SSE (Sum of Squared Error)'),
+        ('mad','MAD (Mean Absolute Deviation')
+    )
 
 class UserForm(forms.ModelForm):
     password=forms.CharField(widget=forms.PasswordInput)
@@ -25,6 +40,13 @@ class CreateForm(forms.ModelForm):
     class Meta:
         model=Project
         fields=['project_name','description']
+
+class ForecastOptionsForm(forms.Form):
+    metric = forms.MultipleChoiceField(choices=METRIC_CHOICE)
+    start_date = forms.DateField(input_formats=['%Y-%m-%d'])
+    end_date = forms.DateField(input_formats=['%Y-%m-%d'])
+    n_preds = forms.IntegerField()
+    smoothing_method=forms.RadioSelect(choices=FITTING_METHOD)
 
 #class XlToDbForm(forms.Form):
 #    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)
