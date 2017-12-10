@@ -10,29 +10,27 @@ cur = conn.cursor()
 xl_workbook = xlrd.open_workbook('2015 ROOMS SEGMENTATION.xlsx')  # location and name of the file
 sheet_names = xl_workbook.sheet_names()
 xl_sheet = xl_workbook.sheet_by_index(4)
-print('Sheet name: %s' % xl_sheet.name)
+#print('Sheet name: %s' % xl_sheet.name)
 row = xl_sheet.row(4)
 ind_or_grp = xl_sheet.row(3)
 for iog, cell_obj in enumerate(ind_or_grp):
     if cell_obj.value == 'GROUP':
         group_start = iog
-        print('%s' % group_start)
+        #print('%s' % group_start)
 ind_actual = np.zeros((13, 12),
                       dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float), ('rev', float)])
-grp_actual = np.zeros((5, 12), dtype=[('rns', 'f8'), ('arr', 'f8'), ('rev', 'f8')])
 
 ind_actual_last_year = np.zeros((13, 12),
                       dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float), ('rev', float)])
-grp_actual_last_year = np.zeros((5, 12), dtype=[('rns', 'f8'), ('arr', 'f8'), ('rev', 'f8')])
 
 month_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
               'November', 'December']
-print('(Column #) type:value')
+#print('(Column #) type:value')
 unneeded_columns = ['', 'Barter', 'GRAND TOTAL', 'TOTAL GROUP', 'TOTAL INDIVIDUAL', 'SEGMENT NAME',
                     'Qualified Discount', 'Long Staying']
 
 year = xl_sheet.cell(1,1).value.split()[1]
-print(year)
+#print(year)
 #year_row = year_row.split()
 #year = year_row[1]
 #print(year)
@@ -67,11 +65,15 @@ for idx, cell_obj in enumerate(row):
                     val = 'rev'
                 our = xl_sheet.cell(actual_row, ecolumn).value
                 our2 = xl_sheet.cell(actual_row_last_year, ecolumn).value
+                #print("our: %s" %our)
+                print("our2: %s" %our2)
                 if isinstance(our,str):
                     our = 0.0
+                if isinstance(our2,str):
+                    our2 = 0.0
                 #print(type(our))
                 ind_actual[subsegment_column, m][val] = our
-                ind_actual_last_year[subsegment_column, m][val] = our2
+                #ind_actual_last_year[subsegment_column, m][val] = our2
                 # print(m)
                 # print(erow)
             actual_row += 4
@@ -79,7 +81,7 @@ for idx, cell_obj in enumerate(row):
             m += 1
         subsegment_column += 1
         actual_row = 7
-        actual_row_last_year += 4
+        actual_row_last_year = 9
         m = 0
 
 def getDate(month,year):
