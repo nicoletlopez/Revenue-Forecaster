@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django import forms
 from .models import Project,File, Actual
-
+from django.contrib.admin import widgets
+from datetime import datetime
 #choice fields for the ForecastOptionsForm class
 METRIC_CHOICE = \
     (
@@ -42,9 +43,14 @@ class CreateForm(forms.ModelForm):
         fields=['project_name','description']
 
 class ForecastOptionsForm(forms.Form):
+
+    earliest_date = min(Actual.objects.values_list('date'))
+    latest_date = max(Actual.objects.values_list('date'))
+
     metric = forms.MultipleChoiceField(choices=METRIC_CHOICE)
-    start_date = forms.DateField(input_formats=['%Y-%m-%d'])
-    end_date = forms.DateField(input_formats=['%Y-%m-%d'])
+
+    start_date = forms.DateTimeField(input_formats=['%Y-%m-%d'],show_hidden_initial=earliest_date,widget=widgets.AdminDateWidget())
+    end_date = forms.DateField(input_formats=['%Y-%m-%d'],widget=widgets.AdminDateWidget())
     n_preds = forms.IntegerField()
     smoothing_method=forms.RadioSelect(choices=FITTING_METHOD)
 
