@@ -44,15 +44,15 @@ class CreateForm(forms.ModelForm):
 
 class ForecastOptionsForm(forms.Form):
 
-    earliest_date = min(Actual.objects.values_list('date'))
-    latest_date = max(Actual.objects.values_list('date'))
+    earliest_date = min(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
+    latest_date = max(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
 
     metric = forms.MultipleChoiceField(choices=METRIC_CHOICE)
 
-    start_date = forms.DateTimeField(input_formats=['%Y-%m-%d'],show_hidden_initial=earliest_date,widget=widgets.AdminDateWidget())
-    end_date = forms.DateField(input_formats=['%Y-%m-%d'],widget=widgets.AdminDateWidget())
+    start_date = forms.DateField(input_formats=['%Y-%m-%d'],initial=earliest_date,widget=widgets.AdminDateWidget())
+    end_date = forms.DateField(input_formats=['%Y-%m-%d'],initial=latest_date,widget=widgets.AdminDateWidget())
     n_preds = forms.IntegerField()
-    smoothing_method=forms.RadioSelect(choices=FITTING_METHOD)
+    smoothing_method=forms.ChoiceField(widget=forms.RadioSelect,choices=FITTING_METHOD)
 
 #class XlToDbForm(forms.Form):
 #    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)

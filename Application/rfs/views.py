@@ -365,5 +365,5 @@ def excel_to_db(request,project_id):
         return render(request,'rfs/datafeeder.html',context)
 ###########TRIPLE SMOOTHING#############
 def forecast_form(request):
-    forecast_options_form = ForecastOptionsForm()
-    return render(request,'rfs/forecast-form.html',{'form':forecast_options_form})
+    form = ForecastOptionsForm(request.POST or None)
+    return render(request,'rfs/forecast-form.html',{'form':form})

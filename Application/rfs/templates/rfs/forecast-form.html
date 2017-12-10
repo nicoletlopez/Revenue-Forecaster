@@ -7,7 +7,10 @@
 <body>
 <form>
     {% csrf_token %}
-    {{ form }}
+    {% for field in form %}
+    {{ field.label_tag }}<br/>
+    {{ field }}<br/>
+    {% endfor %}
     <input type="submit"/>
 </form>
 </body>
