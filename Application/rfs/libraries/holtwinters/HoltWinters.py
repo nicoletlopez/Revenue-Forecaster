@@ -1,8 +1,12 @@
 import numpy as np
 from ..fitting import ConstantFitting as cfitting
 
-class HoltWinters2(object):
-    def __init__(self,series,slen=12,n_preds=1):
+class HoltWinters(object):
+    def __init__(self,series,n_preds=1,slen=12):
+        """
+
+        :rtype:
+        """
         self.series= series
         self.slen = slen
         self.n_preds = n_preds

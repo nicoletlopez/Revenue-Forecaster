@@ -55,3 +55,5 @@ insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
 
 select * from rfs_seg_list;
 select * from rfs_actual;
+
+select sum('actual_rev') from rfs_actual where date = '2015-02-28'
