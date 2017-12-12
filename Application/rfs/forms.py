@@ -50,7 +50,7 @@ class ForecastOptionsForm(forms.Form):
     #latest_date = max(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
 
     earliest_date = '2015-01-31'
-    latest_date = '2015-12-31'
+    latest_date = '2016-12-31'
 
     metric = forms.MultipleChoiceField(choices=METRIC_CHOICE,initial='rev')
     start_date = forms.DateField(input_formats=['%Y-%m-%d'],initial=earliest_date,widget=widgets.AdminDateWidget())
@@ -58,6 +58,15 @@ class ForecastOptionsForm(forms.Form):
     number_of_predictions = forms.IntegerField(initial=1)
     season_length = forms.IntegerField(initial=12)
     fitting_method=forms.ChoiceField(widget=forms.RadioSelect,choices=FITTING_METHOD,initial='sse')
+
+    alpha = forms.FloatField(max_value=1.0,min_value=0.01,required=False)
+    beta = forms.FloatField(max_value=1.0,min_value=0.01,required=False)
+    gamma = forms.FloatField(max_value=1.0, min_value=0.01,required=False)
+
+    #may have errors if constant_value_end is greater than constant_value_start
+    constant_value_start = forms.FloatField(max_value=1,min_value=100,required=False)
+    constant_value_end = forms.FloatField(max_value=1,min_value=100,required=False)
+    constant_value_step = forms.FloatField(max_value=10,min_value=1,required=False)
 
 #class XlToDbForm(forms.Form):
 #    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)

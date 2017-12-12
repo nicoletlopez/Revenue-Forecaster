@@ -1,20 +1,26 @@
 {% extends 'rfs/base.html' %}
 {% block body %}
-    <form role="form" method='post' action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        {% include 'rfs/form_template.html' %}
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-success">Forecast</button>
-            </div>
+<form role="form" method='post' action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include 'rfs/form_template.html' %}
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-success">Forecast</button>
         </div>
-    </form>
-    {% comment %}Prints out the forecast options metrics{% endcomment %}
-    <strong>Metric:</strong>{{ metric }}<br/>
-    <strong>Start Date:</strong>{{ start_date }}<br/>
-    <strong>End Date:</strong>{{ end_date }}<br/>
-    <strong>Time Delta:</strong>{{ values_list }}<br/>
-    <strong>Number of Predictions:</strong>{{ n_preds }}<br/>
-    <strong>Fitting Method:</strong>{{ fitting_method }}<br/>
-    <strong>Seasonal Length:</strong>{{ season_length }}<br/>
+    </div>
+</form>
+{% comment %}Prints out the forecast options metrics{% endcomment %}
+<strong>Metric:</strong>{{ metric }}<br/>
+<strong>Start Date:</strong>{{ start_date }}<br/>
+<strong>End Date:</strong>{{ end_date }}<br/>
+<strong>Values (per month):</strong>{{ values_list }}<br/>
+<strong>Number of Predictions:</strong>{{ n_preds }}<br/>
+<strong>Fitting Method:</strong>{{ fitting_method }}<br/>
+<strong>Seasonal Length:</strong>{{ season_length }}<br/>
+<h3>Optional:</h3>
+<strong>Alpha:</strong>{{ alpha }}<br/>
+<strong>Beta:</strong>{{ beta }}<br/>
+<strong>Gamma:</strong>{{ gamma }}<br/>
+<h1>Results:</h1>{{ result }}
+<strong>Errors:</strong>{{ error }}
 {% endblock %}
