@@ -398,7 +398,7 @@ def forecast_form(request, project_id):
             if date_input.month == 1:
                 try:
                     date_input += relativedelta(months=1)
-                    date_input = date_input.replace(day=29)
+                    date_input = date_input.replace(day=28)
                 except:
                     return date_input
                 finally:
@@ -427,7 +427,7 @@ def forecast_form(request, project_id):
         while counter < end_date:
             total_value = Actual.objects.filter(date=counter).aggregate(Sum('actual_%s' % metric))
             try:
-                value_count.append(float(total_value['actual_arr__sum']))
+                value_count.append(float(total_value['actual_%s__sum' % metric]))
             except:
                 value_count.append(0)
             counter = add_one_month(counter)
