@@ -22,7 +22,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
-from .forms import FileForm, CreateForm, ForecastOptionsForm
+from .forms import FileForm, CreateForm #ForecastOptionsForm
 from .models import Project, File, Actual, Seg_list
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -363,7 +363,8 @@ def excel_to_db(request,project_id):
                  'message':'Excel format wrong. Please choose a correct one'
                  }
         return render(request,'rfs/datafeeder.html',context)
+
 ###########TRIPLE SMOOTHING#############
-def forecast_form(request):
-    form = ForecastOptionsForm(request.POST or None)
-    return render(request,'rfs/forecast-form.html',{'form':form})
+#def forecast_form(request):
+ #   form = ForecastOptionsForm(request.POST or None)
+  #  return render(request,'rfs/forecast-form.html',{'form':form})

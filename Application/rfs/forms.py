@@ -42,7 +42,7 @@ class CreateForm(forms.ModelForm):
         model=Project
         fields=['project_name','description']
 
-class ForecastOptionsForm(forms.Form):
+"""class ForecastOptionsForm(forms.Form):
 
     earliest_date = min(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
     latest_date = max(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
@@ -52,7 +52,7 @@ class ForecastOptionsForm(forms.Form):
     start_date = forms.DateField(input_formats=['%Y-%m-%d'],initial=earliest_date,widget=widgets.AdminDateWidget())
     end_date = forms.DateField(input_formats=['%Y-%m-%d'],initial=latest_date,widget=widgets.AdminDateWidget())
     n_preds = forms.IntegerField()
-    smoothing_method=forms.ChoiceField(widget=forms.RadioSelect,choices=FITTING_METHOD)
+    smoothing_method=forms.ChoiceField(widget=forms.RadioSelect,choices=FITTING_METHOD)"""
 
 #class XlToDbForm(forms.Form):
 #    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)
