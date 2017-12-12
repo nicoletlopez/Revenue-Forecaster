@@ -10,6 +10,12 @@ from .libraries.fitting import ConstantFitting
 from .libraries.holtwinters import HoltWinters
 from .libraries.xlread import excelread
 # end custom libraries
+
+from datetime import datetime
+from datetime import timedelta
+from calendar import calendar
+from dateutil.relativedelta import *
+
 import numpy as np
 import xlrd
 from django.contrib.auth import authenticate, login, logout
@@ -21,8 +27,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
+from django.db.models import Sum
 
-from .forms import FileForm, CreateForm #ForecastOptionsForm
+from .forms import FileForm, CreateForm, ForecastOptionsForm
 from .models import Project, File, Actual, Seg_list
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -285,6 +292,8 @@ def excel_to_db(request,project_id):
                             "December": 12}
                 if month in thirty_ones:
                     day = 31
+                elif month == "February":
+                    day = 28
                 else:
                     day = 30
                 month = monthMap.get(month)
@@ -365,6 +374,73 @@ def excel_to_db(request,project_id):
         return render(request,'rfs/datafeeder.html',context)
 
 ###########TRIPLE SMOOTHING#############
-#def forecast_form(request):
- #   form = ForecastOptionsForm(request.POST or None)
-  #  return render(request,'rfs/forecast-form.html',{'form':form})
+def forecast_form(request, project_id):
+    form = ForecastOptionsForm(request.POST or None)
+    if form.is_valid():
+        # get forecast info
+        # get performance metric desired
+        metric = request.POST.get("metric")
+        # get start date
+        start_date = datetime.strptime(request.POST.get("start_date"),'%Y-%m-%d')
+        # get end date
+        end_date = datetime.strptime(request.POST.get("end_date"),'%Y-%m-%d')
+        # get number of predictions
+        n_preds = request.POST.get("number_of_predictions")
+        # get fitting method
+        fitting_method = request.POST.get("fitting_method")
+        # get season length
+        season_length = request.POST.get('season_length')
+
+        def add_one_month(date_input):
+            # january
+            thirties = [2, 4, 6, 9, 11]
+            thirty_ones = [3, 5, 7, 8, 10, 12]
+            if date_input.month == 1:
+                try:
+                    date_input += relativedelta(months=1)
+                    date_input = date_input.replace(day=29)
+                except:
+                    return date_input
+                finally:
+                    return date_input
+
+            if date_input.month in thirties:
+                date_input += relativedelta(months=1)
+                date_input = date_input.replace(day=31)
+                return date_input
+
+            if date_input.month in thirty_ones:
+                date_input += relativedelta(months=1)
+                try:
+                    date_input = date_input.replace(day=31)
+                except:
+                    date_input = date_input.replace(day=30)
+                finally:
+                    return date_input
+
+        # create an array for the values (e.g. total + group for month of january)
+        value_count = []
+
+        #add the total + group for each month
+        #to keep track, increment a month for each query, and add each query to the value_count list
+        counter = start_date
+        while counter < end_date:
+            total_value = Actual.objects.filter(date=counter).aggregate(Sum('actual_%s' % metric))
+            try:
+                value_count.append(float(total_value['actual_arr__sum']))
+            except:
+                value_count.append(0)
+            counter = add_one_month(counter)
+
+        return render(request, 'rfs/forecast-form.html', {'form': form,
+                                                          "metric": metric,
+                                                          "start_date": start_date,
+                                                          "end_date": end_date,
+                                                          "values_list": value_count,
+                                                          "n_preds": n_preds,
+                                                          "fitting_method": fitting_method,
+                                                          "season_length": season_length})
+
+        # return render(request,'rfs/forecast-form.html',{"form":form,"values":values_dict})
+
+    return render(request, 'rfs/forecast-form.html', {'form': form})
