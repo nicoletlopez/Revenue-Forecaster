@@ -37,7 +37,7 @@ class ConstantFitting(object):
 
         squared_errors = []
 
-        for ctr in range(len(seasonal_factor)):
+        for ctr in range(n):
             y_hat = a + (b * actual[ctr])
             error = seasonal_factor[ctr] - y_hat
             squared_error = error * error
@@ -45,3 +45,15 @@ class ConstantFitting(object):
 
         mean_squared_errors = np.mean(squared_errors)
         return mean_squared_errors
+
+    def mse2(self,prediction_list):
+        m = np.mean(prediction_list)
+        squared_errors = []
+        mse2 = 0;
+        for i in range(len(prediction_list)):
+            error = prediction_list[i] - m
+            squared_error = error * error
+            squared_errors.append(squared_error)
+            mse2 = np.mean(squared_errors)
+
+        return mse2

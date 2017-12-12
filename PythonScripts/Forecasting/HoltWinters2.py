@@ -162,6 +162,35 @@ class HoltWinters2(object):
 
         return predicted_values
 
+    def optimize_by_mse2(self,prediction_list):
+        #instantiate ConstantFitting object
+        fitting = cfitting.ConstantFitting()
+        #collect all sse values in an array
+        mse2_list = []
+        counter = 0
+        for item in prediction_list:
+            #include actual data only (the ETS method returns actual + predicted)
+            item = item[0:len(self.series)]
+            mse2 = fitting.mse2(item)
+            mse2_list.append(mse2)
+            #print("%s - %s" % (self.value_dictionary[counter],sse))
+            counter += 1
+
+        # for the purpose of having referenceable values, I turned the following into instance variable
+        self.min_mse2 = min(mse2_list)
+        self.min_mse2_index = mse2_list.index(self.min_mse2)
+        self.constants = self.value_dictionary[self.min_mse2_index]
+        predicted_values = self.triple_exponential_smoothing(self.constants[0],
+                                                            self.constants[1],
+                                                            self.constants[2])[-self.n_preds:]
+
+        print("Min MSE2: %s" % self.min_mse2)
+        print("Min MSE2 index: %s" % self.min_mse2_index)
+        print("Constants: %s" % self.constants)
+        print(predicted_values)
+
+        return predicted_values
+
 
 """sample_data = \
     [
