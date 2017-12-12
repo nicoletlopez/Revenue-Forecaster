@@ -1,12 +1,13 @@
 import numpy as np
 from PythonScripts.forecasting import ConstantFitting as cfitting
+from tqdm import tqdm
+
 
 class HoltWinters2(object):
-    def __init__(self,series,slen=12,n_preds=1):
-        self.series= series
+    def __init__(self, series, slen=12, n_preds=1):
+        self.series = series
         self.slen = slen
         self.n_preds = n_preds
-
 
     def __initial_trend(self):
         sum = 0.0
@@ -29,35 +30,35 @@ class HoltWinters2(object):
             seasonals[i] = sum_of_vals_over_avg / n_seasons
         return seasonals
 
-    def get_prediction_tuples(self,start=1,end=101,step=1):
-        #generate list of all constant values
+    def get_prediction_tuples(self, start=1, end=101, step=1):
+        # generate list of all constant values
         constants_list = []
-        for constant in range(start,end,step):
-            constants_list.append(constant/100)
+        for constant in range(start, end, step):
+            constants_list.append(constant / 100)
 
-        #generate dictionary of all possible alpha, beta, gamma combinations
+        # generate dictionary of all possible alpha, beta, gamma combinations
         self.value_dictionary = {}
         counter = 0
         for alpha in constants_list:
             for beta in constants_list:
                 for gamma in constants_list:
-                    self.value_dictionary[counter] = [alpha,beta,gamma]
-                    counter +=1
+                    self.value_dictionary[counter] = [alpha, beta, gamma]
+                    counter += 1
 
         prediction_list = []
-        for key in self.value_dictionary:
-            prediction_tuple = self.triple_exponential_smoothing(self.value_dictionary[key][0],self.value_dictionary[key][1],self.value_dictionary[key][2])
+        for key in tqdm(self.value_dictionary):
+            prediction_tuple = self.triple_exponential_smoothing(self.value_dictionary[key][0],
+                                                                 self.value_dictionary[key][1],
+                                                                 self.value_dictionary[key][2])
             prediction_list.append(prediction_tuple)
             """print("%s %s %s" % (self.value_dictionary[key][0],
                   self.value_dictionary[key][1],
                   self.value_dictionary[key][2]))"""
-        #print(len(prediction_list))
+        # print(len(prediction_list))
 
-
-        print(len(prediction_list))
         return prediction_list
 
-    def triple_exponential_smoothing(self,alpha=0.07,beta=1.0,gamma=1.0):
+    def triple_exponential_smoothing(self, alpha=0.07, beta=1.0, gamma=1.0):
         result = []
         seasonals = self.__initial_seasonal_components()
         for i in range(len(self.series) + self.n_preds):
@@ -77,30 +78,32 @@ class HoltWinters2(object):
                 result.append(smooth + trend + seasonals[i % self.slen])
         return result
 
-    #to get SSE, MAD, and MSE of a LIST, use the ConstantFitting class
+    # to get SSE, MAD, and MSE of a LIST, use the ConstantFitting class
 
-    #create a list of SSE's find the minumum, and return the prediction list
-    def optimize_by_sse(self,prediction_list):
-        #instantiate ConstantFitting object
+    # create a list of SSE's find the minumum, and return the prediction list
+    def optimize_by_sse(self, prediction_list):
+        # instantiate ConstantFitting object
         fitting = cfitting.ConstantFitting()
-        #collect all sse values in an array
+        # collect all sse values in an array
         sse_list = []
         counter = 0
-        for item in prediction_list:
-            #include actual data only (the ETS method returns actual + predicted)
-            item = item[0:len(self.series)]
-            sse = fitting.sse(item)
-            sse_list.append(sse)
-            #print("%s - %s" % (self.value_dictionary[counter],sse))
-            counter += 1
+        for item in tqdm(prediction_list):
+            while counter < 200000:
+            # include actual data only (the ETS method returns actual + predicted)
+                item = item[0:len(self.series)]
+                sse = fitting.sse(item)
+                sse_list.append(sse)
+                # print("%s - %s" % (self.value_dictionary[counter],sse))
+                counter += 1
+                print("SSE #%s: %s %s" % (counter, sse, self.value_dictionary[counter-1]))
 
         # for the purpose of having referenceable values, I turned the following into instance variable
         self.min_sse = min(sse_list)
         self.min_sse_index = sse_list.index(self.min_sse)
         self.constants = self.value_dictionary[self.min_sse_index]
         predicted_values = self.triple_exponential_smoothing(self.constants[0],
-                                                            self.constants[1],
-                                                            self.constants[2])[-self.n_preds:]
+                                                             self.constants[1],
+                                                             self.constants[2])[-self.n_preds:]
 
         print("Min SSE: %s" % self.min_sse)
         print("Min SSE index: %s" % self.min_sse_index)
@@ -109,23 +112,22 @@ class HoltWinters2(object):
 
         return predicted_values
 
-
     def optimize_by_mad(self, prediction_list):
-        #instantiate ConstantFittting class
+        # instantiate ConstantFittting class
         fitting = cfitting.ConstantFitting()
-        #collect all MAD values in an array
+        # collect all MAD values in an array
         mad_list = []
         counter = 0
-        for item in prediction_list:
-            #include actual data only (prediction list = actual + forecast values)
+        for item in tqdm(prediction_list):
+            # include actual data only (prediction list = actual + forecast values)
             item = item[0:len(self.series)]
             mad = fitting.mad(item)
             mad_list.append(mad)
-            #print("%s - %s" % (self.value_dictionary[counter],mad))
-            counter +=1
+            # print("%s - %s" % (self.value_dictionary[counter],mad))
+            counter += 1
         self.min_mad = min(mad_list)
         self.min_mad_index = mad_list.index(self.min_mad)
-        self.constants =  self.value_dictionary[self.min_mad_index]
+        self.constants = self.value_dictionary[self.min_mad_index]
         predicted_values = self.triple_exponential_smoothing(self.constants[0],
                                                              self.constants[2],
                                                              self.constants[2])[-self.n_preds]
@@ -136,22 +138,22 @@ class HoltWinters2(object):
 
         return predicted_values
 
-    def optimize_by_mse(self,prediction_list):
-        #instantiate ConstantFittting class
+    def optimize_by_mse(self, prediction_list):
+        # instantiate ConstantFittting class
         fitting = cfitting.ConstantFitting()
-        #collect all MSE values in an array
+        # collect all MSE values in an array
         mse_list = []
         counter = 0
-        for item in prediction_list:
-            #include actual data only (prediction list = actual + forecast values)
+        for item in tqdm(prediction_list):
+            # include actual data only (prediction list = actual + forecast values)
             item = item[0:len(self.series)]
             mse = fitting.mse(self.series, item)
             mse_list.append(mse)
-            #print("%s - %s" % (self.value_dictionary[counter],mad))
-            counter +=1
+            # print("%s - %s" % (self.value_dictionary[counter],mad))
+            counter += 1
         self.min_mse = min(mse_list)
         self.min_mse_index = mse_list.index(self.min_mse)
-        self.constants =  self.value_dictionary[self.min_mse_index]
+        self.constants = self.value_dictionary[self.min_mse_index]
         predicted_values = self.triple_exponential_smoothing(self.constants[0],
                                                              self.constants[2],
                                                              self.constants[2])[-self.n_preds]
@@ -162,18 +164,18 @@ class HoltWinters2(object):
 
         return predicted_values
 
-    def optimize_by_mse2(self,prediction_list):
-        #instantiate ConstantFitting object
+    def optimize_by_mse2(self, prediction_list):
+        # instantiate ConstantFitting object
         fitting = cfitting.ConstantFitting()
-        #collect all sse values in an array
+        # collect all sse values in an array
         mse2_list = []
         counter = 0
-        for item in prediction_list:
-            #include actual data only (the ETS method returns actual + predicted)
+        for item in tqdm(prediction_list):
+            # include actual data only (the ETS method returns actual + predicted)
             item = item[0:len(self.series)]
             mse2 = fitting.mse2(item)
             mse2_list.append(mse2)
-            #print("%s - %s" % (self.value_dictionary[counter],sse))
+            # print("%s - %s" % (self.value_dictionary[counter],sse))
             counter += 1
 
         # for the purpose of having referenceable values, I turned the following into instance variable
@@ -181,8 +183,8 @@ class HoltWinters2(object):
         self.min_mse2_index = mse2_list.index(self.min_mse2)
         self.constants = self.value_dictionary[self.min_mse2_index]
         predicted_values = self.triple_exponential_smoothing(self.constants[0],
-                                                            self.constants[1],
-                                                            self.constants[2])[-self.n_preds:]
+                                                             self.constants[1],
+                                                             self.constants[2])[-self.n_preds:]
 
         print("Min MSE2: %s" % self.min_mse2)
         print("Min MSE2 index: %s" % self.min_mse2_index)
