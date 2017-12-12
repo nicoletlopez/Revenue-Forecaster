@@ -31,11 +31,9 @@ urlpatterns=[
     url(r'project/(?P<project_id>[0-9]+)/datafeeder', views.excel_to_db, name='datafeed'),
 
 
-    #url(r'^forecast/$', views.forecast_form, name='forecast')
+    url(r'^forecast/$', views.forecast_form, name='forecast')
     #TEST#
     #url(r'^test/$',views.ActualView.as_view(),name='actual-view'),
-
-    url(r'project/(?P<project_id>[0-9]+)/forecast/$', views.forecast_form, name='forecast'),
 
     #url for forecast menu
 
