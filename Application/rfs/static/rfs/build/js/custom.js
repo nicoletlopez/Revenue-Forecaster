@@ -3400,6 +3400,18 @@ if (typeof NProgress != 'undefined') {
         var actualForecast = echarts.init(document.getElementById('actual_forecast'), theme);
 
         actualForecast.setOption({
+			dataZoom: [
+        {   // this dataZoom component controls x-axis by dafault
+            type: 'slider', // this dataZoom component is dataZoom component of slider
+            start: 0,      // the left is located at 10%
+            end: 100         // the right is located at 60%
+        },
+        {   // This dataZoom component controls x-axis by dafault
+            type: 'inside', // this dataZoom component is dataZoom component of inside
+            start: 0,      // the left is located at 10%
+            end: 100         // the right is located at 60%
+        }
+    ],
             title: {
                 text: 'Actual and Forecast Data Graph',
                 subtext: ''
