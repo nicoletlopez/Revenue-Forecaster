@@ -121,17 +121,7 @@ class ProjectDashboard(LoginRequiredMixin, DetailView):
         context['arc_projects'] = Project.objects.all().filter(status='ARC')
         context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
         context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
-        ############
-        context['json_actual_arr'] = json_serializer.serialize(
-            Actual.objects.all().filter(project_id=self.kwargs['pk']), ensure_ascii=False, fields=('actual_arr'))
-        context['json_actual_rns'] = json_serializer.serialize(
-            Actual.objects.all().filter(project_id=self.kwargs['pk']), ensure_ascii=False, fields=('actual_rns'))
-        context['json_actual_rev'] = json_serializer.serialize(
-            Actual.objects.all().filter(project_id=self.kwargs['pk']), ensure_ascii=False, fields=('actual_rev'))
-        # context['json_date'] = json_serializer.serialize(Actual.objects.all().filter(project_id=self.kwargs['pk']),fields=('date'))
-        context['json_date'] = json.dumps(list(Actual.objects.filter(project_id=self.kwargs['pk']).values('date')),
-                                          cls=DjangoJSONEncoder)
-
+        context['actual_data_list']=Actual.objects.all().filter(project_id=self.kwargs['pk'])
         return context
 
 

@@ -1,10 +1,5 @@
 {% block content %}
-    <script>
-    var actual_arr='{{ json_actual_arr|escapejs }}';
-    var actual_rns='{{ json_actual_rns|escapejs }}';
-    var actual_rev='{{ json_actual_rev|escapejs }}';
-    var data_date='{{ json_date|escapejs }}';
-    </script>
+    {% if actual_data_list %}
 <div class="row tile_count">
             <div class="col-md-3 col-sm-3 col-xs-6 tile_stats_count">
               <span class="count_top"><i class="fa fa-money"></i> Revenue</span>
@@ -53,5 +48,33 @@
                     <div id="revpar_line" style="height:350px;"></div>
     </div>
     </div>
+        {% else %}
+        <div class="col-md-12">
+          <div class="col-middle">
+            <div class="text-center text-center">
+              <h2 class="error-number">{% block jumbo %}No data graphs to show{% endblock jumbo %}</h2>
+              <h2>{% block subjumbo %}Actual data is required{% endblock subjumbo %}</h2>
 
+
+              <div class="center">
+
+                  <div class="row">
+                      <div class="col-md-offset-4 col-md-4">
+                  <div class="btn-group-justified">
+                      <a class="btn btn-app" href="{% url 'rfs:file' project.id %}">
+                      <i class="fa fa-upload"></i> Upload a File
+                    </a>
+                      {% if act_files %}
+                    <a class="btn btn-app" href="{% url 'rfs:datafeed' project.id %}">
+                      <i class="fa fa-database"></i> Feed Data
+                    </a>
+                          {% endif %}
+
+                        </div>
+                    </div>
+                  </div>
+            </div>
+          </div>
+        </div>
+    {% endif %}
 {% endblock %}
