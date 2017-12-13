@@ -4,10 +4,10 @@ from tqdm import tqdm
 
 
 class HoltWinters2(object):
-    def __init__(self, series, slen=12, n_preds=1):
+    def __init__(self, series, season_length=12, n_preds=1):
         self.value_dictionary = {}
         self.series = series
-        self.slen = slen
+        self.slen = season_length
         self.n_preds = n_preds
 
     def __initial_trend(self):

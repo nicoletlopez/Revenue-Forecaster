@@ -1,0 +1,29 @@
+create table if not exists seg_list (id integer not null primary key AUTOINCREMENT , tag varchar(30) not null, name varchar(30) not null, seg_type varchar(30) not null,
+  check(seg_type = 'GRP' or(seg_type = 'IND')));
+
+create table if not exists actual(id integer not null primary key AUTOINCREMENT, date date not null,rns double not null, arr double not null,
+  rev double not null, seg_id integer not null);
+
+insert into seg_list (tag,name,seg_type) values('RCK','RACK','IND');
+insert into seg_list (tag,name,seg_type) values('CORPO','CORPORATE','IND');
+insert into seg_list (tag,name,seg_type) values('CORPO','CORPORATE OTHERS','IND');
+insert into seg_list (tag,name,seg_type) values('PKG/PRM','PACKAGES/PROMO','IND');
+insert into seg_list (tag,name,seg_type) values('WSOL','WHOLESALE ONLINE','IND');
+insert into seg_list (tag,name,seg_type) values('WSOF','WHOLESALE OFFLINE','IND');
+insert into seg_list (tag,name,seg_type) values('INDO','INDIVIDUAL OTHERS','IND');
+insert into seg_list (tag,name,seg_type) values('INDR','INDUSTRY RATE','IND');
+
+insert into seg_list (tag,name,seg_type) values('CORPM','CORPORATE MEETINGS','GRP');
+insert into seg_list (tag,name,seg_type) values('CON/ASSOC','CONVENTION/ASSOCIATION','GRP');
+insert into seg_list (tag,name,seg_type) values('GOV/NGO','GOVERNMENT/NGO','GRP');
+insert into seg_list (tag,name,seg_type) values('GRPT','GROUP TOURS','GRP');
+insert into seg_list (tag,name,seg_type) values('GRPO','GROUP OTHERS','GRP');
+insert into seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
+
+drop table seg_list;
+
+select * from seg_list;
+select id from seg_list where name = 'RACK';
+select * from seg_list where id = '1';
+select * from actual;
+delete from actual;
