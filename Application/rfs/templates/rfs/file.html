@@ -17,16 +17,21 @@
     <ul class="list-unstyled project_files">
     {% if act_files %}
         {% for file in act_files %}
-            <li style=""><a href="#"><i class="fa fa-file-excel-o"></i>{{ file.excel_file }}</a>
+
+            <ul class="list-group">
+            <li class="list-group-item">
+                <a href="#"><i class="fa fa-file-excel-o"></i>{{ file.excel_file }}</a>
                 <form action="{% url 'rfs:file-delete' project.id file.id %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <input type="hidden" name="project_id" value="{{ project.id }}" />
                     <input type="hidden" name="status" value="ARC">
-                    <button type="submit" class="btn btn-default btn-xs btn-danger">
+                    <button type="submit" class="btn btn-default btn-xs btn-danger pull-right">
                         <span class="fa fa-archive"></span>
                     </button>
                 </form>
             </li>
+            </ul>
+
         {% endfor %}
     {% else %}
          <li>No files uploaded.</li>
@@ -41,11 +46,6 @@
             <div class="col-sm-offset-2 col-sm-1">
                 <button type="submit" class="btn btn-success">Upload</button>
             </div>
-                {% if act_files %}
-                <div class="col-sm-3">
-                <a href="{% url 'rfs:datafeed' project.id %}" class="btn btn-info"><i class="fa fa-arrow-right"></i> Feed Data</a>
-            </div>
-                {% endif %}
             </div>
 
     </form>
