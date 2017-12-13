@@ -16,3 +16,4 @@ Application/rfs/ets/
 PythonScripts/__pycache__/
 PythonScripts/forecasting/__pycache__/
 /Application/rfs/ets/
+/PythonScripts/forecasting/Launcher.py

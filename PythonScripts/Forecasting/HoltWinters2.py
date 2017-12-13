@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 class HoltWinters2(object):
     def __init__(self, series, slen=12, n_preds=1):
+        self.value_dictionary = {}
         self.series = series
         self.slen = slen
         self.n_preds = n_preds
@@ -37,7 +38,6 @@ class HoltWinters2(object):
             constants_list.append(constant / 100)
 
         # generate dictionary of all possible alpha, beta, gamma combinations
-        self.value_dictionary = {}
         counter = 0
         for alpha in constants_list:
             for beta in constants_list:
@@ -88,14 +88,13 @@ class HoltWinters2(object):
         sse_list = []
         counter = 0
         for item in tqdm(prediction_list):
-            while counter < 200000:
             # include actual data only (the ETS method returns actual + predicted)
-                item = item[0:len(self.series)]
-                sse = fitting.sse(item)
-                sse_list.append(sse)
-                # print("%s - %s" % (self.value_dictionary[counter],sse))
-                counter += 1
-                print("SSE #%s: %s %s" % (counter, sse, self.value_dictionary[counter-1]))
+            item = item[0:len(self.series)]
+            sse = fitting.sse(item)
+            sse_list.append(sse)
+            # print("%s - %s" % (self.value_dictionary[counter],sse))
+            counter += 1
+            #print("SSE #%s: %s %s" % (counter, sse, self.value_dictionary[counter-1]))
 
         # for the purpose of having referenceable values, I turned the following into instance variable
         self.min_sse = min(sse_list)
