@@ -36,10 +36,17 @@
         {% csrf_token %}
         <input type="hidden" name="project" value="{{ project }}">
         {% include 'rfs/form_template.html' %}
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+
+            <div class="row">
+            <div class="col-sm-offset-2 col-sm-1">
                 <button type="submit" class="btn btn-success">Upload</button>
             </div>
-        </div>
+                {% if act_files %}
+                <div class="col-sm-3">
+                <a href="{% url 'rfs:datafeed' project.id %}" class="btn btn-info"><i class="fa fa-arrow-right"></i> Feed Data</a>
+            </div>
+                {% endif %}
+            </div>
+
     </form>
 {% endblock %}

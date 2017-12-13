@@ -3413,7 +3413,7 @@ if (typeof NProgress != 'undefined') {
         }
     ],
             title: {
-                text: 'Actual and Forecast Data Graph',
+                text: 'Actual Data Graph',
                 subtext: ''
             },
             tooltip: {

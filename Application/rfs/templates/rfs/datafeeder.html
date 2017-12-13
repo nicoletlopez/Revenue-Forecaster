@@ -50,6 +50,20 @@
 {% block 2ndblock %}
 {% if actual_data_list %}
     {% if project.status == 'ACT' %}
+    <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+    <ul class="nav navbar-right panel_toolbox">
+      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+      </li>
+    </ul>
+    <div class="clearfix"></div>
+  </div>
+    <div class="x_content">
+    <div id="actual_forecast" style="height:350px;"></div>
+    </div>
+    </div>
+    </div>
         {% include 'rfs/actual_table.html' %}
     {% endif %}
 {% endif %}
