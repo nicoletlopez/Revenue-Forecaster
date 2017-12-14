@@ -39,5 +39,6 @@ urlpatterns=[
 
     #url for forecast menu
 
+    url(r'project/(?P<project_id>[0-9]+)/three/$', views.ChartData.as_view(), name='data2'),
 
 ]

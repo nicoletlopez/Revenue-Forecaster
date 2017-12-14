@@ -6,6 +6,9 @@ import os
 import re
 
 # custom libraries
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .libraries.fitting import ConstantFitting
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import excelread
@@ -352,7 +355,7 @@ def excel_to_db(request, project_id):
                         pass
 
             context = {'project': project,
-                       'message': 'Om nomo nom! Data Fed!',
+                       'message': 'Data insert success!',
                        'arc_projects': Project.objects.all().filter(status='ARC'),
                        'all_projects': Project.objects.all().filter(status='ACT'),
                        'act_files': File.objects.filter(status='ACT', project_id=project_id),
@@ -476,3 +479,34 @@ def forecast_form(request, project_id):
         # return render(request,'rfs/forecast-form.html',{"form":form,"values":values_dict})
 
     return render(request, 'rfs/forecast-form.html', {'form': form})
+
+class ChartData(APIView):
+
+    def get(self, request, *args, **kwargs):
+        date_query = Actual.objects.order_by('date').values_list('date', flat='true').distinct()
+        date = []
+        actual_rev_total = []
+        actual_arr_total = []
+        actual_rns_total = []
+        for x in range(len(date_query)):
+            date.append(date_query[x].strftime('%B %d %Y'))
+
+            actual_rev_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rev'))
+            value = float(actual_rev_query['actual_rev__sum'])
+            actual_rev_total.append(round(value/1000, 2))
+
+
+
+            actual_arr_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_arr'))
+            actual_arr_total.append(float(actual_arr_query['actual_arr__sum']))
+
+            actual_rns_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rns'))
+            actual_rns_total.append(float(actual_rns_query['actual_rns__sum']))
+
+        data = {
+            "actual_rev_total": actual_rev_total,
+            "actual_arr_total": actual_arr_total,
+            "actual_rns_total": actual_rns_total,
+            "date": date,
+        }
+        return Response(data)
