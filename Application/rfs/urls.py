@@ -35,7 +35,10 @@ urlpatterns=[
     #TEST#
     #url(r'^test/$',views.ActualView.as_view(),name='actual-view'),
 
-    url(r'project/(?P<project_id>[0-9]+)/forecast/$', views.forecast_form, name='forecast'),
+    #url for default forecast (automatic optimization)
+    url(r'project/(?P<project_id>[0-9]+)/forecast/$', views.forecast_form_default, name='forecast'),
+    url(r'project/(?P<project_id>[0-9]+)/forecast/custom', views.forecast_form_custom, name='custom-forecast'),
+    #url for manual forecast (own alpha beta gammas)
 
     #url for forecast menu
 

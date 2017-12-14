@@ -32,7 +32,7 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.db.models import Sum
 
-from .forms import FileForm, CreateForm, ForecastOptionsForm
+from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm
 from .models import Project, File, Actual, Seg_list
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -385,7 +385,7 @@ def excel_to_db(request, project_id):
 
 
 ###########TRIPLE SMOOTHING#############
-def forecast_form(request, project_id):
+def forecast_form_default(request, project_id):
     form = ForecastOptionsForm(request.POST or None)
     if form.is_valid():
         # get forecast info
@@ -401,10 +401,12 @@ def forecast_form(request, project_id):
         fitting_method = request.POST.get("fitting_method")
         # get season length
         season_length = int(request.POST.get('season_length'))
+
         # get the constant values
-        alpha = request.POST.get("alpha")
-        beta = request.POST.get("beta")
-        gamma = request.POST.get("gamma")
+        #alpha = request.POST.get("alpha")
+        #beta = request.POST.get("beta")
+        #gamma = request.POST.get("gamma")
+
         #get the starting,end, and skip constant values
         constant_value_start = request.POST.get("constant_value_start")
 
@@ -453,7 +455,8 @@ def forecast_form(request, project_id):
         # if the data is less than the season length, an error will occur
 
         try:
-            hw = hwinters.HoltWinters(value_list,1,12)
+            hw = hwinters.HoltWinters(value_list,int(n_preds),int(season_length))
+            #
             prediction_tuples = hw.get_prediction_tuples(step=9)
             if fitting_method == 'sse':
                 result = hw.optimize_by_sse(prediction_tuples)
@@ -462,7 +465,7 @@ def forecast_form(request, project_id):
         except Exception:
             result = "Data too short for season length %s" % season_length
 
-        return render(request, 'rfs/forecast-form.html', {'form': form,
+        return render(request, 'rfs/default_forecast_form.html', {'form': form,
                                                           "metric": metric,
                                                           "start_date": start_date,
                                                           "end_date": end_date,
@@ -470,15 +473,109 @@ def forecast_form(request, project_id):
                                                           "n_preds": n_preds,
                                                           "fitting_method": fitting_method,
                                                           "season_length": season_length,
-                                                          "alpha": alpha,
-                                                          "beta": beta,
-                                                          "gamma": gamma,
-                                                          "result":result,},
+                                                          "alpha": hw.constants[0],
+                                                          "beta": hw.constants[1],
+                                                          "gamma": hw.constants[2],
+                                                          "result":result, },
                       )
 
-        # return render(request,'rfs/forecast-form.html',{"form":form,"values":values_dict})
+        # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
 
-    return render(request, 'rfs/forecast-form.html', {'form': form})
+    return render(request, 'rfs/default_forecast_form.html', {'form': form})
+
+def forecast_form_custom(request,project_id):
+    form = CustomForecastForm(request.POST or None)
+    if form.is_valid():
+        # get forecast info
+        # get performance metric desired
+        metric = request.POST.get("metric")
+        # get start date
+        start_date = datetime.strptime(request.POST.get("start_date"), '%Y-%m-%d')
+        # get end date
+        end_date = datetime.strptime(request.POST.get("end_date"), '%Y-%m-%d')
+        # get number of predictions
+        n_preds = request.POST.get("number_of_predictions")
+        # get fitting method
+        #fitting_method = request.POST.get("fitting_method")
+        # get season length
+        season_length = int(request.POST.get('season_length'))
+
+        # get the constant values
+        alpha = request.POST.get("alpha")
+        beta = request.POST.get("beta")
+        gamma = request.POST.get("gamma")
+
+        # get the starting,end, and skip constant values
+        constant_value_start = request.POST.get("constant_value_start")
+
+        def add_one_month(date_input):
+            # january
+            thirties = [2, 4, 6, 9, 11]
+            thirty_ones = [3, 5, 7, 8, 10, 12]
+            if date_input.month == 1:
+                try:
+                    date_input += relativedelta(months=1)
+                    date_input = date_input.replace(day=28)
+                except:
+                    return date_input
+                finally:
+                    return date_input
+
+            if date_input.month in thirties:
+                date_input += relativedelta(months=1)
+                date_input = date_input.replace(day=31)
+                return date_input
+
+            if date_input.month in thirty_ones:
+                date_input += relativedelta(months=1)
+                try:
+                    date_input = date_input.replace(day=31)
+                except:
+                    date_input = date_input.replace(day=30)
+                finally:
+                    return date_input
+
+        # create an array for the values (e.g. total + group for month of january)
+        value_list = []
+
+        # add the total + group for each month
+        # to keep track, increment a month for each query, and add each query to the value_count list
+        date = start_date
+        while date <= end_date:
+            total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+            try:
+                value_list.append(float(total_value['actual_%s__sum' % metric]))
+            except:
+                value_list.append(0)
+            date = add_one_month(date)
+
+        # make the necessary forecast using the HoltWinters class and the values in the value_count variable
+        # if the data is less than the season length, an error will occur
+        hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
+        result = hw.triple_exponential_smoothing(float(alpha), float(beta), float(gamma))[-int(n_preds) :]
+        try:
+            #hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
+            #result = hw.triple_exponential_smoothing(alpha,beta,gamma)[-n_preds:]
+            pass
+        except Exception:
+            pass
+            #result = "Data too short for season length %s" % season_length
+
+        return render(request, 'rfs/default_forecast_form.html', {'form': form,
+                                                                  "metric": metric,
+                                                                  "start_date": start_date,
+                                                                  "end_date": end_date,
+                                                                  "values_list": value_list,
+                                                                  "n_preds": n_preds,
+                                                                  "season_length": season_length,
+                                                                  "alpha": "TEMP",#hw.constants[0][0],
+                                                                  "beta": "TEMP",#hw.constants[1][0],
+                                                                  "gamma": "TEMP",#hw.constants[2][0],
+                                                                  "result": result,},)
+
+        # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
+    else:
+        return render(request, 'rfs/default_forecast_form.html', {'form': form})
 
 class ChartData(APIView):
 
