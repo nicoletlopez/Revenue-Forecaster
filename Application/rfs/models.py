@@ -73,9 +73,15 @@ class Actual(models.Model):
     #budget_rns = models.FloatField()
     #budget_arr = models.FloatField()
     #budget_rev = models.FloatField()
-    actual_rns = models.DecimalField(max_digits=15,decimal_places=2)
-    actual_arr = models.DecimalField(max_digits=15,decimal_places=2)
-    actual_rev = models.DecimalField(max_digits=15,decimal_places=2)
+    actual_rns = models.DecimalField(max_digits=15,decimal_places=2,null=True)
+    actual_arr = models.DecimalField(max_digits=15,decimal_places=2,null=True)
+    actual_rev = models.DecimalField(max_digits=15,decimal_places=2,null=True)
+    #still manually entered
+    actual_rna = models.DecimalField(max_digits=15,decimal_places=2,null=True)
+
+    #derived by actual_rns/actual_rna
+    actual_ocr = models.DecimalField(max_digits=15,decimal_places=2,null=True)
+    actual_revpar = models.DecimalField(max_digits=15,decimal_places=2,null=True)
     def __str__(self):
         return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
     class Meta:

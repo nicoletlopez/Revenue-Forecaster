@@ -1,39 +1,29 @@
 # from __future__ import print_function
 
 
-import json
 import os
-import re
-
-# custom libraries
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from .libraries.fitting import ConstantFitting
-from .libraries.holtwinters import HoltWinters as hwinters
-from .libraries.xlread import excelread
-# end custom libraries
-
 from datetime import datetime
-from datetime import timedelta
-from calendar import calendar
-from dateutil.relativedelta import *
 
-import numpy as np
-import xlrd
+from dateutil.relativedelta import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
-from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from django.db.models import Sum
+# custom libraries
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm
+from .libraries.holtwinters import HoltWinters as hwinters
+from .libraries.xlread import ExcelReader as xlread
 from .models import Project, File, Actual, Seg_list
+
+# end custom libraries
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -124,7 +114,7 @@ class ProjectDashboard(LoginRequiredMixin, DetailView):
         context['arc_projects'] = Project.objects.all().filter(status='ARC')
         context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
         context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
-        context['actual_data_list']=Actual.objects.all().filter(project_id=self.kwargs['pk'])
+        context['actual_data_list'] = Actual.objects.all().filter(project_id=self.kwargs['pk'])
         return context
 
 
@@ -264,22 +254,38 @@ def file_update(request, project_id, file_id):
 ###########EXCELREADER#############
 def excel_to_db(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
+
+    def record(result_array):
+        for tuples in result_array:
+            for single_array in tuples:
+                segment = (single_array[0].decode("utf-8")).upper()
+                date = single_array[1].decode("utf-8")
+                rns = float(single_array[2])
+                arr = float(single_array[3])
+                rev = float(single_array[4])
+                segment_id = Seg_list.objects.get(name=segment)
+                actual_object = Actual(date=date, actual_rns=rns, actual_arr=arr, actual_rev=rev,
+                                       segment=segment_id, project_id=project_id)
+                actual_object.save()
     try:
         if request.method == "POST":
             excelfile = BASE_DIR + '/projects/' + str(request.POST.get("file"))
-            xl_workbook = xlrd.open_workbook(excelfile)
-            xl_sheet = xl_workbook.sheet_by_index(4)
-            row = xl_sheet.row(4)
-            ind_or_grp = xl_sheet.row(3)
+            # instantiate excel reader object
+            excel_read = xlread.ExcelReader(excelfile)
 
-            def get_year(cellString):
-                return re.search(r"(\d{4})", cellString).group(0)
+            if excel_read.current_year == 2015:
+                record(excel_read.store_last_year_values_to_array())
+                record(excel_read.store_current_year_values_to_array())
+            else:
+                record(excel_read.store_current_year_values_to_array())
 
-            year = get_year(xl_sheet.cell(1, 1).value)
+            year = excel_read.current_year
 
-            # year = xl_sheet.cell(1,1).value.split()[1]
 
-            for iog, cell_obj in enumerate(ind_or_grp):
+                #print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
+
+
+            """for iog, cell_obj in enumerate(ind_or_grp):
                 if cell_obj.value == 'GROUP':
                     group_start = iog
             ind_actual = np.zeros((13, 12),
@@ -352,7 +358,7 @@ def excel_to_db(request, project_id):
                                             segment=seg_id, project_id=project_id)
                         actual_row.save()
                     except(Exception):
-                        pass
+                        pass"""
 
             context = {'project': project,
                        'message': 'Data insert success!',
@@ -372,7 +378,8 @@ def excel_to_db(request, project_id):
                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                    }
         return render(request, 'rfs/datafeeder.html', context)
-    except:
+    except Exception:
+        Exception.__traceback__
         context = {'project': project,
                    'arc_projects': Project.objects.all().filter(status='ARC'),
                    'all_projects': Project.objects.all().filter(status='ACT'),
@@ -403,11 +410,11 @@ def forecast_form_default(request, project_id):
         season_length = int(request.POST.get('season_length'))
 
         # get the constant values
-        #alpha = request.POST.get("alpha")
-        #beta = request.POST.get("beta")
-        #gamma = request.POST.get("gamma")
+        # alpha = request.POST.get("alpha")
+        # beta = request.POST.get("beta")
+        # gamma = request.POST.get("gamma")
 
-        #get the starting,end, and skip constant values
+        # get the starting,end, and skip constant values
         constant_value_start = request.POST.get("constant_value_start")
 
         def add_one_month(date_input):
@@ -447,7 +454,7 @@ def forecast_form_default(request, project_id):
             total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
             try:
                 value_list.append(float(total_value['actual_%s__sum' % metric]))
-            except :
+            except:
                 value_list.append(0)
             date = add_one_month(date)
 
@@ -455,7 +462,7 @@ def forecast_form_default(request, project_id):
         # if the data is less than the season length, an error will occur
 
         try:
-            hw = hwinters.HoltWinters(value_list,int(n_preds),int(season_length))
+            hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
             #
             prediction_tuples = hw.get_prediction_tuples(step=9)
             if fitting_method == 'sse':
@@ -466,24 +473,25 @@ def forecast_form_default(request, project_id):
             result = "Data too short for season length %s" % season_length
 
         return render(request, 'rfs/default_forecast_form.html', {'form': form,
-                                                          "metric": metric,
-                                                          "start_date": start_date,
-                                                          "end_date": end_date,
-                                                          "values_list": value_list,
-                                                          "n_preds": n_preds,
-                                                          "fitting_method": fitting_method,
-                                                          "season_length": season_length,
-                                                          "alpha": hw.constants[0],
-                                                          "beta": hw.constants[1],
-                                                          "gamma": hw.constants[2],
-                                                          "result":result, },
+                                                                  "metric": metric,
+                                                                  "start_date": start_date,
+                                                                  "end_date": end_date,
+                                                                  "values_list": value_list,
+                                                                  "n_preds": n_preds,
+                                                                  "fitting_method": fitting_method,
+                                                                  "season_length": season_length,
+                                                                  "alpha": hw.constants[0],
+                                                                  "beta": hw.constants[1],
+                                                                  "gamma": hw.constants[2],
+                                                                  "result": result, },
                       )
 
         # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
 
     return render(request, 'rfs/default_forecast_form.html', {'form': form})
 
-def forecast_form_custom(request,project_id):
+
+def forecast_form_custom(request, project_id):
     form = CustomForecastForm(request.POST or None)
     if form.is_valid():
         # get forecast info
@@ -496,7 +504,7 @@ def forecast_form_custom(request,project_id):
         # get number of predictions
         n_preds = request.POST.get("number_of_predictions")
         # get fitting method
-        #fitting_method = request.POST.get("fitting_method")
+        # fitting_method = request.POST.get("fitting_method")
         # get season length
         season_length = int(request.POST.get('season_length'))
 
@@ -552,14 +560,14 @@ def forecast_form_custom(request,project_id):
         # make the necessary forecast using the HoltWinters class and the values in the value_count variable
         # if the data is less than the season length, an error will occur
         hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
-        result = hw.triple_exponential_smoothing(float(alpha), float(beta), float(gamma))[-int(n_preds) :]
+        result = hw.triple_exponential_smoothing(float(alpha), float(beta), float(gamma))[-int(n_preds):]
         try:
-            #hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
-            #result = hw.triple_exponential_smoothing(alpha,beta,gamma)[-n_preds:]
+            # hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
+            # result = hw.triple_exponential_smoothing(alpha,beta,gamma)[-n_preds:]
             pass
         except Exception:
             pass
-            #result = "Data too short for season length %s" % season_length
+            # result = "Data too short for season length %s" % season_length
 
         return render(request, 'rfs/default_forecast_form.html', {'form': form,
                                                                   "metric": metric,
@@ -568,14 +576,15 @@ def forecast_form_custom(request,project_id):
                                                                   "values_list": value_list,
                                                                   "n_preds": n_preds,
                                                                   "season_length": season_length,
-                                                                  "alpha": "TEMP",#hw.constants[0][0],
-                                                                  "beta": "TEMP",#hw.constants[1][0],
-                                                                  "gamma": "TEMP",#hw.constants[2][0],
-                                                                  "result": result,},)
+                                                                  "alpha": "TEMP",  # hw.constants[0][0],
+                                                                  "beta": "TEMP",  # hw.constants[1][0],
+                                                                  "gamma": "TEMP",  # hw.constants[2][0],
+                                                                  "result": result, }, )
 
         # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
     else:
         return render(request, 'rfs/default_forecast_form.html', {'form': form})
+
 
 class ChartData(APIView):
 
@@ -588,16 +597,17 @@ class ChartData(APIView):
         for x in range(len(date_query)):
             date.append(date_query[x].strftime('%B %d %Y'))
 
-            actual_rev_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rev'))
+            actual_rev_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
+                Sum('actual_rev'))
             value = float(actual_rev_query['actual_rev__sum'])
-            actual_rev_total.append(round(value/1000, 2))
+            actual_rev_total.append(round(value / 1000, 2))
 
-
-
-            actual_arr_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_arr'))
+            actual_arr_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
+                Sum('actual_arr'))
             actual_arr_total.append(float(actual_arr_query['actual_arr__sum']))
 
-            actual_rns_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rns'))
+            actual_rns_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
+                Sum('actual_rns'))
             actual_rns_total.append(float(actual_rns_query['actual_rns__sum']))
 
         data = {
