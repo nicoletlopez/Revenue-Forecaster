@@ -83,6 +83,10 @@ class Actual(models.Model):
     actual_ocr = models.DecimalField(max_digits=15,decimal_places=2,null=True)
     actual_revpar = models.DecimalField(max_digits=15,decimal_places=2,null=True)
 
+    @property
+    def ocr_percent(self):
+        return str(int(self.actual_ocr * 100))+"%"
+
     def __str__(self):
         return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
     class Meta:

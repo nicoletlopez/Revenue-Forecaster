@@ -3436,7 +3436,7 @@ if (typeof NProgress != 'undefined') {
             legend: {
                 x: 220,
                 y: 40,
-                data: ['Actual Revenue (\'000\'s)', 'Actual ARR', 'Actual RNS','Actual RevPAR']
+                data: ['Room Nights Sold','Average Room Rate','Revenue (\'000\'s)','Occupancy Rate','RevPAR']
             },
             toolbox: {
                 show: true,
@@ -3470,8 +3470,35 @@ if (typeof NProgress != 'undefined') {
             yAxis: [{
                 type: 'value'
             }],
-            series: [{
-                name: 'Actual Revenue (\'000\'s)',
+            series: [
+            	{
+                name: 'Room Nights Sold',
+                type: 'line',
+                smooth: true,
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            type: 'default'
+                        }
+                    }
+                },
+                data: actual_rns_total
+            },
+				{
+                name: 'Average Room Rate',
+                type: 'line',
+                smooth: true,
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            type: 'default'
+                        }
+                    }
+                },
+                data: actual_arr_total
+            },
+            	{
+                name: 'Revenue (\'000\'s)',
                 type: 'line',
                 smooth: true,
                 itemStyle: {
@@ -3483,32 +3510,9 @@ if (typeof NProgress != 'undefined') {
                 },
                 data: actual_rev_total
 
-            }, {
-                name: 'Actual ARR',
-                type: 'line',
-                smooth: true,
-                itemStyle: {
-                    normal: {
-                        areaStyle: {
-                            type: 'default'
-                        }
-                    }
-                },
-                data: actual_arr_total
-            }, {
-                name: 'Actual RNS',
-                type: 'line',
-                smooth: true,
-                itemStyle: {
-                    normal: {
-                        areaStyle: {
-                            type: 'default'
-                        }
-                    }
-                },
-                data: actual_rns_total
-            },{
-            	name:'Actual RevPAR',
+            },
+				{
+            	name:'Occupancy Rate',
 				type:'line',
 				smooth:true,
 				itemStyle:{
@@ -3519,7 +3523,22 @@ if (typeof NProgress != 'undefined') {
 					}
 				},
 				data:[100,200,300,400,500,600,700]
-			}]
+			},
+				{
+            	name:'RevPAR',
+				type:'line',
+				smooth:true,
+				itemStyle:{
+            		normal:{
+            			areaStyle:{
+            				type:'default'
+						}
+					}
+				},
+				data:[100,200,300,400,500,600,700]
+			}
+
+			]
         });
                       },
                       error: function (error_data) {

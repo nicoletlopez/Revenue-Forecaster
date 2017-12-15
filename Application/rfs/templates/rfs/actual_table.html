@@ -17,16 +17,21 @@
           <th>Room Nights Sold</th>
           <th>Average Room Rate</th>
           <th>Revenue</th>
+            <th>Occupany Rate</th>
+            <th>Revenue per Available Room</th>
         </tr>
       </thead>
       <tbody>
       {% for actual_data in actual_data_list %}
+
         <tr>
           <td>{{ actual_data.segment }}</td>
           <td>{{ actual_data.date }}</td>
           <td>{{ actual_data.actual_rns }}</td>
           <td>{{ actual_data.actual_arr }}</td>
           <td>{{ actual_data.actual_rev }}</td>
+        <td>{{ actual_data.ocr_percent}}</td>
+        <td>{{ actual_data.actual_revpar }}</td>
         </tr>
       {% endfor %}
       </tbody>
