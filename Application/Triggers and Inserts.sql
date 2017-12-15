@@ -111,7 +111,7 @@ end ;
 
 
 insert into rfs_seg_list (tag,name,seg_type) values('RCK','RACK','IND');
-insert into rfs_seg_list (tag,name,seg_type) values('CORPO','CORPORATE','IND');
+insert into rfs_seg_list (tag,name,seg_type) values('CORP','CORPORATE','IND');
 insert into rfs_seg_list (tag,name,seg_type) values('CORPO','CORPORATE OTHERS','IND');
 insert into rfs_seg_list (tag,name,seg_type) values('PKG/PRM','PACKAGES/PROMO','IND');
 insert into rfs_seg_list (tag,name,seg_type) values('WSOL','WHOLESALE ONLINE','IND');
@@ -128,5 +128,6 @@ insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
 
 select * from rfs_seg_list;
 select * from rfs_actual;
+
 
 --delete from rfs_actual;
