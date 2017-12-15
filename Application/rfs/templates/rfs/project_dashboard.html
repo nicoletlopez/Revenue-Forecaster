@@ -84,5 +84,9 @@
     {% endif %}
 {% endblock %}
 {% block 2ndblock %}
+    {% if actual_data_list %}
+    {% if project.status == 'ACT' %}
     {% include 'rfs/actual_table.html' %}
+       {% endif %}
+{% endif %}
 {% endblock %}
