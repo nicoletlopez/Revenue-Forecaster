@@ -269,6 +269,7 @@ def excel_to_db(request, project_id):
                 actual_object.save()
     try:
         if request.method == "POST":
+
             excelfile = BASE_DIR + '/projects/' + str(request.POST.get("file"))
             # instantiate excel reader object
             excel_read = xlread.ExcelReader(excelfile)
@@ -285,91 +286,7 @@ def excel_to_db(request, project_id):
                 #print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
 
 
-            """for iog, cell_obj in enumerate(ind_or_grp):
-                if cell_obj.value == 'GROUP':
-                    group_start = iog
-            ind_actual = np.zeros((13, 12),
-                                  dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float),
-                                         ('rev', float)])
-            grp_actual = np.zeros((5, 12), dtype=[('rns', 'f8'), ('arr', 'f8'), ('rev', 'f8')])
 
-            month_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-                          'October',
-                          'November', 'December']
-            unneeded_columns = ['', 'Barter', 'GRAND TOTAL', 'TOTAL GROUP', 'TOTAL INDIVIDUAL', 'SEGMENT NAME',
-                                'Qualified Discount', 'Long Staying']
-
-            def getDate(month, year):
-                thirty_ones = ["January", "March", "May", "July", "August", "October", "December"]
-                monthMap = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
-                            "August": 8,
-                            "September": 9, "October": 10, "November": 11,
-                            "December": 12}
-                if month in thirty_ones:
-                    day = 31
-                elif month == "February":
-                    day = 28
-                else:
-                    day = 30
-                month = monthMap.get(month)
-                date = "%s-%s-%s" % (year, month, day)
-                return date
-
-            ss = 0
-            m = 0
-            erow = 7
-            for idx, cell_obj in enumerate(row):
-                subsegment = cell_obj.value
-                if subsegment not in unneeded_columns:
-                    mon = 5
-                    monx = 0
-                    for month in month_list:
-                        ind_actual[ss, m]['subsegment'] = subsegment
-                        ind_actual[ss, m]['month'] = month
-                        mon = mon + monx
-                        for x in range(0, 3):
-                            ecolumn = idx + x
-                            if x == 0:
-                                val = 'rns'
-                            elif x == 1:
-                                val = 'arr'
-                            else:
-                                val = 'rev'
-                            our = xl_sheet.cell(erow, ecolumn).value
-                            if isinstance(our, str):
-                                our = 0.0
-                            ind_actual[ss, m][val] = our
-                        erow += 4
-                        m += 1
-                    ss += 1
-                    erow = 7
-                    m = 0
-
-            for main in ind_actual:
-                for sub in main:
-                    segment = sub[0].upper().decode('utf-8').strip()
-                    month = sub[1].decode('utf-8')
-                    rns = sub[2]
-                    arr = sub[3]
-                    rev = sub[4]
-                    try:
-                        seg_id = Seg_list.objects.get(name=segment)
-                        actual_row = Actual(date=getDate(month, year), actual_rns=rns, actual_arr=arr, actual_rev=rev,
-                                            segment=seg_id, project_id=project_id)
-                        actual_row.save()
-                    except(Exception):
-                        pass"""
-
-            context = {'project': project,
-                       'message': 'Data insert success!',
-                       'arc_projects': Project.objects.all().filter(status='ARC'),
-                       'all_projects': Project.objects.all().filter(status='ACT'),
-                       'act_files': File.objects.filter(status='ACT', project_id=project_id),
-                       'year_detect': year,
-                       'actual_data_list': Actual.objects.all().filter(project_id=project_id),
-                       'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-                       }
-            return render(request, 'rfs/datafeeder.html', context)
         context = {'project': project,
                    'arc_projects': Project.objects.all().filter(status='ARC'),
                    'all_projects': Project.objects.all().filter(status='ACT'),
@@ -378,18 +295,30 @@ def excel_to_db(request, project_id):
                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                    }
         return render(request, 'rfs/datafeeder.html', context)
-    except Exception:
-        Exception.__traceback__
+    except:
         context = {'project': project,
+                   'message': 'Data insert success!',
                    'arc_projects': Project.objects.all().filter(status='ARC'),
                    'all_projects': Project.objects.all().filter(status='ACT'),
                    'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                   #'year_detect': year,
                    'actual_data_list': Actual.objects.all().filter(project_id=project_id),
                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-                   'message': 'Excel format wrong. Please choose a correct one'
                    }
         return render(request, 'rfs/datafeeder.html', context)
 
+
+"""
+    context = {'project': project,
+               'arc_projects': Project.objects.all().filter(status='ARC'),
+               'all_projects': Project.objects.all().filter(status='ACT'),
+               'act_files': File.objects.filter(status='ACT', project_id=project_id),
+               'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+               'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+               'message': 'Excel format wrong. Please choose a correct one'
+               }
+    return render(request, 'rfs/datafeeder.html', context)
+"""
 
 ###########TRIPLE SMOOTHING#############
 def forecast_form_default(request, project_id):
@@ -590,32 +519,116 @@ def forecast_form_custom(request, project_id):
 
 class ChartData(APIView):
 
-    def get(self, request, *args, **kwargs):
-        date_query = Actual.objects.order_by('date').values_list('date', flat='true').distinct()
-        date = []
-        actual_rev_total = []
-        actual_arr_total = []
-        actual_rns_total = []
-        for x in range(len(date_query)):
-            date.append(date_query[x].strftime('%B %d %Y'))
 
-            actual_rev_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
-                Sum('actual_rev'))
-            value = float(actual_rev_query['actual_rev__sum'])
-            actual_rev_total.append(round(value / 1000, 2))
+    def get(self, request, *args,**kwargs):
+            date_query = Actual.objects.order_by('date').values_list('date', flat='true').distinct()
+            date = []
+            actual_rev_total = []
+            actual_arr_total = []
+            actual_rns_total = []
 
-            actual_arr_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
-                Sum('actual_arr'))
-            actual_arr_total.append(float(actual_arr_query['actual_arr__sum']))
 
-            actual_rns_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
-                Sum('actual_rns'))
-            actual_rns_total.append(float(actual_rns_query['actual_rns__sum']))
+            for x in range(len(date_query)):
+                date.append(date_query[x].strftime('%B %d %Y'))
 
-        data = {
-            "actual_rev_total": actual_rev_total,
-            "actual_arr_total": actual_arr_total,
-            "actual_rns_total": actual_rns_total,
-            "date": date,
-        }
-        return Response(data)
+                actual_rev_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
+                    Sum('actual_rev'))
+                value = float(actual_rev_query['actual_rev__sum'])
+                actual_rev_total.append(round(value / 1000, 2))
+
+                actual_arr_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
+                    Sum('actual_arr'))
+                actual_arr_total.append(float(actual_arr_query['actual_arr__sum']))
+
+                actual_rns_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
+                    Sum('actual_rns'))
+                actual_rns_total.append(float(actual_rns_query['actual_rns__sum']))
+
+            data = {
+                "actual_rev_total": actual_rev_total,
+                "actual_arr_total": actual_arr_total,
+                "actual_rns_total": actual_rns_total,
+                "date": date,
+            }
+            return Response(data)
+
+
+
+
+
+
+###########COMMENTS#############
+"""for iog, cell_obj in enumerate(ind_or_grp):
+                if cell_obj.value == 'GROUP':
+                    group_start = iog
+            ind_actual = np.zeros((13, 12),
+                                  dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float),
+                                         ('rev', float)])
+            grp_actual = np.zeros((5, 12), dtype=[('rns', 'f8'), ('arr', 'f8'), ('rev', 'f8')])
+
+            month_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+                          'October',
+                          'November', 'December']
+            unneeded_columns = ['', 'Barter', 'GRAND TOTAL', 'TOTAL GROUP', 'TOTAL INDIVIDUAL', 'SEGMENT NAME',
+                                'Qualified Discount', 'Long Staying']
+
+            def getDate(month, year):
+                thirty_ones = ["January", "March", "May", "July", "August", "October", "December"]
+                monthMap = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
+                            "August": 8,
+                            "September": 9, "October": 10, "November": 11,
+                            "December": 12}
+                if month in thirty_ones:
+                    day = 31
+                elif month == "February":
+                    day = 28
+                else:
+                    day = 30
+                month = monthMap.get(month)
+                date = "%s-%s-%s" % (year, month, day)
+                return date
+
+            ss = 0
+            m = 0
+            erow = 7
+            for idx, cell_obj in enumerate(row):
+                subsegment = cell_obj.value
+                if subsegment not in unneeded_columns:
+                    mon = 5
+                    monx = 0
+                    for month in month_list:
+                        ind_actual[ss, m]['subsegment'] = subsegment
+                        ind_actual[ss, m]['month'] = month
+                        mon = mon + monx
+                        for x in range(0, 3):
+                            ecolumn = idx + x
+                            if x == 0:
+                                val = 'rns'
+                            elif x == 1:
+                                val = 'arr'
+                            else:
+                                val = 'rev'
+                            our = xl_sheet.cell(erow, ecolumn).value
+                            if isinstance(our, str):
+                                our = 0.0
+                            ind_actual[ss, m][val] = our
+                        erow += 4
+                        m += 1
+                    ss += 1
+                    erow = 7
+                    m = 0
+
+            for main in ind_actual:
+                for sub in main:
+                    segment = sub[0].upper().decode('utf-8').strip()
+                    month = sub[1].decode('utf-8')
+                    rns = sub[2]
+                    arr = sub[3]
+                    rev = sub[4]
+                    try:
+                        seg_id = Seg_list.objects.get(name=segment)
+                        actual_row = Actual(date=getDate(month, year), actual_rns=rns, actual_arr=arr, actual_rev=rev,
+                                            segment=seg_id, project_id=project_id)
+                        actual_row.save()
+                    except(Exception):
+pass"""
