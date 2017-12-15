@@ -82,6 +82,7 @@ class Actual(models.Model):
     #derived by actual_rns/actual_rna
     actual_ocr = models.DecimalField(max_digits=15,decimal_places=2,null=True)
     actual_revpar = models.DecimalField(max_digits=15,decimal_places=2,null=True)
+
     def __str__(self):
         return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
     class Meta:
