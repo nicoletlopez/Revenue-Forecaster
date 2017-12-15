@@ -1,3 +1,4 @@
+{% extends 'rfs/project.html' %}
 {% block content %}
     {% if actual_data_list %}
 <div class="row tile_count">
@@ -28,6 +29,8 @@
                     <div id="actual_forecast" style="height:350px;"></div>
     </div>
     </div>
+
+        <!--
     <div class="row">
     <div class="col-md-6">
 <div class="clearfix"></div>
@@ -38,6 +41,7 @@
                     <div id="arr_line" style="height:350px;"></div>
     </div>
     </div>
+
     <div class="row">
     <div class="col-md-6">
 <div class="clearfix"></div>
@@ -48,6 +52,7 @@
                     <div id="revpar_line" style="height:350px;"></div>
     </div>
     </div>
+    -->
         {% else %}
         <div class="col-md-12">
           <div class="col-middle">
@@ -77,4 +82,7 @@
           </div>
         </div>
     {% endif %}
+{% endblock %}
+{% block 2ndblock %}
+    {% include 'rfs/actual_table.html' %}
 {% endblock %}

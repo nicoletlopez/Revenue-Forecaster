@@ -105,7 +105,7 @@ class ProjectDashboard(LoginRequiredMixin, DetailView):
     login_url = 'rfs:login'
     redirect_field_name = ''
     model = Project
-    template_name = 'rfs/project.html'
+    template_name = 'rfs/project_dashboard.html'
 
     def get_context_data(self, **kwargs):
         context = super(ProjectDashboard, self).get_context_data(**kwargs)
