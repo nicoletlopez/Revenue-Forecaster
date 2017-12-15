@@ -3408,10 +3408,10 @@ if (typeof NProgress != 'undefined') {
                       method:"GET",
                       url: endpoint,
                       success: function (data) {
-                          actual_rev_total = data.actual_rev_total
-                          actual_arr_total = data.actual_arr_total
-                          actual_rns_total = data.actual_rns_total
-						  date = data.date
+                          actual_rev_total = data.actual_rev_total;
+                          actual_arr_total = data.actual_arr_total;
+                          actual_rns_total = data.actual_rns_total;
+						  date = data.date;
 
 		actualForecast.setOption({
 		dataZoom: [

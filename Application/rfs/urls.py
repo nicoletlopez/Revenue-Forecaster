@@ -28,7 +28,7 @@ urlpatterns=[
     url(r'project/(?P<project_id>[0-9]+)/files/archived/(?P<file_id>[0-9]+)/update/$',views.arc_file_update,name='arc-file-update'),
     #url(r'project/(?P<project_id>[0-9]+)/delete/(?P<file_id>[0-9]+)/$', views.file_delete_in_details, name='file-del'),
     ##DATA FEEDER URLS##
-    url(r'project/(?P<project_id>[0-9]+)/datafeeder', views.excel_to_db, name='datafeed'),
+    url(r'project/(?P<project_id>[0-9]+)/datafeeder/', views.excel_to_db, name='datafeed'),
 
 
     #url(r'^forecast/$', views.forecast_form, name='forecast')

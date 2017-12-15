@@ -514,41 +514,38 @@ def forecast_form_custom(request, project_id):
     else:
         return render(request, 'rfs/default_forecast_form.html', {'form': form})
 
-
 class ChartData(APIView):
 
+    def get(self, request, project_id,**kwargs):
+        project=get_object_or_404(Project,pk=project_id)
+        date_query = Actual.objects.filter(project=project).order_by('date').values_list('date', flat='true').distinct()
+        date = []
+        actual_rev_total = []
+        actual_arr_total = []
+        actual_rns_total = []
 
-    def get(self, request, *args,**kwargs):
-            date_query = Actual.objects.order_by('date').values_list('date', flat='true').distinct()
-            date = []
-            actual_rev_total = []
-            actual_arr_total = []
-            actual_rns_total = []
 
+        for x in range(len(date_query)):
+            date.append(date_query[x].strftime('%B %d %Y'))
 
-            for x in range(len(date_query)):
-                date.append(date_query[x].strftime('%B %d %Y'))
+            actual_rev_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rev'))
 
-                actual_rev_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
-                    Sum('actual_rev'))
-                value = float(actual_rev_query['actual_rev__sum'])
-                actual_rev_total.append(round(value / 1000, 2))
+            value = round(actual_rev_query['actual_rev__sum']/1000,2)
+            actual_rev_total.append(float(value))
 
-                actual_arr_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
-                    Sum('actual_arr'))
-                actual_arr_total.append(float(actual_arr_query['actual_arr__sum']))
+            actual_arr_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_arr'))
+            actual_arr_total.append(float(actual_arr_query['actual_arr__sum']))
 
-                actual_rns_query = Actual.objects.filter(date=date_query[x].strftime('%Y-%m-%d')).aggregate(
-                    Sum('actual_rns'))
-                actual_rns_total.append(float(actual_rns_query['actual_rns__sum']))
+            actual_rns_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rns'))
+            actual_rns_total.append(float(actual_rns_query['actual_rns__sum']))
 
-            data = {
-                "actual_rev_total": actual_rev_total,
-                "actual_arr_total": actual_arr_total,
-                "actual_rns_total": actual_rns_total,
-                "date": date,
-            }
-            return Response(data)
+        data = {
+            "actual_rev_total": actual_rev_total,
+            "actual_arr_total": actual_arr_total,
+            "actual_rns_total": actual_rns_total,
+            "date": date,
+        }
+        return Response(data)
 
 
 
