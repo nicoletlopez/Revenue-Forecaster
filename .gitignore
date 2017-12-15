@@ -9,11 +9,8 @@
 *.sqlite3
 
 /.vscode/
-/Application/projects/README.md
-Application/RevenueSystem/__pycache__/
-Application/rfs/__pycache__/
-Application/rfs/ets/
-PythonScripts/__pycache__/
-PythonScripts/forecasting/__pycache__/
+__pycache__/
+
+Application/projects/*.xlsx
 /Application/rfs/ets/
 /PythonScripts/forecasting/Launcher.py
