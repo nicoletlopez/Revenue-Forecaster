@@ -129,5 +129,4 @@ insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
 select * from rfs_seg_list;
 select * from rfs_actual;
 
-
 --delete from rfs_actual;
