@@ -469,6 +469,8 @@ def forecast_form_default(request, project_id):
                 result = hw.optimize_by_sse(prediction_tuples)
             elif fitting_method == 'mad':
                 result = hw.optimize_by_mad(prediction_tuples)
+            elif fitting_method == 'mse':
+                result = hw.optimize_by_mse(prediction_tuples)
         except Exception:
             result = "Data too short for season length %s" % season_length
 

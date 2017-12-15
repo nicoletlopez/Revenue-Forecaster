@@ -1,5 +1,6 @@
 import numpy as np
 from ..fitting import ConstantFitting as cfitting
+from tqdm import tqdm
 
 class HoltWinters(object):
     def __init__(self,series,n_preds=1,slen=12):
@@ -138,6 +139,32 @@ class HoltWinters(object):
                                                              self.constants[2])[-self.n_preds]
         print("Min MAD: %s " % self.min_mad)
         print("Min MAD index: %s" % self.min_mad_index)
+        print("Constants: %s" % self.constants)
+        print(predicted_values)
+
+        return predicted_values
+
+    def optimize_by_mse(self, prediction_list):
+        # instantiate ConstantFittting class
+        fitting = cfitting.ConstantFitting()
+        # collect all MSE values in an array
+        mse_list = []
+        counter = 0
+        for item in tqdm(prediction_list):
+            # include actual data only (prediction list = actual + forecast values)
+            item = item[0:len(self.series)]
+            mse = fitting.mse(self.series, item)
+            mse_list.append(mse)
+            # print("%s - %s" % (self.value_dictionary[counter],mad))
+            counter += 1
+        self.min_mse = min(mse_list)
+        self.min_mse_index = mse_list.index(self.min_mse)
+        self.constants = self.value_dictionary[self.min_mse_index]
+        predicted_values = self.triple_exponential_smoothing(self.constants[0],
+                                                             self.constants[2],
+                                                             self.constants[2])[-self.n_preds]
+        print("Min MSE: %s " % self.min_mse)
+        print("Min MSE index: %s" % self.min_mse_index)
         print("Constants: %s" % self.constants)
         print(predicted_values)
 
