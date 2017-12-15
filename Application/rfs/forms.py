@@ -8,7 +8,7 @@ METRIC_CHOICE = \
     (
         ('rev','Revenue'),
         ('arr','Average Room Rate'),
-        ('occ','Occupancy Rate'),
+        ('ocr','Occupancy Rate'),
         ('revpar','Revenue per Available Room')
     )
 FITTING_METHOD = \

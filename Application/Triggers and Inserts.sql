@@ -34,6 +34,7 @@ END;
 create trigger set_ocr_rna_2015_2016 after insert on rfs_actual
 BEGIN
 /*2015*/
+
 update rfs_actual set actual_ocr = 0.63 where date = '2015-01-31';
 update rfs_actual set actual_ocr = 0.58 where date = '2015-02-28';
 update rfs_actual set actual_ocr = 0.50 where date = '2015-03-31';
@@ -46,6 +47,7 @@ update rfs_actual set actual_ocr = 0.45 where date='2015-09-30';
 update rfs_actual set actual_ocr = 0.47 where date='2015-10-31';
 update rfs_actual set actual_ocr = 0.56 where date='2015-11-30';
 update rfs_actual set actual_ocr = 0.76 where date='2015-12-31';
+
 
 update rfs_actual set actual_rna = 8091 where date='2015-01-31';
 update rfs_actual set actual_rna = 7308 where date='2015-02-28';
@@ -61,6 +63,7 @@ update rfs_actual set actual_rna = 0.63 where date='2015-12-31';
 update rfs_actual set actual_rna = 8091 where date='2015-11-30';
 
 /*2016*/
+
 update rfs_actual set actual_ocr = 0.63 where date='2016-01-31';
 update rfs_actual set actual_ocr = 0.62 where date='2016-02-28';
 update rfs_actual set actual_ocr = 0.53 where date='2016-03-31';
@@ -73,6 +76,7 @@ update rfs_actual set actual_ocr = 0.49 where date='2016-09-30';
 update rfs_actual set actual_ocr = 0.52 where date='2016-10-31';
 update rfs_actual set actual_ocr = 0.58 where date='2016-11-30';
 update rfs_actual set actual_ocr = 0.65 where date='2016-12-31';
+
 
 update rfs_actual set actual_rna = 8091 where date='2016-01-31';
 update rfs_actual set actual_rna = 7569 where date='2016-02-28';
@@ -87,9 +91,16 @@ update rfs_actual set actual_rna = 8060 where date='2016-10-31';
 update rfs_actual set actual_rna = 7800 where date='2016-12-31';
 update rfs_actual set actual_rna = 8060 where date='2016-11-30';
 END;
-create trigger set_revpar after update on rfs_actual
+
+/*create trigger set_ocr after update of actual_rna on rfs_actual
+  BEGIN
+    update rfs_actual set actual_ocr = (old.actual_rns/old.actual_rna) where actual_id = old.actual_id;
+  END;*/
+
+create trigger set_revpar after update of actual_ocr on rfs_actual
 begin
-update rfs_actual set actual_revpar = (actual_arr * actual_ocr) where actual_id = OLD.actual_id;
+  ---update rfs_actual set actual_ocr = (actual_rns/actual_rna) where actual_id = OLD.actual_id;
+  update rfs_actual set actual_revpar = (actual_arr/actual_ocr) where actual_id = OLD.actual_id;
 end ;
 
 ---create table rfs_ind_seg (ind_id integer primary key,tag varchar(30) not null,
@@ -100,7 +111,7 @@ end ;
 
 
 insert into rfs_seg_list (tag,name,seg_type) values('RCK','RACK','IND');
-insert into rfs_seg_list (tag,name,seg_type) values('CORPO','CORPORATE','IND');
+insert into rfs_seg_list (tag,name,seg_type) values('CORP','CORPORATE','IND');
 insert into rfs_seg_list (tag,name,seg_type) values('CORPO','CORPORATE OTHERS','IND');
 insert into rfs_seg_list (tag,name,seg_type) values('PKG/PRM','PACKAGES/PROMO','IND');
 insert into rfs_seg_list (tag,name,seg_type) values('WSOL','WHOLESALE ONLINE','IND');
@@ -114,7 +125,6 @@ insert into rfs_seg_list (tag,name,seg_type) values('GOV/NGO','GOVERNMENT/NGO','
 insert into rfs_seg_list (tag,name,seg_type) values('GRPT','GROUP TOURS','GRP');
 insert into rfs_seg_list (tag,name,seg_type) values('GRPO','GROUP OTHERS','GRP');
 insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
-
 
 select * from rfs_seg_list;
 select * from rfs_actual;

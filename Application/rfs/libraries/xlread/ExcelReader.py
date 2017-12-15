@@ -117,8 +117,6 @@ class ExcelReader(object):
         return date
 
     def save_current_year_actual_to_db(self, actual_values):
-        conn = sqlite3.connect('sample_db.sqlite3')
-        cur = conn.cursor()
         for main in actual_values:
             for sub in main:
                 segment = sub[0].upper().decode('utf-8').strip()
@@ -129,8 +127,6 @@ class ExcelReader(object):
                 date = self.__get_date(month, self.current_year)
 
     def save_last_year_actual_to_db(self, actual_values_last_year):
-        conn = sqlite3.connect('sample_db.sqlite3')
-        cur = conn.cursor()
         for main in actual_values_last_year:
             for sub in main:
                 segment = sub[0].upper().decode('utf-8').strip()
@@ -140,10 +136,11 @@ class ExcelReader(object):
                 rev = sub[4]
                 date = self.__get_date(month, self.last_year)
 
-"""file = "2016 ROOMS SEGMENTATION.xlsx"
+"""file = "2015 ROOMS SEGMENTATION.xlsx"
 er = ExcelReader(file)
-actual_2016 = er.store_current_year_values_to_array()
-for tuples in actual_2016:
+actual_2015 = er.store_current_year_values_to_array()
+actual_2014 = er.store_last_year_values_to_array()
+for tuples in actual_2014:
     for single_array in tuples:
         segment = (single_array[0].decode("utf-8")).upper()
         date = single_array[1].decode("utf-8")
