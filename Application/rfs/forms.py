@@ -18,6 +18,18 @@ FITTING_METHOD = \
         ('mad','MAD (Mean Absolute Deviation')
     )
 
+SUB_SEGMENT = \
+    (
+        ('RKC','RACK'),
+        ('CORP','CORPORATE'),
+        ('CORPO','CORPORATE OTHERS'),
+        ('PKG/PRM','PACKAGES/PROMO'),
+        ('WSOL','WHOLESALE ONLINE'),
+        ('WSOF','WHOLESALE OFFLINE'),
+        ('INDO','INDIVIDUAL OTHERS'),
+        ('INDR','INDUSTRY RATE')
+    )
+
 class UserForm(forms.ModelForm):
     password=forms.CharField(widget=forms.PasswordInput)
 
@@ -90,6 +102,9 @@ class CustomForecastForm(forms.Form):
     constant_value_end = forms.FloatField(min_value=1,max_value=101,required=False,initial=101)
     constant_value_step = forms.FloatField(min_value=1,max_value=9,required=False,initial=9)
 
+class InputForm(forms.Form):
+    segment = forms.ChoiceField(initial="RACK",choices=SUB_SEGMENT)
+    date = forms.DateField()
 #class XlToDbForm(forms.Form):
 #    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)
 #    file=forms.ModelChoiceField(queryset=Project.objects.all().filter())

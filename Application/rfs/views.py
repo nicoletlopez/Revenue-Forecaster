@@ -18,7 +18,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm
+from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, InputForm
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import ExcelReader as xlread
 from .models import Project, File, Actual, Seg_list
@@ -515,6 +515,16 @@ def forecast_form_custom(request, project_id):
         # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
     else:
         return render(request, 'rfs/default_forecast_form.html', {'form': form})
+
+def input_data(request,project_id):
+    form = InputForm(request.POST or None)
+
+    segment = request.POST.get("segment")
+    date = request.POST.get("date")
+
+    context = {"form":form}
+
+    return render(request,"rfs/data_input_form.html",context=context)
 
 class ChartData(APIView):
 
