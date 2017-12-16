@@ -35,7 +35,7 @@ create trigger set_ocr_rna_2015_2016 after insert on rfs_actual
 BEGIN
 /*2015*/
 
-update rfs_actual set actual_ocr = 0.63 where date = '2015-01-31';
+/*update rfs_actual set actual_ocr = 0.63 where date = '2015-01-31';
 update rfs_actual set actual_ocr = 0.58 where date = '2015-02-28';
 update rfs_actual set actual_ocr = 0.50 where date = '2015-03-31';
 update rfs_actual set actual_ocr = 0.53 where date = '2015-04-30';
@@ -46,7 +46,7 @@ update rfs_actual set actual_ocr = 0.53 where date='2015-08-31';
 update rfs_actual set actual_ocr = 0.45 where date='2015-09-30';
 update rfs_actual set actual_ocr = 0.47 where date='2015-10-31';
 update rfs_actual set actual_ocr = 0.56 where date='2015-11-30';
-update rfs_actual set actual_ocr = 0.76 where date='2015-12-31';
+update rfs_actual set actual_ocr = 0.76 where date='2015-12-31';*/
 
 
 update rfs_actual set actual_rna = 8091 where date='2015-01-31';
@@ -59,12 +59,12 @@ update rfs_actual set actual_rna = 8091 where date='2015-07-31';
 update rfs_actual set actual_rna = 8091 where date='2015-08-31';
 update rfs_actual set actual_rna = 7830 where date='2015-09-30';
 update rfs_actual set actual_rna = 8091 where date='2015-10-31';
-update rfs_actual set actual_rna = 0.63 where date='2015-12-31';
-update rfs_actual set actual_rna = 8091 where date='2015-11-30';
+update rfs_actual set actual_rna = 7830 where date='2015-11-30';
+update rfs_actual set actual_rna = 8091 where date='2015-12-31';
 
 /*2016*/
 
-update rfs_actual set actual_ocr = 0.63 where date='2016-01-31';
+/*update rfs_actual set actual_ocr = 0.63 where date='2016-01-31';
 update rfs_actual set actual_ocr = 0.62 where date='2016-02-28';
 update rfs_actual set actual_ocr = 0.53 where date='2016-03-31';
 update rfs_actual set actual_ocr = 0.62 where date='2016-04-30';
@@ -75,7 +75,7 @@ update rfs_actual set actual_ocr = 0.47 where date='2016-08-31';
 update rfs_actual set actual_ocr = 0.49 where date='2016-09-30';
 update rfs_actual set actual_ocr = 0.52 where date='2016-10-31';
 update rfs_actual set actual_ocr = 0.58 where date='2016-11-30';
-update rfs_actual set actual_ocr = 0.65 where date='2016-12-31';
+update rfs_actual set actual_ocr = 0.65 where date='2016-12-31';*/
 
 
 update rfs_actual set actual_rna = 8091 where date='2016-01-31';
@@ -88,14 +88,16 @@ update rfs_actual set actual_rna = 8060 where date='2016-07-31';
 update rfs_actual set actual_rna = 8060 where date='2016-08-31';
 update rfs_actual set actual_rna = 7800 where date='2016-09-30';
 update rfs_actual set actual_rna = 8060 where date='2016-10-31';
-update rfs_actual set actual_rna = 7800 where date='2016-12-31';
-update rfs_actual set actual_rna = 8060 where date='2016-11-30';
+update rfs_actual set actual_rna = 7800 where date='2016-11-30';
+update rfs_actual set actual_rna = 8060 where date='2016-12-31';
+
 END;
 
-/*create trigger set_ocr after update of actual_rna on rfs_actual
+create trigger set_ocr after update of actual_rna on rfs_actual
   BEGIN
-    update rfs_actual set actual_ocr = (old.actual_rns/old.actual_rna) where actual_id = old.actual_id;
-  END;*/
+    update rfs_actual set actual_ocr = cast(
+      cast(old.actual_rns as float)/cast(old.actual_rna as float)as float) where actual_id = old.actual_id;
+  END;
 
 create trigger set_revpar after update of actual_ocr on rfs_actual
 begin
@@ -128,5 +130,10 @@ insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
 
 select * from rfs_seg_list;
 select * from rfs_actual;
+select * from rfs_actual where date='2015-12-31';
+select sum(cast(actual_rns as float)) as rns,
+  sum(cast(actual_rna as float)) as rna,
+  cast(sum(cast(actual_rns as float)) / sum(cast(actual_rna as float)) as float) * 100 as ocr
+  from rfs_actual where date='2015-01-31';
 
 --delete from rfs_actual;
