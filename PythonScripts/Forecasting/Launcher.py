@@ -14,7 +14,7 @@ print(hw.triple_exponential_smoothing(0.3,0.4,0.5)[-1:])
 """
 hw = hw2.HoltWinters2(sample_data, 12, 2)
 
-predicted_list = hw.get_prediction_tuples(1, 101, 9)
+predicted_list = hw.get_prediction_tuples(1, 101, 1)
 hw.optimize_by_mse(predicted_list)
 print()
 """

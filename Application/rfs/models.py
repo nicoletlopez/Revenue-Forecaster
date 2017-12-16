@@ -91,7 +91,7 @@ class Actual(models.Model):
         return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
     class Meta:
         ordering = ['actual_id']
-        #unique_together=(('actual_rns','actual_arr','actual_rev'))
+        unique_together=(('project','date','actual_rns','actual_arr','actual_rev'))
 
 class Forecast(models.Model):
     forecast_id = models.AutoField(primary_key=True)

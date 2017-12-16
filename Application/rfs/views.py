@@ -538,7 +538,7 @@ class ChartData(APIView):
 
 
         for x in range(len(date_query)):
-            date.append(date_query[x].strftime('%B %d %Y'))
+            date.append(date_query[x].strftime('%B %Y'))
 
             actual_rev_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rev'))
 
