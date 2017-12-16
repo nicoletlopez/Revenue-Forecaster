@@ -6,16 +6,18 @@ import re
 
 
 class ExcelReader(object):
-    def __init__(self, file_path, sheet_index=4, sub_segments_index=4):
+    def __init__(self, file_path, sheet_index=4, sub_segments_index=4, metrics_index=5):
         # initializing xlrd objects
         def get_year(cellString):
             return re.search(r"(\d{4})", cellString).group(0)
+
         self.workbook = xlrd.open_workbook(file_path)
         self.sheet = self.workbook.sheet_by_index(sheet_index)
         self.current_year = get_year(self.sheet.cell(1, 1).value)
         self.sub_segments = self.sheet.row(sub_segments_index)
+        self.metrics = self.sheet.row(metrics_index)
         # initializing time data for storing in the database
-        #self.current_year = self.sheet.cell(1, 1).value.split()[1]
+        # self.current_year = self.sheet.cell(1, 1).value.split()[1]
         print(self.current_year)
         try:
             self.last_year = int(self.current_year) - 1
@@ -27,22 +29,36 @@ class ExcelReader(object):
         self.unneeded_columns = ['', 'Barter', 'GRAND TOTAL', 'TOTAL GROUP', 'TOTAL INDIVIDUAL', 'SEGMENT NAME',
                                  'Qualified Discount', 'Long Staying']
 
+    def store_room_nights_available_to_array(self, rna_row_index=7):
+        room_nights_available_list = []
+        for column, cell_obj in enumerate(self.metrics):
+            if cell_obj.value == 'Room Nights Available':
+                rna_column_index = column
+                print(cell_obj)
+        for x in range(12):
+            room_nights_available = self.sheet.cell(rna_row_index, rna_column_index).value
+            #print(rna_column_index)
+            room_nights_available_list.append(room_nights_available)
+            rna_row_index += 4
+        print(room_nights_available_list)
+        return room_nights_available
+
     def store_current_year_values_to_array(self, actual_row_index=7):  # year relative to the excel file
         # initializing numpy array for storing actual values
         actual_values = np.zeros((13, 12),
-                      dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float), ('rev', float)])
+                                 dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float),
+                                        ('rev', float)])
         # initialize array indices
         sub_segment_index = 0
         month_index = 0
         for column, cell_obj in enumerate(self.sub_segments):
-            #print(column)
             sub_segment = cell_obj.value
             if sub_segment not in self.unneeded_columns:
                 for month in self.month_list:
                     # populating numpy array with subsegment and month values
                     actual_values[sub_segment_index, month_index]['subsegment'] = str(sub_segment)
-                    #print("subsegment index: %s     month index: %s" %(sub_segment_index,month_index))
-                    actual_values[sub_segment_index, month_index]['month'] = self.__get_date(month,self.current_year)
+                    # print("subsegment index: %s     month index: %s" %(sub_segment_index,month_index))
+                    actual_values[sub_segment_index, month_index]['month'] = self.__get_date(month, self.current_year)
                     # populating numpy array with actual values
                     # get the column headers (Room Nights Sold, Average Rm Rate(PHP), Revenue (PHP'000)
                     for x in range(0, 3):
@@ -68,7 +84,8 @@ class ExcelReader(object):
     def store_last_year_values_to_array(self, actual_last_year_row_index=9):  # year relative to the excel file
         # initializing numpy array for storing actual values
         actual_values_last_year = np.zeros((13, 12),
-                      dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float), ('rev', float)])
+                                           dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float),
+                                                  ('arr', float), ('rev', float)])
         # initialize array indices
         sub_segment_index = 0
         month_index = 0
@@ -78,7 +95,8 @@ class ExcelReader(object):
                 for month in self.month_list:
                     # populating numpy array with subsegment and month values
                     actual_values_last_year[sub_segment_index, month_index]['subsegment'] = str(sub_segment)
-                    actual_values_last_year[sub_segment_index, month_index]['month'] = self.__get_date(str(month),str(self.last_year))
+                    actual_values_last_year[sub_segment_index, month_index]['month'] = self.__get_date(str(month), str(
+                        self.last_year))
                     # populating numpy array with actual values
                     # get the column headers (Room Nights Sold, Average Rm Rate(PHP), Revenue (PHP'000)
                     for x in range(0, 3):
@@ -139,6 +157,7 @@ class ExcelReader(object):
                 arr = sub[3]
                 rev = sub[4]
                 date = self.__get_date(month, self.last_year)
+
 
 """file = "2016 ROOMS SEGMENTATION.xlsx"
 er = ExcelReader(file)
