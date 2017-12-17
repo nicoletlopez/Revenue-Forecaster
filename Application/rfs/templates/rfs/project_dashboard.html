@@ -57,16 +57,12 @@
               <div class="center">
 
                   <div class="row">
-                      <div class="col-md-offset-4 col-md-4">
+                      <div class="col-md-offset-5 col-md-2">
                   <div class="btn-group-justified">
-                      <a class="btn btn-app" href="{% url 'rfs:file' project.id %}">
-                      <i class="fa fa-upload"></i> Upload a File
-                    </a>
-                      {% if act_files %}
                     <a class="btn btn-app" href="{% url 'rfs:datafeed' project.id %}">
                       <i class="fa fa-database"></i> Feed Data
                     </a>
-                          {% endif %}
+
 
                         </div>
                     </div>

@@ -14,9 +14,7 @@
                   {% if project.status == 'ACT' %}
                       <li class="{% if request.resolver_match.url_name == 'project' %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-dashboard"> </i> Dashboard </a></li>
                       <li class="{% if request.resolver_match.url_name == 'project-details' %}active{% endif %}"><a href="{% url 'rfs:project-details' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
-                      <li class="{% if request.resolver_match.url_name == 'file' %}active{% endif %}"><a href="{% url 'rfs:file' project.id %}"><i class="fa fa-file"> </i> Files <span style="color:white;" class="badge bg-green">{{ act_files.count }}</span></a></li>
                       <li class="{% if request.resolver_match.url_name == 'datafeed' %}active{% endif %}"><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
-                      <li class="{% if request.resolver_match.url_name == 'arc-file' %}active{% endif %}"><a href="{% url 'rfs:arc-file' project.id %}"><i class="fa fa-archive"> </i> Archived Files <span style="color:white;" class="badge bg-green">{{ arc_files.count }}</span></a></li>
                   {% else %}
                       <h3>Project will be available when restored.</h3>
                           <form action="{% url 'rfs:project-delete' project.id %}" method="post">
