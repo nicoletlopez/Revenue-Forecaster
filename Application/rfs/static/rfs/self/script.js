@@ -218,24 +218,23 @@ console.log('init_echarts');
 
 
     if ($('#rev_revpar').length) {
+        $(document).ready(function(){
 
 
 
-    $(document).ready(function(){
     var revRevpar = echarts.init(document.getElementById('rev_revpar'), theme);
           var rev_total=[];
-          var arr_total=[];
-          var rns_total=[];
+          var revpar_total=[];
           var date=[];
           var pathname = window.location.pathname;
           var endpoint = '';
-          if(pathname === '/rfs/project/2/'){
+          if(pathname === '/rfs/project/1/'){
               endpoint = 'charts';
           }
-          else if(pathname === '/rfs/project/2/individual/'){
+          else if(pathname === '/rfs/project/1/individual/'){
               endpoint = 'ind_charts';
           }
-          else if(pathname === '/rfs/project/2/group/'){
+          else if(pathname === '/rfs/project/1/group/'){
               endpoint = 'grp_charts';
           }
               $.ajax({
@@ -243,10 +242,8 @@ console.log('init_echarts');
                   url: endpoint,
                   success: function (data) {
                       rev_total = data.rev_total;
-                      arr_total = data.arr_total;
-                      rns_total = data.rns_total;
+                      revpar_total = data.revpar_total;
                       date = data.date;
-                      alert(rev_total)
                       revRevpar.setOption({
                           dataZoom: [
                               {
@@ -305,7 +302,6 @@ console.log('init_echarts');
                               type: 'value'
                           }],
                           series: [
-
                               {
                                   name: 'RevPAR',
                                   type: 'bar',
@@ -317,7 +313,7 @@ console.log('init_echarts');
                                           }
                                       }
                                   },
-                                  data: [100, 200, 300, 400, 500, 600, 700]
+                                  data: revpar_total
                               },
                               {
                                   name: 'Revenue (\'000\'s)',
@@ -351,190 +347,243 @@ console.log('init_echarts');
 
 
     if ($('#arr_rns').length) {
+        $(document).ready(function() {
 
 
+        var arrRns = echarts.init(document.getElementById('arr_rns'), theme);
+
+        var arr_total = [];
+        var rns_total = [];
+        var date = [];
+        var pathname = window.location.pathname;
+        var endpoint = '';
+          if(pathname.charAt(15) === ''){
+              endpoint = 'charts';
+              alert('charts')
+          }
+          else if(pathname.charAt(15) === 'i'){
+              endpoint = 'ind_charts';
+              alert('ind_charts')
+          }
+          else if(pathname.charAt(15) === 'g'){
+              endpoint = 'grp_charts';
+              alert('grp_charts')
+          }
+        $.ajax({
+            method: "GET",
+            url: endpoint,
+            success: function (data) {
+                arr_total = data.arr_total;
+                rns_total = data.rns_total;
+                date = data.date;
+                arrRns.setOption({
+                    dataZoom: [
+                        {
+                            type: 'slider',
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            type: 'inside',
+                            start: 0,
+                            end: 100
+                        }
+                    ],
+                    title: {
+                        text: 'ARR and RNS Actual Data Graph',
+                        subtext: ''
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        x: 220,
+                        y: 40,
+                        data: ['Average Room Rate', 'Room Nights Sold']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            magicType: {
+                                show: true,
+                                title: {
+
+                                    bar: 'Bar',
+                                    line: 'Line',
+                                    stack: 'Stack',
+                                    tiled: 'Tiled'
+                                },
+                                type: ['bar', 'line', 'stack', 'tiled']
+                            },
+                            restore: {
+                                show: true,
+                                title: "Restore"
+                            },
+                            saveAsImage: {
+                                show: true,
+                                title: "Save Image"
+                            }
+                        }
+                    },
+                    calculable: false,
+                    xAxis: [{
+                        type: 'category',
+                        data: date
+                    }],
+                    yAxis: [{
+                        type: 'value'
+                    }],
+                    series: [
+
+                        {
+                            name: 'Average Room Rate',
+                            type: 'bar',
+                            smooth: true,
+                            itemStyle: {
+                                normal: {
+                                    areaStyle: {
+                                        type: 'default'
+                                    }
+                                }
+                            },
+                            data: arr_total
+                        },
+                        {
+                            name: 'Room Nights Sold',
+                            type: 'bar',
+                            smooth: true,
+                            itemStyle: {
+                                normal: {
+                                    areaStyle: {
+                                        type: 'default'
+                                    }
+                                }
+                            },
+                            data: rns_total
+
+                        }
 
 
-    var arrRns = echarts.init(document.getElementById('arr_rns'), theme);
-
-    arrRns.setOption({
-    dataZoom: [
-    {
-    type: 'slider',
-    start: 0,
-    end: 100
-    },
-    {
-    type: 'inside',
-    start: 0,
-    end: 100
-    }
-    ],
-    title: {
-        text: 'ARR and RNS Actual Data Graph',
-        subtext: ''
-    },
-    tooltip: {
-        trigger: 'axis'
-    },
-    legend: {
-        x: 220,
-        y: 40,
-        data: ['Average Room Rate','Room Nights Sold']
-    },
-    toolbox: {
-        show: true,
-        feature: {
-            magicType: {
-                show: true,
-                title: {
-
-                    bar: 'Bar',
-                    line: 'Line',
-                    stack: 'Stack',
-                    tiled: 'Tiled'
+                    ]
+                });
                 },
-                type: ['bar','line',  'stack', 'tiled']
-            },
-            restore: {
-                show: true,
-                title: "Restore"
-            },
-            saveAsImage: {
-                show: true,
-                title: "Save Image"
-            }
-        }
-    },
-    calculable: false,
-    xAxis: [{
-        type: 'category',
-        data: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
-    }],
-    yAxis: [{
-        type: 'value'
-    }],
-    series: [
-
-        {
-        name:'Average Room Rate',
-        type:'bar',
-        smooth:true,
-        itemStyle:{
-            normal:{
-                areaStyle:{
-                    type:'default'
-                }
-            }
-        },
-        data:[100,200,300,400,500,600,700]
-    },
-        {
-        name: 'Room Nights Sold',
-        type: 'bar',
-        smooth: true,
-        itemStyle: {
-            normal: {
-                areaStyle: {
-                    type: 'default'
-                }
-            }
-        },
-        data: [100,200,300,400,500,600,700]
-
-    }
-
-
-
-    ]
-    });
+                  error: function (error_data) {
+                      console.log("error");
+                      console.log(error_data);
+                  }
+        })
+})
     }
 
 
     if ($('#ocr').length) {
+        $(document).ready(function() {
 
 
-
-
-    var ocr = echarts.init(document.getElementById('ocr'), theme);
-
-    ocr.setOption({
-    dataZoom: [
-    {
-    type: 'slider',
-    start: 0,
-    end: 100
-    },
-    {
-    type: 'inside',
-    start: 0,
-    end: 100
-    }
-    ],
-    title: {
-        text: 'Occupancy Rate Actual Data Graph',
-        subtext: ''
-    },
-    tooltip: {
-        trigger: 'axis'
-    },
-    legend: {
-        x: 220,
-        y: 40,
-        data: ['RevPAR','Revenue (\'000\'s)']
-    },
-    toolbox: {
-        show: true,
-        feature: {
-            magicType: {
-                show: true,
-                title: {
-
-                    bar: 'Bar',
-                    line: 'Line',
-                    stack: 'Stack',
-                    tiled: 'Tiled'
-                },
-                type: ['bar','line',  'stack', 'tiled']
-            },
-            restore: {
-                show: true,
-                title: "Restore"
-            },
-            saveAsImage: {
-                show: true,
-                title: "Save Image"
-            }
+        var ocr = echarts.init(document.getElementById('ocr'), theme);
+        var ocr_total = [];
+        var date = [];
+        var pathname = window.location.pathname;
+        var endpoint = '';
+        if(pathname === '/rfs/project/1/'){
+            endpoint = 'charts';
         }
-    },
-    calculable: false,
-    xAxis: [{
-        type: 'category',
-        data: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
-    }],
-    yAxis: [{
-        type: 'value'
-    }],
-    series: [
+        else if(pathname === '/rfs/project/1/individual/'){
+            endpoint = 'ind_charts';
+        }
+        else if(pathname === '/rfs/project/1/group/'){
+            endpoint = 'grp_charts';
+        }
+        $.ajax({
+            method: "GET",
+            url: endpoint,
+            success: function (data) {
+                ocr_total = data.ocr_total;
+                date = data.date;
+                ocr.setOption({
+                dataZoom: [
+                    {
+                        type: 'slider',
+                        start: 0,
+                        end: 100
+                    },
+                    {
+                        type: 'inside',
+                        start: 0,
+                        end: 100
+                    }
+                ],
+                title: {
+                    text: 'Occupancy Rate Actual Data Graph',
+                    subtext: ''
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    x: 220,
+                    y: 40,
+                    data: ['RevPAR', 'Revenue (\'000\'s)']
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        magicType: {
+                            show: true,
+                            title: {
 
-        {
-        name:'Occupancy Rate',
-        type:'bar',
-        smooth:true,
-        itemStyle:{
-            normal:{
-                areaStyle:{
-                    type:'default'
-                }
+                                bar: 'Bar',
+                                line: 'Line',
+                                stack: 'Stack',
+                                tiled: 'Tiled'
+                            },
+                            type: ['bar', 'line', 'stack', 'tiled']
+                        },
+                        restore: {
+                            show: true,
+                            title: "Restore"
+                        },
+                        saveAsImage: {
+                            show: true,
+                            title: "Save Image"
+                        }
+                    }
+                },
+                calculable: false,
+                xAxis: [{
+                    type: 'category',
+                    data: date
+                }],
+                yAxis: [{
+                    type: 'value'
+                }],
+                series: [
+
+                    {
+                        name: 'Occupancy Rate %',
+                        type: 'bar',
+                        smooth: true,
+                        itemStyle: {
+                            normal: {
+                                areaStyle: {
+                                    type: 'default'
+                                }
+                            }
+                        },
+                        data: ocr_total
+                    }
+
+
+                ]
+    });
+            },
+            error: function (error_data) {
+              console.log("error");
+              console.log(error_data);
             }
-        },
-        data:[100,200,300,400,500,600,700]
+        })
+})
     }
 
-
-
-    ]
-    });
-              }
 
 }
