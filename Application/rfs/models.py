@@ -109,3 +109,23 @@ class Forecast(models.Model):
     def __str__(self):
         return str(self.forecast_id) + " - %s " % self.date
     unique_together = (('forecast_rns','forecast_arr','forecast_rev','actual_reference'))
+
+class ForecastConstraints(models.Model):
+    metric = models.CharField(max_length=10)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    n_preds = models.IntegerField()
+    s_len = models.IntegerField()
+    fitting_method = models.CharField(max_length=10)
+    segment = models.CharField(max_length=30)
+    alpha = models.FloatField()
+    beta = models.FloatField()
+    gamma = models.FloatField()
+    result = models.DecimalField(max_length=15,decimal_places=2,max_digits=20)
+
+    class Meta:
+        indexes= \
+        [
+            models.Index(fields=['metric','start_date','end_date','n_preds','s_len','fitting_method','segment','alpha',
+                                 'beta','gamma','result'])
+        ]

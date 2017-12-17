@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, UpdateRnaForm
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import ExcelReader as xlread
-from .models import Project, File, Actual, Seg_list
+from .models import Project, File, Actual, Seg_list, ForecastConstraints
 
 # end custom libraries
 
@@ -385,6 +385,51 @@ def excel_to_db(request, project_id):
 ###########TRIPLE SMOOTHING#############
 def forecast_form_default(request, project_id):
     form = ForecastOptionsForm(request.POST or None)
+    def add_one_month(date_input):
+        # january
+        thirties = [2, 4, 6, 9, 11]
+        thirty_ones = [3, 5, 7, 8, 10, 12]
+        if date_input.month == 1:
+            try:
+                date_input += relativedelta(months=1)
+                date_input = date_input.replace(day=28)
+            except:
+                return date_input
+            finally:
+                return date_input
+
+        if date_input.month in thirties:
+            date_input += relativedelta(months=1)
+            date_input = date_input.replace(day=31)
+            return date_input
+
+        if date_input.month in thirty_ones:
+            date_input += relativedelta(months=1)
+            try:
+                date_input = date_input.replace(day=31)
+            except:
+                date_input = date_input.replace(day=30)
+            finally:
+                return date_input
+
+    """def check_if_forecast_done_before(metric,start_date,end_date,n_preds,season_length,fitting_method,segment,alpha,beta,gamma,result,value_list):
+        if ForecastConstraints.objects.get(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
+                                           s_len=season_length,fitting_method=fitting_method,segment=segment).exists():
+            forecast_obj = ForecastConstraints.objects.get(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
+                                           s_len=season_length,fitting_method=fitting_method,segment=segment)
+            return render(request, 'rfs/default_forecast_form.html', {'form': form,
+                                                                      "metric": forecast_obj.metric,
+                                                                      "start_date": forecast_obj.start_date,
+                                                                      "end_date": forecast_obj.end_date,
+                                                                      "segment": forecast_obj.segment,
+                                                                      "values_list": value_list,
+                                                                      "n_preds": forecast_obj.n_preds,
+                                                                      "fitting_method": forecast_obj.fitting_method,
+                                                                      "season_length": season_length,
+                                                                      "alpha": alpha,
+                                                                      "beta": beta,
+                                                                      "gamma": gamma,
+                                                                      "result": result})"""
     if form.is_valid():
         # get forecast info
         # get performance metric desired
@@ -409,32 +454,9 @@ def forecast_form_default(request, project_id):
         # get the starting,end, and skip constant values
         constant_value_start = request.POST.get("constant_value_start")
 
-        def add_one_month(date_input):
-            # january
-            thirties = [2, 4, 6, 9, 11]
-            thirty_ones = [3, 5, 7, 8, 10, 12]
-            if date_input.month == 1:
-                try:
-                    date_input += relativedelta(months=1)
-                    date_input = date_input.replace(day=28)
-                except:
-                    return date_input
-                finally:
-                    return date_input
+        """check_if_forecast_done_before(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
+                                      season_length=season_length,fitting_method=fitting_method,segment=segment)"""
 
-            if date_input.month in thirties:
-                date_input += relativedelta(months=1)
-                date_input = date_input.replace(day=31)
-                return date_input
-
-            if date_input.month in thirty_ones:
-                date_input += relativedelta(months=1)
-                try:
-                    date_input = date_input.replace(day=31)
-                except:
-                    date_input = date_input.replace(day=30)
-                finally:
-                    return date_input
 
         # create an array for the values (e.g. total + group for month of january)
         value_list = []
@@ -500,6 +522,32 @@ def forecast_form_default(request, project_id):
 
 
 def forecast_form_custom(request, project_id):
+    def add_one_month(date_input):
+        # january
+        thirties = [2, 4, 6, 9, 11]
+        thirty_ones = [3, 5, 7, 8, 10, 12]
+        if date_input.month == 1:
+            try:
+                date_input += relativedelta(months=1)
+                date_input = date_input.replace(day=28)
+            except:
+                return date_input
+            finally:
+                return date_input
+
+        if date_input.month in thirties:
+            date_input += relativedelta(months=1)
+            date_input = date_input.replace(day=31)
+            return date_input
+
+        if date_input.month in thirty_ones:
+            date_input += relativedelta(months=1)
+            try:
+                date_input = date_input.replace(day=31)
+            except:
+                date_input = date_input.replace(day=30)
+            finally:
+                return date_input
     form = CustomForecastForm(request.POST or None)
     if form.is_valid():
         # get forecast info
@@ -525,32 +573,7 @@ def forecast_form_custom(request, project_id):
         # get the starting,end, and skip constant values
         constant_value_start = request.POST.get("constant_value_start")
 
-        def add_one_month(date_input):
-            # january
-            thirties = [2, 4, 6, 9, 11]
-            thirty_ones = [3, 5, 7, 8, 10, 12]
-            if date_input.month == 1:
-                try:
-                    date_input += relativedelta(months=1)
-                    date_input = date_input.replace(day=28)
-                except:
-                    return date_input
-                finally:
-                    return date_input
 
-            if date_input.month in thirties:
-                date_input += relativedelta(months=1)
-                date_input = date_input.replace(day=31)
-                return date_input
-
-            if date_input.month in thirty_ones:
-                date_input += relativedelta(months=1)
-                try:
-                    date_input = date_input.replace(day=31)
-                except:
-                    date_input = date_input.replace(day=30)
-                finally:
-                    return date_input
 
         # create an array for the values (e.g. total + group for month of january)
         value_list = []
