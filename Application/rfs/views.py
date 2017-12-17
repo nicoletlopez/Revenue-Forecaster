@@ -117,6 +117,42 @@ class ProjectDashboard(LoginRequiredMixin, DetailView):
         context['actual_data_list'] = Actual.objects.all().filter(project_id=self.kwargs['pk'])
         return context
 
+class GraphInd(LoginRequiredMixin,DetailView):
+    login_url = 'rfs:login'
+    redirect_field_name = ''
+    model = Project
+    template_name = 'rfs/project_dashboard.html'
+    def get_context_data(self, **kwargs):
+        context = super(GraphInd, self).get_context_data(**kwargs)
+        context['all_projects'] = Project.objects.all().filter(status='ACT')
+        context['all_files'] = File.objects.all()
+        context['arc_projects'] = Project.objects.all().filter(status='ARC')
+        context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
+        context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
+        context['actual_data_list'] = Actual.objects.all().filter(project_id=self.kwargs['pk'])
+        context['active_tag'] = 'active'
+        context['block_display'] = 'display:block;'
+        context['current_page'] = 'current-page'
+        return context
+
+class GraphGrp(LoginRequiredMixin,DetailView):
+    login_url = 'rfs:login'
+    redirect_field_name = ''
+    model = Project
+    template_name = 'rfs/project_dashboard.html'
+    def get_context_data(self, **kwargs):
+        context = super(GraphGrp, self).get_context_data(**kwargs)
+        context['all_projects'] = Project.objects.all().filter(status='ACT')
+        context['all_files'] = File.objects.all()
+        context['arc_projects'] = Project.objects.all().filter(status='ARC')
+        context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
+        context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
+        context['actual_data_list'] = Actual.objects.all().filter(project_id=self.kwargs['pk'])
+        context['active_tag'] = 'active'
+        context['block_display'] = 'display:block;'
+        context['current_page'] = 'current-page'
+        return context
+
 
 class ProjectDetails(LoginRequiredMixin, DetailView):
     login_url = 'rfs:login'
@@ -131,6 +167,9 @@ class ProjectDetails(LoginRequiredMixin, DetailView):
         context['arc_projects'] = Project.objects.all().filter(status='ARC')
         context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
         context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
+        context['active_tag']= 'active'
+        context['block_display']= 'display:block;'
+        context['current_page']= 'current-page'
         return context
 
 
@@ -177,6 +216,9 @@ def file_view(request, project_id):
                         'error_message': 'You already added that file',
                         'arc_projects': Project.objects.all().filter(status='ARC'),
                         'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                        'active_tag':'active',
+                        'block_display':'display:block;',
+                        'current_page':'current-page',
                     }
                     return render(request, 'rfs/file.html', context)
             file = form.save(commit=False)
@@ -193,6 +235,9 @@ def file_view(request, project_id):
                     'error_message': 'File must be XLS, XLSX',
                     'arc_projects': Project.objects.all().filter(status='ARC'),
                     'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                    'active_tag': 'active',
+                    'block_display': 'display:block;',
+                    'current_page': 'current-page',
                 }
                 return render(request, 'rfs/file.html', context)
 
@@ -204,6 +249,9 @@ def file_view(request, project_id):
                            'form': form,
                            'arc_projects': Project.objects.all().filter(status='ARC'),
                            'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                           'active_tag': 'active',
+                           'block_display': 'display:block;',
+                           'current_page': 'current-page',
                            })
         context = {
             'all_projects': projects,
@@ -212,6 +260,9 @@ def file_view(request, project_id):
             'project': project,
             'form': form,
             'arc_projects': Project.objects.all().filter(status='ARC'),
+            'active_tag': 'active',
+            'block_display': 'display:block;',
+            'current_page': 'current-page',
         }
         return render(request, 'rfs/file.html', context)
 
@@ -227,6 +278,9 @@ def arc_file_view(request, project_id):
             'arc_files': File.objects.filter(status='ARC', project_id=project_id),
             'arc_projects': Project.objects.all().filter(status='ARC'),
             'act_files': File.objects.filter(status='ACT', project_id=project_id),
+            'active_tag': 'active',
+            'block_display': 'display:block;',
+            'current_page': 'current-page',
         }
         return render(request, 'rfs/file_archived.html', context)
 
@@ -293,6 +347,9 @@ def excel_to_db(request, project_id):
                    'act_files': File.objects.filter(status='ACT', project_id=project_id),
                    'actual_data_list': Actual.objects.all().filter(project_id=project_id),
                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                   'active_tag': 'active',
+                   'block_display': 'display:block;',
+                   'current_page': 'current-page',
                    }
         return render(request, 'rfs/datafeeder.html', context)
     except:
@@ -304,6 +361,9 @@ def excel_to_db(request, project_id):
                    #'year_detect': year,
                    'actual_data_list': Actual.objects.all().filter(project_id=project_id),
                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                   'active_tag': 'active',
+                   'block_display': 'display:block;',
+                   'current_page': 'current-page',
                    }
         return render(request, 'rfs/datafeeder.html', context)
 
@@ -561,81 +621,3 @@ class ChartData(APIView):
 
 
 
-
-
-
-###########COMMENTS#############
-"""for iog, cell_obj in enumerate(ind_or_grp):
-                if cell_obj.value == 'GROUP':
-                    group_start = iog
-            ind_actual = np.zeros((13, 12),
-                                  dtype=[('subsegment', 'S40'), ('month', 'S40'), ('rns', float), ('arr', float),
-                                         ('rev', float)])
-            grp_actual = np.zeros((5, 12), dtype=[('rns', 'f8'), ('arr', 'f8'), ('rev', 'f8')])
-
-            month_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-                          'October',
-                          'November', 'December']
-            unneeded_columns = ['', 'Barter', 'GRAND TOTAL', 'TOTAL GROUP', 'TOTAL INDIVIDUAL', 'SEGMENT NAME',
-                                'Qualified Discount', 'Long Staying']
-
-            def getDate(month, year):
-                thirty_ones = ["January", "March", "May", "July", "August", "October", "December"]
-                monthMap = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7,
-                            "August": 8,
-                            "September": 9, "October": 10, "November": 11,
-                            "December": 12}
-                if month in thirty_ones:
-                    day = 31
-                elif month == "February":
-                    day = 28
-                else:
-                    day = 30
-                month = monthMap.get(month)
-                date = "%s-%s-%s" % (year, month, day)
-                return date
-
-            ss = 0
-            m = 0
-            erow = 7
-            for idx, cell_obj in enumerate(row):
-                subsegment = cell_obj.value
-                if subsegment not in unneeded_columns:
-                    mon = 5
-                    monx = 0
-                    for month in month_list:
-                        ind_actual[ss, m]['subsegment'] = subsegment
-                        ind_actual[ss, m]['month'] = month
-                        mon = mon + monx
-                        for x in range(0, 3):
-                            ecolumn = idx + x
-                            if x == 0:
-                                val = 'rns'
-                            elif x == 1:
-                                val = 'arr'
-                            else:
-                                val = 'rev'
-                            our = xl_sheet.cell(erow, ecolumn).value
-                            if isinstance(our, str):
-                                our = 0.0
-                            ind_actual[ss, m][val] = our
-                        erow += 4
-                        m += 1
-                    ss += 1
-                    erow = 7
-                    m = 0
-
-            for main in ind_actual:
-                for sub in main:
-                    segment = sub[0].upper().decode('utf-8').strip()
-                    month = sub[1].decode('utf-8')
-                    rns = sub[2]
-                    arr = sub[3]
-                    rev = sub[4]
-                    try:
-                        seg_id = Seg_list.objects.get(name=segment)
-                        actual_row = Actual(date=getDate(month, year), actual_rns=rns, actual_arr=arr, actual_rev=rev,
-                                            segment=seg_id, project_id=project_id)
-                        actual_row.save()
-                    except(Exception):
-pass"""

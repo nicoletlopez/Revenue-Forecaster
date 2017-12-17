@@ -27,37 +27,25 @@
               <div class="count">4,567</div>
               <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Month</span>
             </div>
-          </div>
-    <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="clearfix"></div>
-                    <div id="actual_forecast" style="height:350px;"></div>
-    </div>
-    </div>
+</div>
+        <div class="row">
+<div class="">
+                      <ul class="nav nav-tabs bar_tabs right" role="tablist">
+                        <li role="presentation" class=""><a href="{% url 'rfs:grp' project.id %}" ><i class="fa fa-users"></i></a>
+                        </li>
+                        <li role="presentation" class=""><a href="{% url 'rfs:ind' project.id %}"><i class="fa fa-user"></i></a>
+                        </li>
+                        <li role="presentation" class=""><a href="{% url 'rfs:project' project.id %}" ><i class="fa fa-building"></i></a>
+                        </li>
+                      </ul>
+                        <div role="tabpanel" class="tab-pane fade active in" id="tab_content11" aria-labelledby="home-tab">
+                          {% include "rfs/actual_graphs.html" %}
+                        </div>
 
-        <!--
-    <div class="row">
-    <div class="col-md-6">
-<div class="clearfix"></div>
-                    <div id="revenue_line" style="height:350px;"></div>
-    </div>
-    <div class="col-md-6">
-<div class="clearfix"></div>
-                    <div id="arr_line" style="height:350px;"></div>
-    </div>
-    </div>
+</div>
+        </div>
 
-    <div class="row">
-    <div class="col-md-6">
-<div class="clearfix"></div>
-                    <div id="occupancy_line" style="height:350px;"></div>
-    </div>
-    <div class="col-md-6">
-<div class="clearfix"></div>
-                    <div id="revpar_line" style="height:350px;"></div>
-    </div>
-    </div>
-    -->
+
         {% else %}
         <div class="col-md-12">
           <div class="col-middle">

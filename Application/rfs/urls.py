@@ -46,4 +46,8 @@ urlpatterns=[
 
     url(r'project/(?P<project_id>[0-9]+)/three/$', views.ChartData.as_view(), name='data2'),
 
+    #URLS for IND GRP
+    url(r'project/(?P<pk>[0-9]+)/individual/$',views.GraphInd.as_view(),name='ind'),
+    url(r'project/(?P<pk>[0-9]+)/group/$',views.GraphGrp.as_view(),name='grp'),
+
 ]
