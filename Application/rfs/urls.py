@@ -44,7 +44,9 @@ urlpatterns=[
 
     #url for forecast menu
 
-    url(r'project/(?P<project_id>[0-9]+)/three/$', views.ChartData.as_view(), name='data2'),
+    url(r'project/(?P<project_id>[0-9]+)/charts/$', views.ChartData.as_view(), name='charts'),
+    url(r'project/(?P<project_id>[0-9]+)/individual/ind_charts/$', views.ChartDataInd.as_view(), name='charts_ind'),
+    url(r'project/(?P<project_id>[0-9]+)/group/grp_charts/$', views.ChartDataGrp.as_view(), name='charts_grp'),
 
     #URLS for IND GRP
     url(r'project/(?P<pk>[0-9]+)/individual/$',views.GraphInd.as_view(),name='ind'),

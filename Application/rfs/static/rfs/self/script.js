@@ -223,118 +223,129 @@ console.log('init_echarts');
 
     $(document).ready(function(){
     var revRevpar = echarts.init(document.getElementById('rev_revpar'), theme);
-
-          var endpoint = 'three';
-          var actual_rev_total=[];
-          var actual_arr_total=[];
-          var actual_rns_total=[];
+          var rev_total=[];
+          var arr_total=[];
+          var rns_total=[];
           var date=[];
-          $.ajax({
-              method:"GET",
-              url: endpoint,
-              success: function (data) {
-                  actual_rev_total = data.actual_rev_total;
-                  actual_arr_total = data.actual_arr_total;
-                  actual_rns_total = data.actual_rns_total;
-                  date = data.date;
+          var pathname = window.location.pathname;
+          var endpoint = '';
+          if(pathname === '/rfs/project/2/'){
+              endpoint = 'charts';
+              alert(endpoint)
+          }
+          else if(pathname === '/rfs/project/2/individual/'){
+              endpoint = 'ind_charts';
+              alert(endpoint)
+          }
+          else if(pathname === '/rfs/project/2/group/'){
+              endpoint = 'grp_charts';
+              alert(endpoint)
+          }
+              $.ajax({
+                  method: "GET",
+                  url: endpoint,
+                  success: function (data) {
+                      rev_total = data.rev_total;
+                      arr_total = data.arr_total;
+                      rns_total = data.rns_total;
+                      date = data.date;
 
-    revRevpar.setOption({
-    dataZoom: [
-    {
-    type: 'slider',
-    start: 0,
-    end: 100
-    },
-    {
-    type: 'inside',
-    start: 0,
-    end: 100
-    }
-    ],
-    title: {
-        text: 'RevPAR and Revenue Actual Data Graph',
-        subtext: ''
-    },
-    tooltip: {
-        trigger: 'axis'
-    },
-    legend: {
-        x: 220,
-        y: 40,
-        data: ['RevPAR','Revenue (\'000\'s)']
-    },
-    toolbox: {
-        show: true,
-        feature: {
-            magicType: {
-                show: true,
-                title: {
+                      revRevpar.setOption({
+                          dataZoom: [
+                              {
+                                  type: 'slider',
+                                  start: 0,
+                                  end: 100
+                              },
+                              {
+                                  type: 'inside',
+                                  start: 0,
+                                  end: 100
+                              }
+                          ],
+                          title: {
+                              text: 'RevPAR and Revenue Actual Data Graph',
+                              subtext: ''
+                          },
+                          tooltip: {
+                              trigger: 'axis'
+                          },
+                          legend: {
+                              x: 220,
+                              y: 40,
+                              data: ['RevPAR', 'Revenue (\'000\'s)']
+                          },
+                          toolbox: {
+                              show: true,
+                              feature: {
+                                  magicType: {
+                                      show: true,
+                                      title: {
 
-                    bar: 'Bar',
-                    line: 'Line',
-                    stack: 'Stack',
-                    tiled: 'Tiled'
-                },
-                type: ['bar','line',  'stack', 'tiled']
-            },
-            restore: {
-                show: true,
-                title: "Restore"
-            },
-            saveAsImage: {
-                show: true,
-                title: "Save Image"
-            }
-        }
-    },
-    calculable: false,
-    xAxis: [{
-        type: 'category',
-        data: date
-    }],
-    yAxis: [{
-        type: 'value'
-    }],
-    series: [
+                                          bar: 'Bar',
+                                          line: 'Line',
+                                          stack: 'Stack',
+                                          tiled: 'Tiled'
+                                      },
+                                      type: ['bar', 'line', 'stack', 'tiled']
+                                  },
+                                  restore: {
+                                      show: true,
+                                      title: "Restore"
+                                  },
+                                  saveAsImage: {
+                                      show: true,
+                                      title: "Save Image"
+                                  }
+                              }
+                          },
+                          calculable: false,
+                          xAxis: [{
+                              type: 'category',
+                              data: date
+                          }],
+                          yAxis: [{
+                              type: 'value'
+                          }],
+                          series: [
 
-        {
-        name:'RevPAR',
-        type:'bar',
-        smooth:true,
-        itemStyle:{
-            normal:{
-                areaStyle:{
-                    type:'default'
-                }
-            }
-        },
-        data:[100,200,300,400,500,600,700]
-    },
-        {
-        name: 'Revenue (\'000\'s)',
-        type: 'bar',
-        smooth: true,
-        itemStyle: {
-            normal: {
-                areaStyle: {
-                    type: 'default'
-                }
-            }
-        },
-        data: actual_rev_total
+                              {
+                                  name: 'RevPAR',
+                                  type: 'bar',
+                                  smooth: true,
+                                  itemStyle: {
+                                      normal: {
+                                          areaStyle: {
+                                              type: 'default'
+                                          }
+                                      }
+                                  },
+                                  data: [100, 200, 300, 400, 500, 600, 700]
+                              },
+                              {
+                                  name: 'Revenue (\'000\'s)',
+                                  type: 'bar',
+                                  smooth: true,
+                                  itemStyle: {
+                                      normal: {
+                                          areaStyle: {
+                                              type: 'default'
+                                          }
+                                      }
+                                  },
+                                  data: rev_total
 
-    }
+                              }
 
 
-
-    ]
-    });
-              },
-              error: function (error_data) {
-                  console.log("error");
-                  console.log(error_data);
-              }
-          })
+                          ]
+                      });
+                  },
+                  error: function (error_data) {
+                      console.log("error");
+                      console.log(error_data);
+                  }
+              })
 
 
 
