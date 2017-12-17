@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
 from django import forms
-from .models import Project,File, Actual
+#from django.db import models
+#from django.forms import ModelForm
 from django.contrib.admin import widgets
 from datetime import datetime
+from .models import Project,File, Actual
 #choice fields for the ForecastOptionsForm class
 METRIC_CHOICE = \
     (
@@ -18,7 +20,7 @@ FITTING_METHOD = \
         ('mad','MAD (Mean Absolute Deviation)')
     )
 
-SUB_SEGMENT = \
+FORECAST_SUB_SEGMENT = \
     (
         ('TOTAL','Total Individual and Group'),
         ('IND','Total Individual'),
@@ -37,8 +39,24 @@ SUB_SEGMENT = \
         ('GOV\'T/NGOS','Government/NGO'),
         ('GRPT','Group Tours'),
         ('GRPO','Group Others'),
-        ('BRT','Barter'),
     )
+
+SEGMENTS = \
+(
+    ('RCK', 'Rack'),
+    ('CORP', 'Corporate'),
+    ('CORPO', 'Corporate Others'),
+    ('PKG/PRM', 'Packages/Promo'),
+    ('WSOL', 'Wholesale Online'),
+    ('WSOF', 'Wholesale Offline'),
+    ('INDO', 'Individual Others'),
+    ('INDR', 'Industry Rate'),
+    ('CORPM', 'Corporate Meetings'),
+    ('CON/ASSOC', 'Convention/Association'),
+    ('GOV\'T/NGOS', 'Government/NGO'),
+    ('GRPT', 'Group Tours'),
+    ('GRPO', 'Group Others'),
+)
 
 class UserForm(forms.ModelForm):
     password=forms.CharField(widget=forms.PasswordInput)
@@ -80,7 +98,7 @@ class ForecastOptionsForm(forms.Form):
     fitting_method=forms.ChoiceField(widget=forms.RadioSelect,choices=FITTING_METHOD,initial='sse')
 
     #by sub/segment
-    segment = forms.ChoiceField(choices=SUB_SEGMENT,initial='Total Individual and Group')
+    segment = forms.ChoiceField(choices=FORECAST_SUB_SEGMENT, initial='Total Individual and Group')
     """alpha = forms.FloatField(max_value=1.0,min_value=0.01,required=False,initial=0.6)
     beta = forms.FloatField(max_value=1.0,min_value=0.01,required=False,initial=0.4)
     gamma = forms.FloatField(max_value=1.0, min_value=0.01,required=False,initial=0.5)
@@ -114,9 +132,14 @@ class CustomForecastForm(forms.Form):
     constant_value_end = forms.FloatField(min_value=1,max_value=101,required=False,initial=101)
     constant_value_step = forms.FloatField(min_value=1,max_value=9,required=False,initial=9)
 
-class InputForm(forms.Form):
-    segment = forms.ChoiceField(initial="RACK",choices=SUB_SEGMENT)
-    date = forms.DateField()
+class UpdateRnaForm(forms.Form):
+
+    segment = forms.ChoiceField(initial="RACK", choices=SEGMENTS)
+    date = forms.DateField(initial='2015-01-31')
+    rna = forms.FloatField()
+
+
+
 #class XlToDbForm(forms.Form):
 #    year=forms.IntegerField(max_value=2016,min_value=2014,initial=2015)
 #    file=forms.ModelChoiceField(queryset=Project.objects.all().filter())

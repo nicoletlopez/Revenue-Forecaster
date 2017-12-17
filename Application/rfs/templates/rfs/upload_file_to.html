@@ -17,7 +17,7 @@
       <tbody>
       {% for project in all_projects %}
       <tr>
-          <td><a href="{% url 'rfs:file' project.id %}"><div style="height:100%;width:100%">{{ project.project_name }}</div></a></td>
+          <td><a href="{% url 'rfs:datafeed' project.id %}"><div style="height:100%;width:100%">{{ project.project_name }}</div></a></td>
           <td>{{ project.file_set.count }}</td>
       </tr>
       {% endfor %}

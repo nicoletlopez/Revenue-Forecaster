@@ -18,7 +18,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, InputForm
+from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, UpdateRnaForm
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import ExcelReader as xlread
 from .models import Project, File, Actual, Seg_list
@@ -206,8 +206,9 @@ def file_view(request, project_id):
         projects = Project.objects.all().filter(status='ACT')
         if form.is_valid():
             project_files = project.file_set.all()
+            input_file='project_{0}/{1}'.format(project.project_name,form.cleaned_data.get("excel_file"))
             for f in project_files:
-                if f.excel_file == form.cleaned_data.get("excel_file"):
+                if f.excel_file == input_file:
                     context = {
                         'all_projects': projects,
                         'act_files': File.objects.filter(status='ACT', project_id=project_id),
@@ -307,80 +308,119 @@ def file_update(request, project_id, file_id):
 
 ###########EXCELREADER#############
 def excel_to_db(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-    def record(result_array):
-        for tuples in result_array:
-            for single_array in tuples:
-                segment = (single_array[0].decode("utf-8")).upper().strip()
-                #print("%s %s" % (segment,type(segment)))
-                date = single_array[1].decode("utf-8")
-                rns = float(single_array[2])
-                arr = float(single_array[3])
-                rev = float(single_array[4])
-                segment_id = Seg_list.objects.get(name=segment)
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('rfs:login'))
+    else:
+        form = FileForm(request.POST or None, request.FILES or None)
+        project = get_object_or_404(Project, pk=project_id)
+        projects = Project.objects.all().filter(status='ACT')
+        if form.is_valid():
+            project_files = project.file_set.all()
+            input_file = 'project_{0}/{1}'.format(project.project_name, form.cleaned_data.get("excel_file"))
+            for f in project_files:
+                if f.excel_file == input_file:
+                    context = {
+                        'all_projects': projects,
+                        'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                        'project': project,
+                        'form': form,
+                        'error_message': 'File already used',
+                        'arc_projects': Project.objects.all().filter(status='ARC'),
+                        'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                        'active_tag': 'active',
+                        'block_display': 'display:block;',
+                        'current_page': 'current-page',
+                        'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                    }
+                    return render(request, 'rfs/datafeeder.html', context)
+            file = form.save(commit=False)
+            file.project = project
+            file.excel_file = request.FILES['excel_file']
+            file_type = file.excel_file.url.split('.')[-1]
+            file_type = file_type.lower()
+            if file_type not in EXCEL_FILE_TYPES:
+                context = {
+                    'all_projects': projects,
+                    'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                    'project': project,
+                    'form': form,
+                    'error_message': 'File must be XLS, XLSX',
+                    'arc_projects': Project.objects.all().filter(status='ARC'),
+                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                    'active_tag': 'active',
+                    'block_display': 'display:block;',
+                    'current_page': 'current-page',
+                    'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                }
+                return render(request, 'rfs/datafeeder.html', context)
+            file.save()
+            def record(result_array):
+                for tuples in result_array:
+                    for single_array in tuples:
+                        segment = (single_array[0].decode("utf-8")).upper().strip()
+                        #print("%s %s" % (segment,type(segment)))
+                        date = single_array[1].decode("utf-8")
+                        rns = float(single_array[2])
+                        arr = float(single_array[3])
+                        rev = float(single_array[4])
+                        segment_id = Seg_list.objects.get(name=segment)
 
-                actual_object = Actual(date=date, actual_rns=rns, actual_arr=arr, actual_rev=rev,
-                                    segment=segment_id, project_id=project_id)
-                print(actual_object)
-                actual_object.save()
-    try:
-        if request.method == "POST":
+                        actual_object = Actual(date=date, actual_rns=rns, actual_arr=arr, actual_rev=rev,
+                                            segment=segment_id, project_id=project_id)
+                        actual_object.save()
 
-            excelfile = BASE_DIR + '/projects/' + str(request.POST.get("file"))
-            # instantiate excel reader object
-            excel_read = xlread.ExcelReader(excelfile)
+            try:
+                excelfile = BASE_DIR + '/projects/' + str(input_file)
 
-            if excel_read.current_year == 2015:
-                record(excel_read.store_last_year_values_to_array())
-                record(excel_read.store_current_year_values_to_array())
-            else:
-                record(excel_read.store_current_year_values_to_array())
+                excel_read = xlread.ExcelReader(excelfile)
 
-            year = excel_read.current_year
+                if excel_read.current_year == 2015:
+                    record(excel_read.store_last_year_values_to_array())
+                    record(excel_read.store_current_year_values_to_array())
+                else:
+                    record(excel_read.store_current_year_values_to_array())
 
+                year = excel_read.current_year
+                        #print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
+            except:
 
-                #print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
+                context = {'project': project,
+                           'arc_projects': Project.objects.all().filter(status='ARC'),
+                           'all_projects': Project.objects.all().filter(status='ACT'),
+                           'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                           'form': form,
+                           'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                           'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                           'error_message': 'Excel format wrong. Please choose a correct one'
+                           }
+                return render(request, 'rfs/datafeeder.html', context)
 
-
-
+            context = {'project': project,
+                       'message': 'Data insert success!',
+                       'arc_projects': Project.objects.all().filter(status='ARC'),
+                       'all_projects': Project.objects.all().filter(status='ACT'),
+                       'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                       'year_detect': year,
+                       'form': form,
+                       'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                       'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                       'active_tag': 'active',
+                       'block_display': 'display:block;',
+                       'current_page': 'current-page',
+                       }
+            return render(request, 'rfs/datafeeder.html', context)
         context = {'project': project,
                    'arc_projects': Project.objects.all().filter(status='ARC'),
                    'all_projects': Project.objects.all().filter(status='ACT'),
                    'act_files': File.objects.filter(status='ACT', project_id=project_id),
                    'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                   'form': form,
                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                    'active_tag': 'active',
                    'block_display': 'display:block;',
                    'current_page': 'current-page',
                    }
         return render(request, 'rfs/datafeeder.html', context)
-    except:
-        context = {'project': project,
-                   'message': 'Data insert success!',
-                   'arc_projects': Project.objects.all().filter(status='ARC'),
-                   'all_projects': Project.objects.all().filter(status='ACT'),
-                   'act_files': File.objects.filter(status='ACT', project_id=project_id),
-                   #'year_detect': year,
-                   'actual_data_list': Actual.objects.all().filter(project_id=project_id),
-                   'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-                   'active_tag': 'active',
-                   'block_display': 'display:block;',
-                   'current_page': 'current-page',
-                   }
-        return render(request, 'rfs/datafeeder.html', context)
-
-
-"""
-    context = {'project': project,
-               'arc_projects': Project.objects.all().filter(status='ARC'),
-               'all_projects': Project.objects.all().filter(status='ACT'),
-               'act_files': File.objects.filter(status='ACT', project_id=project_id),
-               'actual_data_list': Actual.objects.all().filter(project_id=project_id),
-               'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-               'message': 'Excel format wrong. Please choose a correct one'
-               }
-    return render(request, 'rfs/datafeeder.html', context)
-"""
 
 ###########TRIPLE SMOOTHING#############
 def forecast_form_default(request, project_id):
@@ -616,15 +656,33 @@ def forecast_form_custom(request, project_id):
     else:
         return render(request, 'rfs/default_forecast_form.html', {'form': form})
 
-def input_data(request,project_id):
-    form = InputForm(request.POST or None)
+#a view for updating room nights sold in any given month
+def update_rns(request,project_id):
+    form = UpdateRnaForm(request.POST or None)
+    message = ''
+    if form.is_valid():
+        def check_valid_date(date):
+            if Actual.objects.filter(date=date).exists():
+                pass
+            else:
+                message = 'ERROR: Date does not exist'
+                return render(request, 'rfs/update_rna_form.html', {"form":form, "message":message})
 
-    segment = request.POST.get("segment")
-    date = request.POST.get("date")
+        segment = request.POST.get("segment")
+        date = request.POST.get("date")
+        rna = request.POST.get("rna")
 
-    context = {"form":form}
+        check_valid_date(date)
 
-    return render(request,"rfs/data_input_form.html",context=context)
+        actual_object = Actual.objects.filter(date=date).update(actual_rna=rna)
+        #actual_object.save()
+
+        message = "Set Room Nights Available to %s on date %s" % (rna,date)
+
+
+    context = {"form":form,"message":message}
+
+    return render(request, "rfs/update_rna_form.html", context=context)
 
 class ChartData(APIView):
 
