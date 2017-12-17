@@ -93,10 +93,10 @@ update rfs_actual set actual_rna = 8060 where date='2016-12-31';
 
 END;
 
-create trigger set_ocr after update of actual_rna on rfs_actual
+create trigger set_ocr after update /*of actual_rna*/ on rfs_actual
   BEGIN
     update rfs_actual set actual_ocr = cast(
-      cast(old.actual_rns as float)/cast(old.actual_rna as float)as float) where actual_id = old.actual_id;
+      cast(actual_rns as float)/cast(actual_rna as float)as float) where actual_id = old.actual_id;
   END;
 
 create trigger set_revpar after update of actual_ocr on rfs_actual
@@ -129,8 +129,8 @@ insert into rfs_seg_list (tag,name,seg_type) values('GRPO','GROUP OTHERS','GRP')
 insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
 
 select * from rfs_seg_list;
+select sum(actual_ocr) from rfs_actual where date = '2015-02-28';
 select * from rfs_actual;
-select * from rfs_actual where date='2015-12-31';
 select sum(cast(actual_rns as float)) as rns,
   sum(cast(actual_rna as float)) as rna,
   cast(sum(cast(actual_rns as float)) / sum(cast(actual_rna as float)) as float) * 100 as ocr
