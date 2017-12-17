@@ -126,7 +126,7 @@ insert into rfs_seg_list (tag,name,seg_type) values('CON/ASSOC','CONVENTION/ASSO
 insert into rfs_seg_list (tag,name,seg_type) values('GOV''T/NGOS','GOV''T/NGOS','GRP');
 insert into rfs_seg_list (tag,name,seg_type) values('GRPT','GROUP TOURS','GRP');
 insert into rfs_seg_list (tag,name,seg_type) values('GRPO','GROUP OTHERS','GRP');
-insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
+--insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
 
 select * from rfs_seg_list;
 select * from rfs_actual;
