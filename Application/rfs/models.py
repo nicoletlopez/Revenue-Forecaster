@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.core.files.storage import Storage,FileSystemStorage
 
 class Project(models.Model):
     project_name=models.CharField(max_length=50,unique=True)
@@ -14,12 +15,16 @@ class Project(models.Model):
         return self.project_name
     class Meta:
         ordering = ['-id']
+
+class CustomStorage(FileSystemStorage):
+    def get_valid_name(self,name):
+        return name
 def project_directory_path(instance,filename):
     return 'project_{0}/{1}'.format(instance.project.project_name,filename)
 
 class File(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE)
-    excel_file=models.FileField(upload_to=project_directory_path)
+    excel_file=models.FileField(upload_to=project_directory_path,storage=CustomStorage())
     status_types = (('ARC', 'Archived'), ('ACT', 'Active'))
     status = models.CharField(max_length=3, choices=status_types, default='ACT')
 
@@ -38,7 +43,7 @@ class Seg_list(models.Model):
     seg_type = models.CharField(max_length=30,choices=SEG_TYPES)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
     class Meta:
         ordering = ['id']
         unique_together = ("tag","name")
@@ -89,10 +94,10 @@ class Actual(models.Model):
             return str(int(self.actual_ocr * 100))+"%"
 
     def __str__(self):
-        return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
+        return str() + "%s - %s " % (self.segment,self.date)
     class Meta:
         ordering = ['actual_id']
-        unique_together=(('project','date','actual_rns','actual_arr','actual_rev'))
+        unique_together=(('project','segment','date','actual_rns','actual_arr','actual_rev'))
 
 class Forecast(models.Model):
     forecast_id = models.AutoField(primary_key=True)

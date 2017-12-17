@@ -13,21 +13,31 @@ METRIC_CHOICE = \
     )
 FITTING_METHOD = \
     (
-        ('mse','MSE (Mean Squared Error)'),
-        ('sse','SSE (Sum of Squared Error)'),
-        ('mad','MAD (Mean Absolute Deviation')
+        ('mse','MSE (Mean Squared Errors)'),
+        ('sse','SSE (Sum of Squared Errors)'),
+        ('mad','MAD (Mean Absolute Deviation)')
     )
 
 SUB_SEGMENT = \
     (
-        ('RKC','RACK'),
-        ('CORP','CORPORATE'),
-        ('CORPO','CORPORATE OTHERS'),
-        ('PKG/PRM','PACKAGES/PROMO'),
-        ('WSOL','WHOLESALE ONLINE'),
-        ('WSOF','WHOLESALE OFFLINE'),
-        ('INDO','INDIVIDUAL OTHERS'),
-        ('INDR','INDUSTRY RATE')
+        ('TOTAL','Total Individual and Group'),
+        ('IND','Total Individual'),
+        ('GRP','Total Group'),
+        ('RCK','Rack'),
+        ('CORP','Corporate'),
+        ('CORPO','Corporate Others'),
+        ('PKG/PRM','Packages/Promo'),
+        ('WSOL','Wholesale Online'),
+        ('WSOF','Wholesale Offline'),
+        ('INDO','Individual Others'),
+        ('INDR','Industry Rate'),
+
+        ('CORPM','Corporate Meetings'),
+        ('CON/ASSOC','Convention/Association'),
+        ('GOV\'T/NGOS','Government/NGO'),
+        ('GRPT','Group Tours'),
+        ('GRPO','Group Others'),
+        ('BRT','Barter'),
     )
 
 class UserForm(forms.ModelForm):
@@ -69,6 +79,8 @@ class ForecastOptionsForm(forms.Form):
     season_length = forms.IntegerField(initial=12)
     fitting_method=forms.ChoiceField(widget=forms.RadioSelect,choices=FITTING_METHOD,initial='sse')
 
+    #by sub/segment
+    segment = forms.ChoiceField(choices=SUB_SEGMENT,initial='Total Individual and Group')
     """alpha = forms.FloatField(max_value=1.0,min_value=0.01,required=False,initial=0.6)
     beta = forms.FloatField(max_value=1.0,min_value=0.01,required=False,initial=0.4)
     gamma = forms.FloatField(max_value=1.0, min_value=0.01,required=False,initial=0.5)
