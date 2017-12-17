@@ -8,9 +8,11 @@
 *.pyc
 *.sqlite3
 
+
 /.vscode/
 __pycache__/
 
 Application/projects/*.xlsx
 /Application/rfs/ets/
 /PythonScripts/forecasting/Launcher.py
+
