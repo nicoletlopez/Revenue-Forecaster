@@ -18,7 +18,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, InputForm
+from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, UpdateRnaForm
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import ExcelReader as xlread
 from .models import Project, File, Actual, Seg_list
@@ -616,15 +616,33 @@ def forecast_form_custom(request, project_id):
     else:
         return render(request, 'rfs/default_forecast_form.html', {'form': form})
 
-def input_data(request,project_id):
-    form = InputForm(request.POST or None)
+#a view for updating room nights sold in any given month
+def update_rns(request,project_id):
+    form = UpdateRnaForm(request.POST or None)
+    message = ''
+    if form.is_valid():
+        def check_valid_date(date):
+            if Actual.objects.filter(date=date).exists():
+                pass
+            else:
+                message = 'ERROR: Date does not exist'
+                return render(request, 'rfs/update_rna_form.html', {"form":form, "message":message})
 
-    segment = request.POST.get("segment")
-    date = request.POST.get("date")
+        segment = request.POST.get("segment")
+        date = request.POST.get("date")
+        rna = request.POST.get("rna")
 
-    context = {"form":form}
+        check_valid_date(date)
 
-    return render(request,"rfs/data_input_form.html",context=context)
+        actual_object = Actual.objects.filter(date=date).update(actual_rna=rna)
+        #actual_object.save()
+
+        message = "Set Room Nights Available to %s on date %s" % (rna,date)
+
+
+    context = {"form":form,"message":message}
+
+    return render(request, "rfs/update_rna_form.html", context=context)
 
 class ChartData(APIView):
 

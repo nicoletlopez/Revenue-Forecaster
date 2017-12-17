@@ -1,0 +1,13 @@
+{% extends 'rfs/base.html' %}
+{% block body %}
+    <div class="alert alert-warning">{{ message }}</div>
+    <form role="form" method='post' action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% include 'rfs/form_template.html' %}
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success">Update RNS</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
