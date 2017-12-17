@@ -1,5 +1,18 @@
-{% extends 'rfs/base.html' %}
-{% block body %}
+{% extends 'rfs/project.html' %}
+{% block title %}{{ project.project_name }} Project - Forecast{% endblock %}
+{% block subtitle %}forecast{% endblock %}
+{% block content %}
+    <div class="row">
+<div class="">
+                      <ul class="nav nav-tabs bar_tabs" role="tablist">
+                        <li role="presentation" class=""><a href="{% url 'rfs:forecast' project.id %}" ><i class="fa fa-file-excel-o"></i> Default</a>
+                        </li>
+                        <li role="presentation" class=""><a href="{% url 'rfs:custom-forecast' project.id %}"><i class="fa fa-gears"></i> Custom</a>
+                        </li>
+                      </ul>
+                        <div role="tabpanel" class="tab-pane fade active in" aria-labelledby="home-tab">
+
+                            {% block forecast_form %}
     <form role="form" method='post' action="" enctype="multipart/form-data">
         {% csrf_token %}
         {% include 'rfs/form_template.html' %}
@@ -23,4 +36,9 @@
     <strong>Beta:</strong>{{ beta }}<br/>
     <strong>Gamma:</strong>{{ gamma }}<br/>
     <h1>Results:</h1>{{ result }}
+{% endblock forecast_form %}
+                        </div>
+
+</div>
+        </div>
 {% endblock %}

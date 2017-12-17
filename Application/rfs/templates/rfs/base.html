@@ -79,7 +79,9 @@
                             {% url 'rfs:project-details' project.id as url4 %}
                             {% url 'rfs:ind' project.id as url5 %}
                             {% url 'rfs:grp' project.id as url6 %}
-                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 or request.path == url5 or request.path == url6 %}{{ current_page }}{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:forecast' project.id as url7 %}
+                            {% url 'rfs:custom-forecast' project.id as url8 %}
+                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 or request.path == url5 or request.path == url6 or request.path == url7 or request.path == url8 %}{{ current_page }}{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
@@ -98,7 +100,9 @@
                             {% url 'rfs:project-details' project.id as url4 %}
                             {% url 'rfs:ind' project.id as url5 %}
                             {% url 'rfs:grp' project.id as url6 %}
-                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 or request.path == url5 or request.path == url6 %}{{ current_page }}{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
+                            {% url 'rfs:forecast' project.id as url7 %}
+                            {% url 'rfs:custom-forecast' project.id as url8 %}
+                            <li class="{% if request.path == url or request.path == url2 or request.path == url3 or request.path == url4 or request.path == url5 or request.path == url6 or request.path == url7 or request.path == url8 %}{{ current_page }}{% endif %}"><a href="{% url 'rfs:project' project.id %}">{{ project.project_name }}</a>
                             </li>
                         {% endfor %}
                     {% endif %}

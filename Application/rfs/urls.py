@@ -38,10 +38,10 @@ urlpatterns=[
     #default forecast (automatic optimization)
     url(r'project/(?P<project_id>[0-9]+)/forecast/$', views.forecast_form_default, name='forecast'),
     #custom forecast (input alpha beta gamma)
-    url(r'project/(?P<project_id>[0-9]+)/forecast/custom', views.forecast_form_custom, name='custom-forecast'),
+    url(r'project/(?P<project_id>[0-9]+)/forecast/custom/$', views.forecast_form_custom, name='custom-forecast'),
 
     #update a file's rns by month
-    url(r'project/(?P<project_id>[0-9]+)/update', views.update_rns, name='rns-updatet'),
+    url(r'project/(?P<project_id>[0-9]+)/forecast/update/rns/$', views.update_rns, name='rns-update'),
 
     #url for forecast menu
 

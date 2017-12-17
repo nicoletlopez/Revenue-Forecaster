@@ -11,12 +11,16 @@
               <div class="navbar">
                 <div class="container">
                   <ul style="height:40px" class="nav nav-pills navbar-nav navbar navBot">
-                  {% url 'rfs:ind' project.id as url5 %}
-                    {% url 'rfs:grp' project.id as url6 %}
+                  {% url 'rfs:ind' project.id as url0 %}
+                    {% url 'rfs:grp' project.id as url1 %}
+                  {% url 'rfs:forecast' project.id as url2 %}
+                  {% url 'rfs:custom-forecast' project.id as url3 %}
                   {% if project.status == 'ACT' %}
-                      <li class="{% if request.resolver_match.url_name == 'project' or request.path == url6 or request.path == url5 %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-dashboard"> </i> Dashboard </a></li>
+                      <li class="{% if request.resolver_match.url_name == 'project' or request.path == url0 or request.path == url1 %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-dashboard"> </i> Dashboard </a></li>
                       <li class="{% if request.resolver_match.url_name == 'project-details' %}active{% endif %}"><a href="{% url 'rfs:project-details' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
                       <li class="{% if request.resolver_match.url_name == 'datafeed' %}active{% endif %}"><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
+                      <li class="{% if request.path == url2 or request.path == url3 %}active{% endif %}"><a href="{% url 'rfs:forecast' project.id %}"><i class="fa fa-bar-chart"> </i> Forecast </a></li>
+
                   {% else %}
                       <h3>Project will be available when restored.</h3>
                           <form action="{% url 'rfs:project-delete' project.id %}" method="post">

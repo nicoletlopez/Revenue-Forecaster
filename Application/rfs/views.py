@@ -425,6 +425,7 @@ def excel_to_db(request, project_id):
 ###########TRIPLE SMOOTHING#############
 def forecast_form_default(request, project_id):
     form = ForecastOptionsForm(request.POST or None)
+    project=get_object_or_404(Project,pk=project_id)
     def add_one_month(date_input):
         # january
         thirties = [2, 4, 6, 9, 11]
@@ -541,7 +542,9 @@ def forecast_form_default(request, project_id):
         except Exception:
             result = "Data too short for season length %s" % season_length
 
-        return render(request, 'rfs/default_forecast_form.html', {'form': form,
+        return render(request, 'rfs/default_forecast_form.html', {
+            'project':project,
+            'form': form,
                                                                   "metric": metric,
                                                                   "start_date": start_date,
                                                                   "end_date": end_date,
@@ -553,15 +556,35 @@ def forecast_form_default(request, project_id):
                                                                   "alpha": hw.constants[0],
                                                                   "beta": hw.constants[1],
                                                                   "gamma": hw.constants[2],
-                                                                  "result": result, },
-                      )
+                                                                  "result": result,
+                                                                  'arc_projects': Project.objects.all().filter(status='ARC'),
+                                                                  'all_projects': Project.objects.all().filter(status='ACT'),
+                                                                  'act_files': File.objects.filter(status='ACT',project_id=project_id),
+                                                                  'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                                                                  'arc_files': File.objects.filter(status='ARC',project_id=project_id),
+                                                                  'active_tag': 'active',
+                                                                  'block_display': 'display:block;',
+                                                                  'current_page': 'current-page',
+                                                                  })
 
         # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
 
-    return render(request, 'rfs/default_forecast_form.html', {'form': form})
+    return render(request, 'rfs/default_forecast_form.html', {
+        'project':project,
+        'form': form,
+        'arc_projects': Project.objects.all().filter(status='ARC'),
+        'all_projects': Project.objects.all().filter(status='ACT'),
+        'act_files': File.objects.filter(status='ACT', project_id=project_id),
+        'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+        'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+        'active_tag': 'active',
+        'block_display': 'display:block;',
+        'current_page': 'current-page',
+       })
 
 
 def forecast_form_custom(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
     def add_one_month(date_input):
         # january
         thirties = [2, 4, 6, 9, 11]
@@ -664,6 +687,7 @@ def forecast_form_custom(request, project_id):
             # result = "Data too short for season length %s" % season_length
 
         return render(request, 'rfs/default_forecast_form.html', {'form': form,
+                                                                  'project':project,
                                                                   "metric": metric,
                                                                   "start_date": start_date,
                                                                   "end_date": end_date,
@@ -673,11 +697,30 @@ def forecast_form_custom(request, project_id):
                                                                   "alpha": "TEMP",  # hw.constants[0][0],
                                                                   "beta": "TEMP",  # hw.constants[1][0],
                                                                   "gamma": "TEMP",  # hw.constants[2][0],
-                                                                  "result": result, }, )
+                                                                  "result": result,
+                                                                  'arc_projects': Project.objects.all().filter(status='ARC'),
+                                                                  'all_projects': Project.objects.all().filter(status='ACT'),
+                                                                  'act_files': File.objects.filter(status='ACT',project_id=project_id),
+                                                                  'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                                                                  'arc_files': File.objects.filter(status='ARC',project_id=project_id),
+                                                                  'active_tag': 'active',
+                                                                  'block_display': 'display:block;',
+                                                                  'current_page': 'current-page',
+                                                                  })
 
         # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
     else:
-        return render(request, 'rfs/default_forecast_form.html', {'form': form})
+        return render(request, 'rfs/default_forecast_form.html', {'form': form,
+                                                                  'project':project,
+                                                                  'arc_projects': Project.objects.all().filter(status='ARC'),
+                                                                  'all_projects': Project.objects.all().filter(status='ACT'),
+                                                                  'act_files': File.objects.filter(status='ACT',project_id=project_id),
+                                                                  'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                                                                  'arc_files': File.objects.filter(status='ARC',project_id=project_id),
+                                                                  'active_tag': 'active',
+                                                                  'block_display': 'display:block;',
+                                                                  'current_page': 'current-page',
+                                                                  })
 
 #a view for updating room nights sold in any given month
 def update_rns(request,project_id):
