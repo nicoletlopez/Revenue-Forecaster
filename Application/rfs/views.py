@@ -254,18 +254,20 @@ def file_update(request, project_id, file_id):
 ###########EXCELREADER#############
 def excel_to_db(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
-
     def record(result_array):
         for tuples in result_array:
             for single_array in tuples:
-                segment = (single_array[0].decode("utf-8")).upper()
+                segment = (single_array[0].decode("utf-8")).upper().strip()
+                #print("%s %s" % (segment,type(segment)))
                 date = single_array[1].decode("utf-8")
                 rns = float(single_array[2])
                 arr = float(single_array[3])
                 rev = float(single_array[4])
                 segment_id = Seg_list.objects.get(name=segment)
+
                 actual_object = Actual(date=date, actual_rns=rns, actual_arr=arr, actual_rev=rev,
-                                       segment=segment_id, project_id=project_id)
+                                    segment=segment_id, project_id=project_id)
+                print(actual_object)
                 actual_object.save()
     try:
         if request.method == "POST":
@@ -337,7 +339,8 @@ def forecast_form_default(request, project_id):
         fitting_method = request.POST.get("fitting_method")
         # get season length
         season_length = int(request.POST.get('season_length'))
-
+        #get the segment (group or individual)
+        segment = request.POST.get('segment')
         # get the constant values
         # alpha = request.POST.get("alpha")
         # beta = request.POST.get("beta")
@@ -380,7 +383,20 @@ def forecast_form_default(request, project_id):
         # to keep track, increment a month for each query, and add each query to the value_count list
         date = start_date
         while date <= end_date:
-            total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+            #for total
+            if segment == 'TOTAL':
+                total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+            #for group or individual
+            elif segment == 'IND' or segment == 'GRP':
+                #segs = Seg_list.objects.filter(seg_type=segment)
+                total_value = Actual.objects.filter(date=date,segment__seg_type=segment).aggregate(Sum('actual_%s' % metric))
+                #total_value = Actual.objects.filter(date=date, segment_id=segs).aggregate(Sum('actual_%s' % metric))
+                #total_value = Actual.objects.filter(date=date, segment_id=segs)
+            #for individual segments
+            else:
+                #segment_id = Seg_list.objects.get(tag=segment)
+                total_value = Actual.objects.filter(date=date, segment__tag=segment).aggregate(
+                    Sum('actual_%s' % metric))
             try:
                 value_list.append(float(total_value['actual_%s__sum' % metric]))
             except:
@@ -407,6 +423,7 @@ def forecast_form_default(request, project_id):
                                                                   "metric": metric,
                                                                   "start_date": start_date,
                                                                   "end_date": end_date,
+                                                                  "segment":segment,
                                                                   "values_list": value_list,
                                                                   "n_preds": n_preds,
                                                                   "fitting_method": fitting_method,
@@ -444,6 +461,7 @@ def forecast_form_custom(request, project_id):
         beta = request.POST.get("beta")
         gamma = request.POST.get("gamma")
 
+        segment = request.POST.get("segment")
         # get the starting,end, and skip constant values
         constant_value_start = request.POST.get("constant_value_start")
 
@@ -480,13 +498,35 @@ def forecast_form_custom(request, project_id):
         # add the total + group for each month
         # to keep track, increment a month for each query, and add each query to the value_count list
         date = start_date
+
         while date <= end_date:
-            total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+            #for total
+            if segment == 'TOTAL':
+                total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+            #for group or individual
+            elif segment == 'IND' or segment == 'GRP':
+                #segs = Seg_list.objects.filter(seg_type=segment)
+                total_value = Actual.objects.filter(date=date,segment__seg_type=segment).aggregate(Sum('actual_%s' % metric))
+                #total_value = Actual.objects.filter(date=date, segment_id=segs).aggregate(Sum('actual_%s' % metric))
+                #total_value = Actual.objects.filter(date=date, segment_id=segs)
+            #for individual segments
+            else:
+                #segment_id = Seg_list.objects.get(tag=segment)
+                total_value = Actual.objects.filter(date=date, segment__tag=segment).aggregate(
+                    Sum('actual_%s' % metric))
             try:
                 value_list.append(float(total_value['actual_%s__sum' % metric]))
             except:
                 value_list.append(0)
             date = add_one_month(date)
+
+        """while date <= end_date:
+            total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+            try:
+                value_list.append(float(total_value['actual_%s__sum' % metric]))
+            except:
+                value_list.append(0)
+            date = add_one_month(date)"""
 
         # make the necessary forecast using the HoltWinters class and the values in the value_count variable
         # if the data is less than the season length, an error will occur

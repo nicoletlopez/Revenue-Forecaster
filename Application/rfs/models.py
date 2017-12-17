@@ -38,7 +38,7 @@ class Seg_list(models.Model):
     seg_type = models.CharField(max_length=30,choices=SEG_TYPES)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
     class Meta:
         ordering = ['id']
         unique_together = ("tag","name")
@@ -85,13 +85,13 @@ class Actual(models.Model):
 
     @property
     def ocr_percent(self):
-        return str(int(self.actual_ocr * 100))+"%"
+        return str(float(self.actual_ocr * 100))+"%"
 
     def __str__(self):
-        return str(self.actual_id) + " - %s %s " % (self.segment,self.date)
+        return str() + "%s - %s " % (self.segment,self.date)
     class Meta:
         ordering = ['actual_id']
-        unique_together=(('project','date','actual_rns','actual_arr','actual_rev'))
+        unique_together=(('project','segment','date','actual_rns','actual_arr','actual_rev'))
 
 class Forecast(models.Model):
     forecast_id = models.AutoField(primary_key=True)

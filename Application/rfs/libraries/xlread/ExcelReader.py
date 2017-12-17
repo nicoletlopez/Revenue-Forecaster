@@ -40,6 +40,7 @@ class ExcelReader(object):
             if sub_segment not in self.unneeded_columns:
                 for month in self.month_list:
                     # populating numpy array with subsegment and month values
+
                     actual_values[sub_segment_index, month_index]['subsegment'] = str(sub_segment)
                     #print("subsegment index: %s     month index: %s" %(sub_segment_index,month_index))
                     actual_values[sub_segment_index, month_index]['month'] = self.__get_date(month,self.current_year)

@@ -159,7 +159,7 @@ class ExcelReader(object):
                 date = self.__get_date(month, self.last_year)
 
 
-"""file = "2016 ROOMS SEGMENTATION.xlsx"
+file = "2015 ROOMS SEGMENTATION.xlsx"
 er = ExcelReader(file)
 actual_2016 = er.store_current_year_values_to_array()
 for tuples in actual_2016:
@@ -169,4 +169,4 @@ for tuples in actual_2016:
         rns = float(single_array[2])
         arr = float(single_array[3])
         rev = float(single_array[4])
-        print("%s - %s, %s - %s, %s - %s, %s - %s, %s - %s" % (segment,type(segment),date,type(date),rns,type(rns),arr,type(arr),rev,type(rev)))"""
+        print("%s - %s, %s - %s, %s - %s, %s - %s, %s - %s" % (segment,type(segment),date,type(date),rns,type(rns),arr,type(arr),rev,type(rev)))
