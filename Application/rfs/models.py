@@ -85,7 +85,8 @@ class Actual(models.Model):
 
     @property
     def ocr_percent(self):
-        return str(float(self.actual_ocr * 100))+"%"
+        if self.actual_ocr is not None:
+            return str(int(self.actual_ocr * 100))+"%"
 
     def __str__(self):
         return str() + "%s - %s " % (self.segment,self.date)
