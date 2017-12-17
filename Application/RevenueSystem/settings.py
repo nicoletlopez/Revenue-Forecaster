@@ -78,6 +78,7 @@ WSGI_APPLICATION = 'RevenueSystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
+        #'ENGINE': 'django.db.backends.mysql',
         'NAME': os.path.join(BASE_DIR, 'rfsa2.sqlite3'),
         #'NAME': 'rfsa2',
         #'USER': 'root',
