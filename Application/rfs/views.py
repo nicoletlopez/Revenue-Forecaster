@@ -829,7 +829,8 @@ class ChartDataInd(APIView):
             revpar_total.append(float(ind_actual_revpar_total_query['actual_revpar__sum']))
 
             ind_actual_ocr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_ind).aggregate(Sum('actual_ocr'))
-            ocr_total.append(float(ind_actual_ocr_total_query['actual_ocr__sum']))
+            value = round(ind_actual_ocr_total_query['actual_ocr__sum'] * 100)
+            ocr_total.append(float(value))
 
         data = {
             # Individual
@@ -871,7 +872,8 @@ class ChartDataGrp(APIView):
             grp_actual_revpar_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_grp).aggregate(Sum('actual_revpar'))
             revpar_total.append(float(grp_actual_revpar_total_query['actual_revpar__sum']))
             grp_actual_ocr_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_grp).aggregate(Sum('actual_ocr'))
-            ocr_total.append(float(grp_actual_ocr_total_query['actual_ocr__sum']))
+            value = round(grp_actual_ocr_total_query['actual_ocr__sum'] * 100)
+            ocr_total.append(float(value))
 
         data = {
             # Group

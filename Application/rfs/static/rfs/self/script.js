@@ -560,7 +560,7 @@ console.log('init_echarts');
                 series: [
 
                     {
-                        name: 'Occupancy Rate',
+                        name: 'Occupancy Rate %',
                         type: 'bar',
                         smooth: true,
                         itemStyle: {
