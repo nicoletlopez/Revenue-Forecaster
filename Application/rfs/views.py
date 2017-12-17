@@ -206,8 +206,9 @@ def file_view(request, project_id):
         projects = Project.objects.all().filter(status='ACT')
         if form.is_valid():
             project_files = project.file_set.all()
+            input_file='project_{0}/{1}'.format(project.project_name,form.cleaned_data.get("excel_file"))
             for f in project_files:
-                if f.excel_file == form.cleaned_data.get("excel_file"):
+                if f.excel_file == input_file:
                     context = {
                         'all_projects': projects,
                         'act_files': File.objects.filter(status='ACT', project_id=project_id),
@@ -307,80 +308,119 @@ def file_update(request, project_id, file_id):
 
 ###########EXCELREADER#############
 def excel_to_db(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-    def record(result_array):
-        for tuples in result_array:
-            for single_array in tuples:
-                segment = (single_array[0].decode("utf-8")).upper().strip()
-                #print("%s %s" % (segment,type(segment)))
-                date = single_array[1].decode("utf-8")
-                rns = float(single_array[2])
-                arr = float(single_array[3])
-                rev = float(single_array[4])
-                segment_id = Seg_list.objects.get(name=segment)
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('rfs:login'))
+    else:
+        form = FileForm(request.POST or None, request.FILES or None)
+        project = get_object_or_404(Project, pk=project_id)
+        projects = Project.objects.all().filter(status='ACT')
+        if form.is_valid():
+            project_files = project.file_set.all()
+            input_file = 'project_{0}/{1}'.format(project.project_name, form.cleaned_data.get("excel_file"))
+            for f in project_files:
+                if f.excel_file == input_file:
+                    context = {
+                        'all_projects': projects,
+                        'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                        'project': project,
+                        'form': form,
+                        'error_message': 'File already used',
+                        'arc_projects': Project.objects.all().filter(status='ARC'),
+                        'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                        'active_tag': 'active',
+                        'block_display': 'display:block;',
+                        'current_page': 'current-page',
+                        'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                    }
+                    return render(request, 'rfs/datafeeder.html', context)
+            file = form.save(commit=False)
+            file.project = project
+            file.excel_file = request.FILES['excel_file']
+            file_type = file.excel_file.url.split('.')[-1]
+            file_type = file_type.lower()
+            if file_type not in EXCEL_FILE_TYPES:
+                context = {
+                    'all_projects': projects,
+                    'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                    'project': project,
+                    'form': form,
+                    'error_message': 'File must be XLS, XLSX',
+                    'arc_projects': Project.objects.all().filter(status='ARC'),
+                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                    'active_tag': 'active',
+                    'block_display': 'display:block;',
+                    'current_page': 'current-page',
+                    'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                }
+                return render(request, 'rfs/datafeeder.html', context)
+            file.save()
+            def record(result_array):
+                for tuples in result_array:
+                    for single_array in tuples:
+                        segment = (single_array[0].decode("utf-8")).upper().strip()
+                        #print("%s %s" % (segment,type(segment)))
+                        date = single_array[1].decode("utf-8")
+                        rns = float(single_array[2])
+                        arr = float(single_array[3])
+                        rev = float(single_array[4])
+                        segment_id = Seg_list.objects.get(name=segment)
 
-                actual_object = Actual(date=date, actual_rns=rns, actual_arr=arr, actual_rev=rev,
-                                    segment=segment_id, project_id=project_id)
-                print(actual_object)
-                actual_object.save()
-    try:
-        if request.method == "POST":
+                        actual_object = Actual(date=date, actual_rns=rns, actual_arr=arr, actual_rev=rev,
+                                            segment=segment_id, project_id=project_id)
+                        actual_object.save()
 
-            excelfile = BASE_DIR + '/projects/' + str(request.POST.get("file"))
-            # instantiate excel reader object
-            excel_read = xlread.ExcelReader(excelfile)
+            try:
+                excelfile = BASE_DIR + '/projects/' + str(input_file)
 
-            if excel_read.current_year == 2015:
-                record(excel_read.store_last_year_values_to_array())
-                record(excel_read.store_current_year_values_to_array())
-            else:
-                record(excel_read.store_current_year_values_to_array())
+                excel_read = xlread.ExcelReader(excelfile)
 
-            year = excel_read.current_year
+                if excel_read.current_year == 2015:
+                    record(excel_read.store_last_year_values_to_array())
+                    record(excel_read.store_current_year_values_to_array())
+                else:
+                    record(excel_read.store_current_year_values_to_array())
 
+                year = excel_read.current_year
+                        #print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
+            except:
 
-                #print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
+                context = {'project': project,
+                           'arc_projects': Project.objects.all().filter(status='ARC'),
+                           'all_projects': Project.objects.all().filter(status='ACT'),
+                           'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                           'form': form,
+                           'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                           'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                           'error_message': 'Excel format wrong. Please choose a correct one'
+                           }
+                return render(request, 'rfs/datafeeder.html', context)
 
-
-
+            context = {'project': project,
+                       'message': 'Data insert success!',
+                       'arc_projects': Project.objects.all().filter(status='ARC'),
+                       'all_projects': Project.objects.all().filter(status='ACT'),
+                       'act_files': File.objects.filter(status='ACT', project_id=project_id),
+                       'year_detect': year,
+                       'form': form,
+                       'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                       'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                       'active_tag': 'active',
+                       'block_display': 'display:block;',
+                       'current_page': 'current-page',
+                       }
+            return render(request, 'rfs/datafeeder.html', context)
         context = {'project': project,
                    'arc_projects': Project.objects.all().filter(status='ARC'),
                    'all_projects': Project.objects.all().filter(status='ACT'),
                    'act_files': File.objects.filter(status='ACT', project_id=project_id),
                    'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+                   'form': form,
                    'arc_files': File.objects.filter(status='ARC', project_id=project_id),
                    'active_tag': 'active',
                    'block_display': 'display:block;',
                    'current_page': 'current-page',
                    }
         return render(request, 'rfs/datafeeder.html', context)
-    except:
-        context = {'project': project,
-                   'message': 'Data insert success!',
-                   'arc_projects': Project.objects.all().filter(status='ARC'),
-                   'all_projects': Project.objects.all().filter(status='ACT'),
-                   'act_files': File.objects.filter(status='ACT', project_id=project_id),
-                   #'year_detect': year,
-                   'actual_data_list': Actual.objects.all().filter(project_id=project_id),
-                   'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-                   'active_tag': 'active',
-                   'block_display': 'display:block;',
-                   'current_page': 'current-page',
-                   }
-        return render(request, 'rfs/datafeeder.html', context)
-
-
-"""
-    context = {'project': project,
-               'arc_projects': Project.objects.all().filter(status='ARC'),
-               'all_projects': Project.objects.all().filter(status='ACT'),
-               'act_files': File.objects.filter(status='ACT', project_id=project_id),
-               'actual_data_list': Actual.objects.all().filter(project_id=project_id),
-               'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-               'message': 'Excel format wrong. Please choose a correct one'
-               }
-    return render(request, 'rfs/datafeeder.html', context)
-"""
 
 ###########TRIPLE SMOOTHING#############
 def forecast_form_default(request, project_id):
@@ -722,18 +762,17 @@ class ChartDataInd(APIView):
 
             # Individuals
             for individual_index in range(len(segment_ind)):
-                ind_actual_rev_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).aggregate(Sum('actual_rev'))
-                ind_rev_truncate = round(ind_actual_rev_total_query['actual_rev__sum']/1000,2)
-                segrev_total += float(ind_rev_truncate)
+                ind_actual_rev_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).values_list('actual_rev', flat='true')
+                segrev_total += ind_actual_rev_total_query[0]
 
-                ind_actual_arr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).aggregate(Sum('actual_arr'))
-                segarr_total += float(ind_actual_arr_total_query['actual_arr__sum'])
+                ind_actual_arr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).values_list('actual_arr', flat='true')
+                segarr_total += ind_actual_arr_total_query[0]
 
-                ind_actual_rns_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).aggregate(Sum('actual_rns'))
-                segrns_total += float(ind_actual_rns_total_query['actual_rns__sum'])
-        rev_total.append(segrev_total)
-        arr_total.append(segarr_total)
-        arr_total.append(segrns_total)
+                ind_actual_rns_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).values_list('actual_rns', flat='true')
+                segrns_total += ind_actual_rns_total_query[0]
+            rev_total.append(segrev_total)
+            arr_total.append(segarr_total)
+            arr_total.append(segrns_total)
 
         data = {
             # Individual
@@ -757,18 +796,24 @@ class ChartDataGrp(APIView):
 
         for x in range(len(date_query)):
             date.append(date_query[x].strftime('%B %Y'))
+            segrev_total = 0
+            segarr_total = 0
+            segrns_total = 0
 
-            # Group
-            for group_index in range(len(segment_grp)):
-                grp_actual_rev_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[segment_grp]).aggregate(Sum('actual_rev'))
-                grp_rev_truncate = round(grp_actual_rev_total_query['actual_rev__sum'] / 1000, 2)
-                rev_total.append(float(grp_rev_truncate))
+            # Individuals
+            for individual_index in range(len(segment_grp)):
+                grp_actual_rev_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[individual_index]).values_list('actual_rev', flat='true')
+                segrev_total += grp_actual_rev_total_query[0]
 
-                grp_actual_arr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'), segment=segment_grp[group_index]).aggregate(Sum('actual_arr'))
-                arr_total.append(float(grp_actual_arr_total_query['actual_arr__sum']))
+                grp_actual_arr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[individual_index]).values_list('actual_arr', flat='true')
+                segarr_total += grp_actual_arr_total_query[0]
 
-                grp_actual_rns_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[group_index]).aggregate(Sum('actual_rns'))
-                rns_total.append(float(grp_actual_rns_total_query['actual_rns__sum']))
+                grp_actual_rns_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[individual_index]).values_list('actual_rns', flat='true')
+                segrns_total += grp_actual_rns_total_query[0]
+            rev_total.append(segrev_total)
+            arr_total.append(segarr_total)
+            arr_total.append(segrns_total)
+
 
         data = {
             # Individual

@@ -231,15 +231,12 @@ console.log('init_echarts');
           var endpoint = '';
           if(pathname === '/rfs/project/2/'){
               endpoint = 'charts';
-              alert(endpoint)
           }
           else if(pathname === '/rfs/project/2/individual/'){
               endpoint = 'ind_charts';
-              alert(endpoint)
           }
           else if(pathname === '/rfs/project/2/group/'){
               endpoint = 'grp_charts';
-              alert(endpoint)
           }
               $.ajax({
                   method: "GET",
@@ -249,7 +246,7 @@ console.log('init_echarts');
                       arr_total = data.arr_total;
                       rns_total = data.rns_total;
                       date = data.date;
-
+                      alert(rev_total)
                       revRevpar.setOption({
                           dataZoom: [
                               {
