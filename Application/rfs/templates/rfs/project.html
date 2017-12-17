@@ -12,7 +12,7 @@
                 <div class="container">
                   <ul style="height:40px" class="nav nav-pills navbar-nav navbar navBot">
                   {% if project.status == 'ACT' %}
-                      <li class="{% if request.resolver_match.url_name == 'project' %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-dashboard"> </i> Dashboard </a></li>
+                      <li class="{% if request.resolver_match.url_name == 'project' or 'ind' or 'grp' %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-dashboard"> </i> Dashboard </a></li>
                       <li class="{% if request.resolver_match.url_name == 'project-details' %}active{% endif %}"><a href="{% url 'rfs:project-details' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
                       <li class="{% if request.resolver_match.url_name == 'datafeed' %}active{% endif %}"><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
                   {% else %}
