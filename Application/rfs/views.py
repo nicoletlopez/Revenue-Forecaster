@@ -754,20 +754,20 @@ class ChartData(APIView):
 
     def get(self, request, project_id,**kwargs):
         project=get_object_or_404(Project,pk=project_id)
-        segment_ind = Seg_list.objects.filter(seg_type='IND').values_list('pk', flat='true')
         date_query = Actual.objects.filter(project=project).order_by('date').values_list('date', flat='true').distinct()
         date = []
 
         rev_total = []
+        revpar_total = []
         arr_total = []
         rns_total = []
+        ocr_total = []
 
 
         for x in range(len(date_query)):
             date.append(date_query[x].strftime('%B %Y'))
 
             actual_rev_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rev'))
-
             value = round(actual_rev_query['actual_rev__sum']/1000,2)
             rev_total.append(float(value))
 
@@ -777,11 +777,23 @@ class ChartData(APIView):
             actual_rns_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_rns'))
             rns_total.append(float(actual_rns_query['actual_rns__sum']))
 
+            actual_revpar_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_revpar'))
+            revpar_total.append(float(actual_revpar_query['actual_revpar__sum']))
+
+            actual_ocr_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d')).aggregate(Sum('actual_ocr'))
+            value = round(actual_ocr_query['actual_ocr__sum'] * 100)
+            ocr_total.append(float(value))
+
+
+
         data = {
             #Mixed
             "rev_total": rev_total,
             "arr_total": arr_total,
             "rns_total": rns_total,
+            "ocr_total": ocr_total,
+            "revpar_total": revpar_total,
+
             "date": date,
         }
         return Response(data)
@@ -794,34 +806,39 @@ class ChartDataInd(APIView):
         date = []
 
         rev_total = []
+        revpar_total = []
         arr_total = []
         rns_total = []
+        ocr_total = []
 
         for x in range(len(date_query)):
             date.append(date_query[x].strftime('%B %Y'))
-            segrev_total = 0
-            segarr_total = 0
-            segrns_total = 0
 
             # Individuals
-            for individual_index in range(len(segment_ind)):
-                ind_actual_rev_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).values_list('actual_rev', flat='true')
-                segrev_total += ind_actual_rev_total_query[0]
+            ind_actual_rev_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_ind).aggregate(Sum('actual_rev'))
+            value = round(ind_actual_rev_total_query['actual_rev__sum'] / 1000, 2)
+            rev_total.append(float(value))
 
-                ind_actual_arr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).values_list('actual_arr', flat='true')
-                segarr_total += ind_actual_arr_total_query[0]
+            ind_actual_arr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_ind).aggregate(Sum('actual_arr'))
+            arr_total.append(float(ind_actual_arr_total_query['actual_arr__sum']))
 
-                ind_actual_rns_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_ind[individual_index]).values_list('actual_rns', flat='true')
-                segrns_total += ind_actual_rns_total_query[0]
-            rev_total.append(segrev_total)
-            arr_total.append(segarr_total)
-            arr_total.append(segrns_total)
+            ind_actual_rns_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_ind).aggregate(Sum('actual_rns'))
+            rns_total.append(float(ind_actual_rns_total_query['actual_rns__sum']))
+
+            ind_actual_revpar_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_ind).aggregate(Sum('actual_revpar'))
+            revpar_total.append(float(ind_actual_revpar_total_query['actual_revpar__sum']))
+
+            ind_actual_ocr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_ind).aggregate(Sum('actual_ocr'))
+            ocr_total.append(float(ind_actual_ocr_total_query['actual_ocr__sum']))
 
         data = {
             # Individual
             "rev_total": rev_total,
             "arr_total": arr_total,
             "rns_total": rns_total,
+            "revpar_total": revpar_total,
+            "ocr_total": ocr_total,
+
             "date": date,
         }
         return Response(data)
@@ -834,35 +851,36 @@ class ChartDataGrp(APIView):
         date = []
 
         rev_total = []
+        revpar_total = []
         arr_total = []
         rns_total = []
+        ocr_total = []
 
         for x in range(len(date_query)):
             date.append(date_query[x].strftime('%B %Y'))
-            segrev_total = 0
-            segarr_total = 0
-            segrns_total = 0
 
-            # Individuals
-            for individual_index in range(len(segment_grp)):
-                grp_actual_rev_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[individual_index]).values_list('actual_rev', flat='true')
-                segrev_total += grp_actual_rev_total_query[0]
 
-                grp_actual_arr_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[individual_index]).values_list('actual_arr', flat='true')
-                segarr_total += grp_actual_arr_total_query[0]
-
-                grp_actual_rns_total_query = Actual.objects.filter(project=project, date=date_query[x].strftime('%Y-%m-%d'),segment=segment_grp[individual_index]).values_list('actual_rns', flat='true')
-                segrns_total += grp_actual_rns_total_query[0]
-            rev_total.append(segrev_total)
-            arr_total.append(segarr_total)
-            arr_total.append(segrns_total)
-
+            # Group
+            grp_actual_rev_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_grp).aggregate(Sum('actual_rev'))
+            value = round(grp_actual_rev_total_query['actual_rev__sum'] / 1000, 2)
+            rev_total.append(float(value))
+            grp_actual_arr_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_grp).aggregate(Sum('actual_arr'))
+            arr_total.append(float(grp_actual_arr_total_query['actual_arr__sum']))
+            grp_actual_rns_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_grp).aggregate(Sum('actual_rns'))
+            rns_total.append(float(grp_actual_rns_total_query['actual_rns__sum']))
+            grp_actual_revpar_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_grp).aggregate(Sum('actual_revpar'))
+            revpar_total.append(float(grp_actual_revpar_total_query['actual_revpar__sum']))
+            grp_actual_ocr_total_query = Actual.objects.filter(project=project,date=date_query[x].strftime('%Y-%m-%d'),segment__in=segment_grp).aggregate(Sum('actual_ocr'))
+            ocr_total.append(float(grp_actual_ocr_total_query['actual_ocr__sum']))
 
         data = {
-            # Individual
+            # Group
             "rev_total": rev_total,
             "arr_total": arr_total,
             "rns_total": rns_total,
+            "ocr_total": ocr_total,
+            "revpar_total": revpar_total,
+
             "date": date,
         }
         return Response(data)
