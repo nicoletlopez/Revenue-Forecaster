@@ -131,7 +131,7 @@ insert into rfs_seg_list (tag,name,seg_type) values('BRT','BARTER','GRP');
 select * from rfs_seg_list;
 select * from rfs_actual;
 select * from rfs_seg_list where tag='GOV''T/NGOS';
-select sum(actual_ocr) from rfs_actual where date = '2015-02-28';
+select sum(actual_ocr) from rfs_actual where date  '2015-02-28';
 select * from rfs_actual, rfs_seg_list where actual_id = id and tag= 'GOV''T/NGOS';
 
 --delete from rfs_actual;

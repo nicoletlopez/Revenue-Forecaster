@@ -39,12 +39,15 @@ urlpatterns=[
     url(r'project/(?P<project_id>[0-9]+)/forecast/$', views.forecast_form_default, name='forecast'),
     #custom forecast (input alpha beta gamma)
     url(r'project/(?P<project_id>[0-9]+)/forecast/custom', views.forecast_form_custom, name='custom-forecast'),
-    #input month's subsegment's data
-    url(r'project/(?P<project_id>[0-9]+)/input/$', views.input_data, name='input-data'),
+
+    #update a file's rns by month
+    url(r'project/(?P<project_id>[0-9]+)/update', views.update_rns, name='rns-updatet'),
 
     #url for forecast menu
 
-    url(r'project/(?P<project_id>[0-9]+)/three/$', views.ChartData.as_view(), name='data2'),
+    url(r'project/(?P<project_id>[0-9]+)/charts/$', views.ChartData.as_view(), name='charts'),
+    url(r'project/(?P<project_id>[0-9]+)/individual/ind_charts/$', views.ChartDataInd.as_view(), name='charts_ind'),
+    url(r'project/(?P<project_id>[0-9]+)/group/grp_charts/$', views.ChartDataGrp.as_view(), name='charts_grp'),
 
     #URLS for IND GRP
     url(r'project/(?P<pk>[0-9]+)/individual/$',views.GraphInd.as_view(),name='ind'),
