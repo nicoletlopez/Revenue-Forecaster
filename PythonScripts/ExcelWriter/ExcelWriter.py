@@ -27,6 +27,18 @@ class ExcelWriter(object):
         forecast_cell = self.worksheet.cell(row=metric_index, column=sub_segment_index)
         forecast_cell.value = forecast_value
 
+    def insert_individual_actual_values(self, actual_value, sub_segment, metric):
+        sub_segment_index = self.__check_individual_actual_subsegment(sub_segment)
+        metric_index = self.__check_individual_actual_metric(metric)
+        actual_cell = self.worksheet.cell(row=metric_index, column=sub_segment_index)
+        actual_cell.value = actual_value
+
+    def insert_group_actual_values(self, actual_value, sub_segment, metric):
+        sub_segment_index = self.__check_group_actual_subsegment(sub_segment)
+        metric_index = self.__check_group_actual_metric(metric)
+        actual_cell = self.worksheet.cell(row=metric_index, column=sub_segment_index)
+        actual_cell.value = actual_value
+
 # Save Workbook
 
     def save_file(self):
