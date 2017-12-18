@@ -533,7 +533,7 @@ def forecast_form_default(request, project_id):
         try:
             hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
             #
-            prediction_tuples = hw.get_prediction_tuples(step=9)
+            prediction_tuples = hw.get_prediction_tuples(step=2)
             if fitting_method == 'sse':
                 result = hw.optimize_by_sse(prediction_tuples)
             elif fitting_method == 'mad':
