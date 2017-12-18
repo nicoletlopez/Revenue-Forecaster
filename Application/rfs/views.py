@@ -21,6 +21,7 @@ from rest_framework.views import APIView
 from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, UpdateRnaForm
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import ExcelReader as xlread
+from .libraries.xlwrite import  ExcelWriter as xlwrite
 from .models import Project, File, Actual, Seg_list, ForecastConstraints
 
 # end custom libraries
@@ -594,6 +595,7 @@ def forecast_form_default(request, project_id):
                                                                       "n_preds": n_preds,
                                                                       "fitting_method": fitting_method,
                                                                       "season_length": season_length,
+
                                                                       "alpha": hw.constants[0],
                                                                       "beta": hw.constants[1],
                                                                       "gamma": hw.constants[2],
@@ -609,6 +611,113 @@ def forecast_form_default(request, project_id):
                                                                       })
 
             # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
+            #                                                       "alpha": alpha,
+            #                                                          "beta": beta,
+            #                                                          "gamma": gamma,
+            #                                                          "result": result})"""
+    if form.is_valid():
+        # get forecast info
+        # get performance metric desired
+        metric = request.POST.get("metric")
+        # get start date
+        start_date = datetime.strptime(request.POST.get("start_date"), '%Y-%m-%d')
+        # get end date
+        end_date = datetime.strptime(request.POST.get("end_date"), '%Y-%m-%d')
+        # get number of predictions
+        n_preds = request.POST.get("number_of_predictions")
+        # get fitting method
+        fitting_method = request.POST.get("fitting_method")
+        # get season length
+        season_length = int(request.POST.get('season_length'))
+        #get the segment (group or individual)
+        segment = request.POST.get('segment')
+        # get the constant values
+        # alpha = request.POST.get("alpha")
+        # beta = request.POST.get("beta")
+        # gamma = request.POST.get("gamma")
+
+        # get the starting,end, and skip constant values
+        constant_value_start = request.POST.get("constant_value_start")
+
+        """check_if_forecast_done_before(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
+                                      season_length=season_length,fitting_method=fitting_method,segment=segment)"""
+
+
+        # create an array for the values (e.g. total + group for month of january)
+        value_list = []
+
+        # add the total + group for each month
+        # to keep track, increment a month for each query, and add each query to the value_count list
+        date = start_date
+        while date <= end_date:
+            #for total
+            if segment == 'TOTAL':
+                total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+            #for group or individual
+            elif segment == 'IND' or segment == 'GRP':
+                #segs = Seg_list.objects.filter(seg_type=segment)
+                total_value = Actual.objects.filter(date=date,segment__seg_type=segment).aggregate(Sum('actual_%s' % metric))
+                #total_value = Actual.objects.filter(date=date, segment_id=segs).aggregate(Sum('actual_%s' % metric))
+                #total_value = Actual.objects.filter(date=date, segment_id=segs)
+            #for individual segments
+            else:
+                #segment_id = Seg_list.objects.get(tag=segment)
+                total_value = Actual.objects.filter(date=date, segment__tag=segment).aggregate(
+                    Sum('actual_%s' % metric))
+            try:
+                value_list.append(float(total_value['actual_%s__sum' % metric]))
+            except:
+                value_list.append(0)
+            date = add_one_month(date)
+
+        # make the necessary forecast using the HoltWinters class and the values in the value_count variable
+        # if the data is less than the season length, an error will occur
+
+        try:
+            hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
+            #
+            prediction_tuples = hw.get_prediction_tuples(step=2)
+            if fitting_method == 'sse':
+                result = hw.optimize_by_sse(prediction_tuples)
+            elif fitting_method == 'mad':
+                result = hw.optimize_by_mad(prediction_tuples)
+            elif fitting_method == 'mse':
+                result = hw.optimize_by_mse(prediction_tuples)
+        except Exception:
+            result = "Data too short for season length %s" % season_length
+
+
+        ###record results in excel file
+        def write_to_excel(metric,subsegment,value,project_name='Project',month="DEFAULT",year='DEFAULT'):
+            month_map = {1:"January",2:"February",3:"March",4:"April",5:"May",6:"June",7:"July",8:"August",
+                         9:"September",10:"October",11:"November",12:"December"}
+            ind_map = {"RCK":"Rack", "CORP":"Corporate", "CORPO":"Corporate Others", "PKG/PRM":"Packages/Promo"
+                , "WSOL":"Wholesale Online", "WSOF":"Wholesale Offline", "INDO":"Individual Others", "INDR":"Industry Rate"}
+            grp_map = {"CORPM":"Corporate Meetings","CON/ASSOC":"Convention/Association", "GOV'T/NGOS":"Gov't/NGOs"
+                , "GRPT":"Group Tours", "GRPO":"Group Others"}
+            metric_dic = {"rev":"Revenue (000's)", "arr":"Avarage Room Rate"
+                , "ocr":"Occupancy (%)", "revpar":"Revenue (000's)"}
+
+            value = value[0]
+
+            year = str(year)
+            #month_string = month_map[month]
+            writer = xlwrite.ExcelWriter(project_name,month,year)
+            metric = metric_dic[metric]
+
+            if subsegment in ind_map:
+                segment = ind_map[subsegment]
+                writer.insert_individual_forecast_value(value,segment,metric)
+            elif subsegment in grp_map:
+                segment = grp_map[subsegment]
+                writer.insert_group_forecast_value(value,segment,metric)
+            writer.save_file()
+
+
+        project_name = Project.objects.get(id=project_id).project_name
+        write_to_excel(metric,segment,result,project_name)
+
+
 
         return render(request, 'rfs/default_forecast_form.html', {
             'project':project,
