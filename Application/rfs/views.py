@@ -21,6 +21,7 @@ from rest_framework.views import APIView
 from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm, UpdateRnaForm
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import ExcelReader as xlread
+from .libraries.xlwrite import  ExcelWriter as xlwrite
 from .models import Project, File, Actual, Seg_list, ForecastConstraints
 
 # end custom libraries
@@ -532,7 +533,7 @@ def forecast_form_default(request, project_id):
         try:
             hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
             #
-            prediction_tuples = hw.get_prediction_tuples(step=1)
+            prediction_tuples = hw.get_prediction_tuples(step=9)
             if fitting_method == 'sse':
                 result = hw.optimize_by_sse(prediction_tuples)
             elif fitting_method == 'mad':
@@ -541,6 +542,38 @@ def forecast_form_default(request, project_id):
                 result = hw.optimize_by_mse(prediction_tuples)
         except Exception:
             result = "Data too short for season length %s" % season_length
+
+        ###record results in excel file
+        def write_to_excel(metric,subsegment,value,project_name='Project',month="DEFAULT",year='DEFAULT'):
+            month_map = {1:"January",2:"February",3:"March",4:"April",5:"May",6:"June",7:"July",8:"August",
+                         9:"September",10:"October",11:"November",12:"December"}
+            ind_map = {"RCK":"Rack", "CORP":"Corporate", "CORPO":"Corporate Others", "PKG/PRM":"Packages/Promo"
+                , "WSOL":"Wholesale Online", "WSOF":"Wholesale Offline", "INDO":"Individual Others", "INDR":"Industry Rate"}
+            grp_map = {"CORPM":"Corporate Meetings","CON/ASSOC":"Convention/Association", "GOV'T/NGOS":"Gov't/NGOs"
+                , "GRPT":"Group Tours", "GRPO":"Group Others"}
+            metric_dic = {"rev":"Revenue (000's)", "arr":"Avarage Room Rate"
+                , "ocr":"Occupancy (%)", "revpar":"Revenue (000's)"}
+
+            value = value[0]
+
+            year = str(year)
+            #month_string = month_map[month]
+            writer = xlwrite.ExcelWriter(project_name,month,year)
+            metric = metric_dic[metric]
+
+            if subsegment in ind_map:
+                segment = ind_map[subsegment]
+                writer.insert_individual_forecast_value(value,segment,metric)
+            elif subsegment in grp_map:
+                segment = grp_map[subsegment]
+                writer.insert_group_forecast_value(value,segment,metric)
+            writer.save_file()
+
+
+        project_name = Project.objects.get(id=project_id).project_name
+        write_to_excel(metric,segment,result,project_name)
+
+
 
         return render(request, 'rfs/default_forecast_form.html', {
             'project':project,

@@ -2,7 +2,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import coordinate_from_string, column_index_from_string
 
 class ExcelWriter(object):
-    def __init__(self, project_name='ProjectName', month='January', year='2017', file_path='ForecastOutput.xltx'):
+    def __init__(self, project_name='ProjectName', month='January', year='2017', file_path='rfs/libraries/xlwrite/ForecastOutput.xltx'):
         self.workbook = load_workbook(file_path)
         self.workbook.template = False
         self.worksheet = self.workbook['Forecast']
