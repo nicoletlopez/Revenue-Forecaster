@@ -93,10 +93,15 @@ update rfs_actual set actual_rna = 8060 where date='2016-12-31';
 
 END;
 
-create trigger if not exists set_ocr after update /*of actual_rna*/ on rfs_actual
+-- create trigger if not exists set_ocr after update /*of actual_rna*/ on rfs_actual
+--   BEGIN
+--     update rfs_actual set actual_ocr = cast(
+--       cast(actual_rns as float)/cast(actual_rna as float)as float) where actual_id = old.actual_id;
+--   END;
+
+create trigger if not exists clear_forecast_index after update of actual_rna on rfs_actual
   BEGIN
-    update rfs_actual set actual_ocr = cast(
-      cast(actual_rns as float)/cast(actual_rna as float)as float) where actual_id = old.actual_id;
+    delete from rfs_forecastconstraints;
   END;
 
 create trigger if not exists set_revpar after update of actual_ocr on rfs_actual
@@ -131,7 +136,7 @@ insert into rfs_seg_list (tag,name,seg_type) values('GRPO','GROUP OTHERS','GRP')
 select * from rfs_seg_list;
 select * from rfs_actual;
 select * from rfs_seg_list where tag='GOV''T/NGOS';
-select sum(actual_ocr) from rfs_actual where date  '2015-02-28';
+select sum(actual_ocr) from rfs_actual where date = '2015-02-28';
 select * from rfs_actual, rfs_seg_list where actual_id = id and tag= 'GOV''T/NGOS';
 
 --delete from rfs_actual;

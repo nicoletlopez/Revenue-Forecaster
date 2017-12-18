@@ -228,14 +228,17 @@ console.log('init_echarts');
           var date=[];
           var pathname = window.location.pathname;
           var endpoint = '';
-          if(pathname === '/rfs/project/1/'){
-              endpoint = 'charts';
-          }
-          else if(pathname === '/rfs/project/1/individual/'){
+          if(window.location.href.indexOf("individual")> -1){
               endpoint = 'ind_charts';
+              //alert('charts')
           }
-          else if(pathname === '/rfs/project/1/group/'){
+          else if(window.location.href.indexOf("group")> -1){
               endpoint = 'grp_charts';
+              //alert('ind_charts')
+          }
+          else {
+              endpoint = 'charts';
+              //alert('grp_charts')
           }
               $.ajax({
                   method: "GET",
@@ -267,7 +270,7 @@ console.log('init_echarts');
                           legend: {
                               x: 220,
                               y: 40,
-                              data: ['RevPAR', 'Revenue (\'000\'s)']
+                              data: ['RevPAR', 'Revenue']
                           },
                           toolbox: {
                               show: true,
@@ -316,7 +319,7 @@ console.log('init_echarts');
                                   data: revpar_total
                               },
                               {
-                                  name: 'Revenue (\'000\'s)',
+                                  name: 'Revenue',
                                   type: 'bar',
                                   smooth: true,
                                   itemStyle: {
@@ -357,17 +360,17 @@ console.log('init_echarts');
         var date = [];
         var pathname = window.location.pathname;
         var endpoint = '';
-          if(pathname.charAt(15) === ''){
-              endpoint = 'charts';
-              alert('charts')
-          }
-          else if(pathname.charAt(15) === 'i'){
+          if(window.location.href.indexOf("individual")> -1){
               endpoint = 'ind_charts';
-              alert('ind_charts')
+              //alert('charts')
           }
-          else if(pathname.charAt(15) === 'g'){
+          else if(window.location.href.indexOf("group")> -1){
               endpoint = 'grp_charts';
-              alert('grp_charts')
+              //alert('ind_charts')
+          }
+          else {
+              endpoint = 'charts';
+              //alert('grp_charts')
           }
         $.ajax({
             method: "GET",
@@ -485,15 +488,18 @@ console.log('init_echarts');
         var date = [];
         var pathname = window.location.pathname;
         var endpoint = '';
-        if(pathname === '/rfs/project/1/'){
-            endpoint = 'charts';
-        }
-        else if(pathname === '/rfs/project/1/individual/'){
-            endpoint = 'ind_charts';
-        }
-        else if(pathname === '/rfs/project/1/group/'){
-            endpoint = 'grp_charts';
-        }
+        if(window.location.href.indexOf("individual")> -1){
+              endpoint = 'ind_charts';
+              //alert('charts')
+          }
+          else if(window.location.href.indexOf("group")> -1){
+              endpoint = 'grp_charts';
+              //alert('ind_charts')
+          }
+          else {
+              endpoint = 'charts';
+              //alert('grp_charts')
+          }
         $.ajax({
             method: "GET",
             url: endpoint,
@@ -523,7 +529,7 @@ console.log('init_echarts');
                 legend: {
                     x: 220,
                     y: 40,
-                    data: ['RevPAR', 'Revenue (\'000\'s)']
+                    data: ['RevPAR', 'Revenue']
                 },
                 toolbox: {
                     show: true,
