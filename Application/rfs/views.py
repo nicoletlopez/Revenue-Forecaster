@@ -475,146 +475,6 @@ def forecast_form_default(request, project_id):
                 finally:
                     return date_input
 
-        """def check_if_forecast_done_before(metric,start_date,end_date,n_preds,season_length,fitting_method,segment,value_list=0,alpha=0,beta=0,gamma=0):
-            if ForecastConstraints.objects.get(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
-                                               s_len=season_length,fitting_method=fitting_method,segment=segment).exists():
-                forecast_obj = ForecastConstraints.objects.get(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
-                                               s_len=season_length,fitting_method=fitting_method,segment=segment)
-                return render(request, 'rfs/default_forecast_form.html', {'form': form,
-                                                                          "metric": forecast_obj.metric,
-                                                                          "start_date": forecast_obj.start_date,
-                                                                          "end_date": forecast_obj.end_date,
-                                                                          "segment": forecast_obj.segment,
-                                                                          "values_list": value_list,
-                                                                          "n_preds": forecast_obj.n_preds,
-                                                                          "fitting_method": forecast_obj.fitting_method,
-                                                                          "season_length": forecast_obj.s_len,
-                                                                          "alpha": forecast_obj.alpha,
-                                                                          "beta": forecast_obj.beta,
-                                                                          "gamma": forecast_obj.gamma,
-                                                                          "result": forecast_obj.result,
-                                                                          'arc_projects': Project.objects.all().filter(
-                                                                              status='ARC'),
-                                                                          'all_projects': Project.objects.all().filter(
-                                                                              status='ACT'),
-                                                                          'act_files': File.objects.filter(status='ACT',
-                                                                                                           project_id=project_id),
-                                                                          'actual_data_list': Actual.objects.all().filter(
-                                                                              project_id=project_id),
-                                                                          'arc_files': File.objects.filter(status='ARC',
-                                                                                                           project_id=project_id),
-                                                                          'active_tag': 'active',
-                                                                          'block_display': 'display:block;',
-                                                                          'current_page': 'current-page',
-                                                                          })"""
-        if form.is_valid():
-            # get forecast info
-            # get performance metric desired
-            metric = request.POST.get("metric")
-            # get start date
-            start_date = datetime.strptime(request.POST.get("start_date"), '%Y-%m-%d')
-            # get end date
-            end_date = datetime.strptime(request.POST.get("end_date"), '%Y-%m-%d')
-            # get number of predictions
-            n_preds = request.POST.get("number_of_predictions")
-            # get fitting method
-            fitting_method = request.POST.get("fitting_method")
-            # get season length
-            season_length = int(request.POST.get('season_length'))
-            #get the segment (group or individual)
-            segment = request.POST.get('segment')
-            # get the constant values
-            # alpha = request.POST.get("alpha")
-            # beta = request.POST.get("beta")
-            # gamma = request.POST.get("gamma")
-
-            # get the starting,end, and skip constant values
-            constant_value_start = request.POST.get("constant_value_start")
-
-            """check_if_forecast_done_before(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
-                                          season_length=season_length,fitting_method=fitting_method,segment=segment)"""
-
-
-            # create an array for the values (e.g. total + group for month of january)
-            value_list = []
-
-            # add the total + group for each month
-            # to keep track, increment a month for each query, and add each query to the value_count list
-            date = start_date
-            while date <= end_date:
-                #for total
-                if segment == 'TOTAL':
-                    total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
-                #for group or individual
-                elif segment == 'IND' or segment == 'GRP':
-                    #segs = Seg_list.objects.filter(seg_type=segment)
-                    total_value = Actual.objects.filter(date=date,segment__seg_type=segment).aggregate(Sum('actual_%s' % metric))
-                    #total_value = Actual.objects.filter(date=date, segment_id=segs).aggregate(Sum('actual_%s' % metric))
-                    #total_value = Actual.objects.filter(date=date, segment_id=segs)
-                #for individual segments
-                else:
-                    #segment_id = Seg_list.objects.get(tag=segment)
-                    total_value = Actual.objects.filter(date=date, segment__tag=segment).aggregate(
-                        Sum('actual_%s' % metric))
-                try:
-                    value_list.append(float(total_value['actual_%s__sum' % metric]))
-                except:
-                    value_list.append(0)
-                date = add_one_month(date)
-
-            # make the necessary forecast using the HoltWinters class and the values in the value_count variable
-            # if the data is less than the season length, an error will occur
-
-            try:
-                hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
-                #
-                prediction_tuples = hw.get_prediction_tuples(step=2)
-                if fitting_method == 'sse':
-                    result = hw.optimize_by_sse(prediction_tuples)
-                elif fitting_method == 'mad':
-                    result = hw.optimize_by_mad(prediction_tuples)
-                elif fitting_method == 'mse':
-                    result = hw.optimize_by_mse(prediction_tuples)
-            except Exception:
-                result = "Data too short for season length %s" % season_length
-
-
-            #forecast_obj = ForecastConstraints(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,s_len=season_length,
-            #                                    fitting_method=fitting_method,segment=segment,alpha=hw.constants[0],beta=hw.constants[1],
-            #                                  gamma=hw.constants[2],result=result)
-            #forecast_obj.save()
-
-            return render(request, 'rfs/default_forecast_form.html', {
-                'project':project,
-                'form': form,
-                                                                      "metric": metric,
-                                                                      "start_date": start_date,
-                                                                      "end_date": end_date,
-                                                                      "segment":segment,
-                                                                      "values_list": value_list,
-                                                                      "n_preds": n_preds,
-                                                                      "fitting_method": fitting_method,
-                                                                      "season_length": season_length,
-
-                                                                      "alpha": hw.constants[0],
-                                                                      "beta": hw.constants[1],
-                                                                      "gamma": hw.constants[2],
-                                                                      "result": result,
-                                                                      'arc_projects': Project.objects.all().filter(status='ARC'),
-                                                                      'all_projects': Project.objects.all().filter(status='ACT'),
-                                                                      'act_files': File.objects.filter(status='ACT',project_id=project_id),
-                                                                      'actual_data_list': Actual.objects.all().filter(project_id=project_id),
-                                                                      'arc_files': File.objects.filter(status='ARC',project_id=project_id),
-                                                                      'active_tag': 'active',
-                                                                      'block_display': 'display:block;',
-                                                                      'current_page': 'current-page',
-                                                                      })
-
-            # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
-            #                                                       "alpha": alpha,
-            #                                                          "beta": beta,
-            #                                                          "gamma": gamma,
-            #                                                          "result": result})"""
     if form.is_valid():
         # get forecast info
         # get performance metric desired
@@ -639,8 +499,8 @@ def forecast_form_default(request, project_id):
         # get the starting,end, and skip constant values
         constant_value_start = request.POST.get("constant_value_start")
 
-        """check_if_forecast_done_before(metric=metric,start_date=start_date,end_date=end_date,n_preds=n_preds,
-                                      season_length=season_length,fitting_method=fitting_method,segment=segment)"""
+
+
 
 
         # create an array for the values (e.g. total + group for month of january)
@@ -722,6 +582,18 @@ def forecast_form_default(request, project_id):
         return render(request, 'rfs/default_forecast_form.html', {
             'project':project,
             'form': form,
+            'metric':metric,
+            'start_date':start_date,
+            'end_date':end_date,
+            'segment':segment,
+            'values_list':value_list,
+            'n_preds':n_preds,
+            'fitting_method':fitting_method,
+            'season_length':season_length,
+            'alpha':hw.constants[0],
+            'beta':hw.constants[1],
+            'gamma':hw.constants[2],
+            'result':result,
             'arc_projects': Project.objects.all().filter(status='ARC'),
             'all_projects': Project.objects.all().filter(status='ACT'),
             'act_files': File.objects.filter(status='ACT', project_id=project_id),
@@ -731,7 +603,18 @@ def forecast_form_default(request, project_id):
             'block_display': 'display:block;',
             'current_page': 'current-page',
            })
-
+    return render(request, 'rfs/default_forecast_form.html', {
+        'project': project,
+        'form': form,
+        'arc_projects': Project.objects.all().filter(status='ARC'),
+        'all_projects': Project.objects.all().filter(status='ACT'),
+        'act_files': File.objects.filter(status='ACT', project_id=project_id),
+        'actual_data_list': Actual.objects.all().filter(project_id=project_id),
+        'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+        'active_tag': 'active',
+        'block_display': 'display:block;',
+        'current_page': 'current-page',
+    })
 
 def forecast_form_custom(request, project_id):
     if not request.user.is_authenticated():
@@ -847,9 +730,9 @@ def forecast_form_custom(request, project_id):
                                                                       "values_list": value_list,
                                                                       "n_preds": n_preds,
                                                                       "season_length": season_length,
-                                                                      "alpha": "TEMP",  # hw.constants[0][0],
-                                                                      "beta": "TEMP",  # hw.constants[1][0],
-                                                                      "gamma": "TEMP",  # hw.constants[2][0],
+                                                                      "alpha": alpha,  # hw.constants[0][0],
+                                                                      "beta": beta,  # hw.constants[1][0],
+                                                                      "gamma": gamma,  # hw.constants[2][0],
                                                                       "result": result,
                                                                       'arc_projects': Project.objects.all().filter(status='ARC'),
                                                                       'all_projects': Project.objects.all().filter(status='ACT'),
