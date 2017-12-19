@@ -120,7 +120,9 @@ class ProjectDashboard(LoginRequiredMixin, DetailView):
         context['actual_rev'] = Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_rev'))
         context['actual_rns'] = Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_rns'))
         context['actual_arr'] = Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_arr'))
-        context['actual_ocr'] = round((Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_ocr')))['actual_ocr__sum']*10,2)
+        if Actual.objects.filter(project_id=self.kwargs['pk']):
+            context['actual_ocr'] = round((Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_ocr')))['actual_ocr__sum']*10,2)
+
         return context
 
 class GraphInd(LoginRequiredMixin,DetailView):
