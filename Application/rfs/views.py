@@ -568,7 +568,7 @@ def forecast_form_default(request, project_id):
         try:
             hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
             #
-            prediction_tuples = hw.get_prediction_tuples(step=9)
+            prediction_tuples = hw.get_prediction_tuples(step=2)
             if fitting_method == 'sse':
                 result = hw.optimize_by_sse(prediction_tuples)
             elif fitting_method == 'mad':
@@ -613,7 +613,7 @@ def forecast_form_default(request, project_id):
             date_list = []
             result_map = {}
             for counter in range(0, len(forecast_result_list)):
-                date = add_one_month(end_date_of_forecast).strftime("%B %d, %Y")
+                date = add_one_month(end_date_of_forecast).strftime("%B %Y")
                 date_list.append(date)
             for counter in range(0, len(date_list)):
                 result_map[date_list[counter]] = forecast_result_list[counter]
