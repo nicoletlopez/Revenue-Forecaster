@@ -584,7 +584,10 @@ def forecast_form_default(request, project_id):
             metric_dic = {"rev": "Revenue (000's)", "arr": "Avarage Room Rate"
                 , "ocr": "Occupancy (%)", "revpar": "Revenue (000's)"}
 
-            value = value[0]
+            try:
+                value = value[0]
+            except Exception:
+                pass
 
             year = str(year)
             # month_string = month_map[month]
