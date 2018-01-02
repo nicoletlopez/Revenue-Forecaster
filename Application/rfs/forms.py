@@ -86,6 +86,15 @@ class ForecastOptionsForm(forms.Form):
 
     #earliest_date = min(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
     #latest_date = max(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
+    def __init__(self, *args, **kwargs):
+        super(ForecastOptionsForm, self).__init__(*args, **kwargs)
+        self.fields['metric'].widget.attrs = {'class': 'form-control'}
+        self.fields['start_date'].widget.attrs = {'class': 'form-control'}
+        self.fields['end_date'].widget.attrs = {'class': 'form-control'}
+        self.fields['number_of_predictions'].widget.attrs = {'class': 'form-control'}
+        self.fields['season_length'].widget.attrs = {'class': 'form-control'}
+        self.fields['fitting_method'].widget.attrs = {'style':'list-style:none'}
+        self.fields['segment'].widget.attrs = {'class': 'form-control'}
 
     earliest_date = '2015-01-31'
     latest_date = '2016-12-31'
@@ -112,6 +121,18 @@ class ForecastOptionsForm(forms.Form):
 class CustomForecastForm(forms.Form):
     #earliest_date = min(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
     #latest_date = max(Actual.objects.values_list('date',flat='true')).strftime('%Y-%m-%d')
+
+    def __init__(self, *args, **kwargs):
+        super(CustomForecastForm, self).__init__(*args, **kwargs)
+        self.fields['metric'].widget.attrs = {'class': 'form-control'}
+        self.fields['start_date'].widget.attrs = {'class': 'form-control'}
+        self.fields['end_date'].widget.attrs = {'class': 'form-control'}
+        self.fields['number_of_predictions'].widget.attrs = {'class': 'form-control'}
+        self.fields['season_length'].widget.attrs = {'class': 'form-control'}
+        self.fields['segment'].widget.attrs = {'class': 'form-control'}
+        self.fields['alpha'].widget.attrs = {'class': 'form-control'}
+        self.fields['beta'].widget.attrs = {'class': 'form-control'}
+        self.fields['gamma'].widget.attrs = {'class': 'form-control'}
 
     earliest_date = '2015-01-31'
     latest_date = '2016-12-31'

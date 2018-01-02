@@ -13,7 +13,7 @@
                         <div role="tabpanel" class="tab-pane fade active in" aria-labelledby="home-tab">
 
                             {% block forecast_form %}
-    <form role="form" method='post' action="" enctype="multipart/form-data">
+    <form class="form-horizontal form-label-left" role="form" method='post' action="" enctype="multipart/form-data">
         {% csrf_token %}
         {% include 'rfs/form_template.html' %}
         <div class="form-group">
