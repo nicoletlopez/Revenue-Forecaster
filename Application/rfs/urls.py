@@ -9,6 +9,7 @@ urlpatterns=[
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', views.logout_user, name='logout'),
 
+
     ########
     url(r'^home/$', views.index_view, name='index'),
     url(r'^home/upload_to/$',views.upload_file_to,name='upload_file_to'),
@@ -18,6 +19,7 @@ urlpatterns=[
     ##PROJECT URLS##
     url(r'project/(?P<pk>[0-9]+)/$',views.ProjectDashboard.as_view(),name='project'),
     url(r'project/(?P<pk>[0-9]+)/details/$',views.ProjectDetails.as_view(),name='project-details'),
+    url(r'project/(?P<project_id>[0-9]+)/details/download/(?P<path>.*)/$',views.download,name='download'),
 
     url(r'project/create/$',views.ProjectCreate.as_view(),name='project-create'),
     url(r'project/(?P<pk>[0-9]+)/update/$', views.ProjectUpdate.as_view(), name='project-delete'),

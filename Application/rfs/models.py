@@ -25,6 +25,8 @@ class Activity(models.Model):
     file=models.CharField(max_length=255,blank=True)
     datetime=models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering=['-id']
 
 class CustomStorage(FileSystemStorage):
     def get_valid_name(self,name):

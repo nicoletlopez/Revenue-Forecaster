@@ -5,6 +5,8 @@ import os
 import traceback
 from datetime import datetime
 
+from django.conf import settings
+from django.http import HttpResponse, Http404
 from dateutil.relativedelta import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -33,6 +35,15 @@ EXCEL_FILE_TYPES = ['xlsx', 'xls']
 
 json_serializer = serializers.get_serializer("json")()
 
+def download(request, project_id,path):
+    project=get_object_or_404(Project,pk=project_id)
+    file_path = os.path.join(settings.MEDIA_ROOT, "project_%s/%s" % (project.project_name,path))
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
+    raise Http404
 
 def start_view(request):
     if request.user.is_authenticated():
@@ -209,6 +220,7 @@ class ProjectDetails(LoginRequiredMixin, DetailView):
         context['arc_projects'] = Project.objects.all().filter(status='ARC')
         context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
         context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
+        context['actual_data_list'] = Actual.objects.all().filter(project_id=self.kwargs['pk'])
         context['activities'] = Activity.objects.filter(project=self.kwargs['pk'])
         context['active_tag'] = 'active'
         context['block_display'] = 'display:block;'

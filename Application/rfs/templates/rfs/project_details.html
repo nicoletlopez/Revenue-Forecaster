@@ -23,7 +23,7 @@
                                 {% if activity.file %}
                               <p class="url">
                                 <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
-                                <a><i class="fa fa-paperclip"></i> {{ activity.file }} </a>
+                                <a href="{% url 'rfs:download' project.id activity.file %}"><i class="fa fa-paperclip"></i> {{ activity.file }} </a>
                               </p>
                                 {% endif %}
                             </div>
