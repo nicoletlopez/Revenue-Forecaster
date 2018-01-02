@@ -23,7 +23,7 @@ from .forms import FileForm, CreateForm, ForecastOptionsForm, CustomForecastForm
 from .libraries.holtwinters import HoltWinters as hwinters
 from .libraries.xlread import ExcelReader as xlread
 from .libraries.xlwrite import ExcelWriter as xlwrite
-from .models import Project, File, Actual, Seg_list
+from .models import Project, File, Actual, Seg_list,Activity
 
 # end custom libraries
 
@@ -209,6 +209,7 @@ class ProjectDetails(LoginRequiredMixin, DetailView):
         context['arc_projects'] = Project.objects.all().filter(status='ARC')
         context['act_files'] = File.objects.filter(status='ACT', project_id=self.kwargs['pk'])
         context['arc_files'] = File.objects.filter(status='ARC', project_id=self.kwargs['pk'])
+        context['activities'] = Activity.objects.filter(project=self.kwargs['pk'])
         context['active_tag'] = 'active'
         context['block_display'] = 'display:block;'
         context['current_page'] = 'current-page'
@@ -396,6 +397,7 @@ def excel_to_db(request, project_id):
                 }
                 return render(request, 'rfs/datafeeder.html', context)
             file.save()
+            Activity(project=project, user=request.user, file=form.cleaned_data.get("excel_file"),log="Inserted data using file %s" % (form.cleaned_data.get("excel_file"))).save()
 
             def record(result_array):
                 for tuples in result_array:
@@ -428,6 +430,8 @@ def excel_to_db(request, project_id):
                 year = excel_read.current_year
                 # print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
             except:
+                file.delete()
+                Activity.objects.filter(project=project).delete()
 
                 context = {'project': project,
                            'arc_projects': Project.objects.all().filter(status='ARC'),
@@ -436,7 +440,10 @@ def excel_to_db(request, project_id):
                            'form': form,
                            'actual_data_list': Actual.objects.all().filter(project_id=project_id),
                            'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-                           'error_message': 'Excel format wrong. Please choose a correct one'
+                           'error_message': 'Excel format wrong. Please choose a correct one',
+                           'active_tag': 'active',
+                           'block_display': 'display:block;',
+                           'current_page': 'current-page',
                            }
                 return render(request, 'rfs/datafeeder.html', context)
 
@@ -536,18 +543,18 @@ def forecast_form_default(request, project_id):
         while date <= end_date:
             # for total
             if segment == 'TOTAL':
-                total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+                total_value = Actual.objects.filter(project=project,date=date).aggregate(Sum('actual_%s' % metric))
             # for group or individual
             elif segment == 'IND' or segment == 'GRP':
                 # segs = Seg_list.objects.filter(seg_type=segment)
-                total_value = Actual.objects.filter(date=date, segment__seg_type=segment).aggregate(
+                total_value = Actual.objects.filter(project=project,date=date, segment__seg_type=segment).aggregate(
                     Sum('actual_%s' % metric))
                 # total_value = Actual.objects.filter(date=date, segment_id=segs).aggregate(Sum('actual_%s' % metric))
                 # total_value = Actual.objects.filter(date=date, segment_id=segs)
             # for individual segments
             else:
                 # segment_id = Seg_list.objects.get(tag=segment)
-                total_value = Actual.objects.filter(date=date, segment__tag=segment).aggregate(
+                total_value = Actual.objects.filter(project=project,date=date, segment__tag=segment).aggregate(
                     Sum('actual_%s' % metric))
             try:
                 value_list.append(float(total_value['actual_%s__sum' % metric]))
@@ -604,6 +611,8 @@ def forecast_form_default(request, project_id):
 
         project_name = Project.objects.get(id=project_id).project_name
         write_to_excel(metric, segment, result, project_name)
+
+        Activity(project=project, user=request.user,log="Forecasted the %s in %s segment using the %s method" % (metric, segment, fitting_method)).save()
 
         return render(request, 'rfs/default_forecast_form.html', {
             'project': project,
@@ -696,12 +705,12 @@ def forecast_form_custom(request, project_id):
         date = start_date
         while (date <= end_date):
             if segment == 'TOTAL':
-                total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
+                total_value = Actual.objects.filter(project=project,date=date).aggregate(Sum('actual_%s' % metric))
             elif segment == 'IND' or segment == 'GRP':
-                total_value = Actual.objects.filter(date=date, segment__seg_type=segment) \
+                total_value = Actual.objects.filter(project=project,date=date, segment__seg_type=segment) \
                     .aggregate(Sum('actual_%s' % metric))
             else:
-                total_value = Actual.objects.filter(date=date, segment__tag=segment).aggregate(
+                total_value = Actual.objects.filter(project=project,date=date, segment__tag=segment).aggregate(
                     Sum('actual_%s' % metric))
             try:
                 value_list.append(float(total_value['actual_%s__sum' % metric]))
@@ -716,6 +725,8 @@ def forecast_form_custom(request, project_id):
         except Exception:
             traceback.print_exc()
             result = "Data too short for season length %s" % season_length
+
+        Activity(project=project, user=request.user,log="Forecasted the %s in %s segment using a custom method" % (metric, segment)).save()
 
         return render(request, 'rfs/default_forecast_form.html',
                       {

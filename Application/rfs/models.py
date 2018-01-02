@@ -2,6 +2,8 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.files.storage import Storage,FileSystemStorage
 
+
+
 class Project(models.Model):
     project_name=models.CharField(max_length=50,unique=True)
     description=models.TextField(blank=True)
@@ -15,6 +17,14 @@ class Project(models.Model):
         return self.project_name
     class Meta:
         ordering = ['-id']
+
+class Activity(models.Model):
+    project=models.ForeignKey(Project,on_delete=models.CASCADE)
+    user=models.CharField(max_length=50)
+    log = models.TextField()
+    file=models.CharField(max_length=255,blank=True)
+    datetime=models.DateTimeField(auto_now_add=True)
+
 
 class CustomStorage(FileSystemStorage):
     def get_valid_name(self,name):

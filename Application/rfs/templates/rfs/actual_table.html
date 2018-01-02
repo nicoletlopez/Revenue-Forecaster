@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="col-md-12 col-sm-12 col-xs-12">
 <div class="x_panel">
   <div class="x_title">
@@ -27,11 +28,11 @@
         <tr>
           <td>{{ actual_data.segment }}</td>
           <td>{{ actual_data.date }}</td>
-          <td>{{ actual_data.actual_rns }}</td>
-          <td>{{ actual_data.actual_arr }}</td>
-          <td>{{ actual_data.actual_rev }}</td>
+          <td>{{ actual_data.actual_rns|intcomma }}</td>
+          <td>{{ actual_data.actual_arr|intcomma }}</td>
+          <td>{{ actual_data.actual_rev|intcomma }}</td>
         <td>{{ actual_data.ocr_percent }}</td>
-        <td>{{ actual_data.actual_revpar }}</td>
+        <td>{{ actual_data.actual_revpar|intcomma }}</td>
         </tr>
       {% endfor %}
       </tbody>
