@@ -568,7 +568,7 @@ def forecast_form_default(request, project_id):
         try:
             hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
             #
-            prediction_tuples = hw.get_prediction_tuples(step=2)
+            prediction_tuples = hw.get_prediction_tuples(step=9)
             if fitting_method == 'sse':
                 result = hw.optimize_by_sse(prediction_tuples)
             elif fitting_method == 'mad':
@@ -609,6 +609,19 @@ def forecast_form_default(request, project_id):
                 writer.insert_group_forecast_value(value, segment, metric)
             writer.save_file()
 
+        def map_forecast_to_date(forecast_result_list, end_date_of_forecast):
+            date_list = []
+            result_map = {}
+            for counter in range(0, len(forecast_result_list)):
+                date = add_one_month(end_date_of_forecast).strftime("%B %d, %Y")
+                date_list.append(date)
+            for counter in range(0, len(date_list)):
+                result_map[date_list[counter]] = forecast_result_list[counter]
+
+            return result_map
+
+        result_map = map_forecast_to_date(result, end_date)
+
         project_name = Project.objects.get(id=project_id).project_name
         write_to_excel(metric, segment, result, project_name)
 
@@ -628,7 +641,7 @@ def forecast_form_default(request, project_id):
             'alpha': hw.constants[0],
             'beta': hw.constants[1],
             'gamma': hw.constants[2],
-            'result': result,
+            'result': result_map,
             'arc_projects': Project.objects.all().filter(status='ARC'),
             'all_projects': Project.objects.all().filter(status='ACT'),
             'act_files': File.objects.filter(status='ACT', project_id=project_id),
