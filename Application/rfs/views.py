@@ -624,11 +624,18 @@ def forecast_form_default(request, project_id):
         def map_forecast_to_date(forecast_result_list, end_date_of_forecast):
             date_list = []
             result_map = {}
-            for counter in range(0, len(forecast_result_list)):
-                date = add_one_month(end_date_of_forecast).strftime("%B %Y")
-                date_list.append(date)
-            for counter in range(0, len(date_list)):
+
+            latest_date = add_one_month(end_date_of_forecast)
+            for item in forecast_result_list:
+                date_list.append(latest_date.strftime("%B %Y"))
+                latest_date = add_one_month(latest_date)
+
+            for counter in range (0,len(forecast_result_list)):
                 result_map[date_list[counter]] = forecast_result_list[counter]
+
+
+            # for counter in range(0, len(date_list)):
+            #     result_map[date_list[counter]] = forecast_result_list[counter]
 
             return result_map
 
@@ -757,11 +764,18 @@ def forecast_form_custom(request, project_id):
         def map_forecast_to_date(forecast_result_list, end_date_of_forecast):
             date_list = []
             result_map = {}
-            for counter in range(0, len(forecast_result_list)):
-                date = add_one_month(end_date_of_forecast).strftime("%B %Y")
-                date_list.append(date)
-            for counter in range(0, len(date_list)):
+
+            latest_date = add_one_month(end_date_of_forecast)
+            for item in forecast_result_list:
+                date_list.append(latest_date.strftime("%B %Y"))
+                latest_date = add_one_month(latest_date)
+
+            for counter in range (0,len(forecast_result_list)):
                 result_map[date_list[counter]] = forecast_result_list[counter]
+
+
+            # for counter in range(0, len(date_list)):
+            #     result_map[date_list[counter]] = forecast_result_list[counter]
 
             return result_map
 
@@ -782,7 +796,7 @@ def forecast_form_custom(request, project_id):
                           'alpha': alpha,
                           'beta': beta,
                           'gamma': gamma,
-                          'result': result_map,
+                          'result': result,
                           'datetime':datetime.today(),
                           'arc_projects': Project.objects.all().filter(status='ARC'),
                           'actual_data_list': Actual.objects.all().filter(project_id=project_id),
