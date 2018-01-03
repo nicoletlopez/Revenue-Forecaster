@@ -661,6 +661,8 @@ def forecast_form_default(request, project_id):
             'beta': hw.constants[1],
             'gamma': hw.constants[2],
             'result': result_map,
+            'first': list(result_map.keys())[0],
+            'last': list(result_map.keys())[-1],
             'datetime': datetime.today(),
             'arc_projects': Project.objects.all().filter(status='ARC'),
             'all_projects': Project.objects.all().filter(status='ACT'),
@@ -797,6 +799,8 @@ def forecast_form_custom(request, project_id):
                           'beta': beta,
                           'gamma': gamma,
                           'result': result_map,
+                          'first':list(result_map.keys())[0],
+                          'last': list(result_map.keys())[-1],
                           'datetime':datetime.today(),
                           'arc_projects': Project.objects.all().filter(status='ARC'),
                           'actual_data_list': Actual.objects.all().filter(project_id=project_id),
@@ -818,163 +822,6 @@ def forecast_form_custom(request, project_id):
                       'block_display': 'display:block;',
                       'current_page': 'current-page',
                   })
-
-
-"""def forecast_form_custom(request, project_id):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('rfs:login'))
-    else:
-        project = get_object_or_404(Project, pk=project_id)
-
-        def add_one_month(date_input):
-            # january
-            thirties = [2, 4, 6, 9, 11]
-            thirty_ones = [3, 5, 7, 8, 10, 12]
-            if date_input.month == 1:
-                try:
-                    date_input += relativedelta(months=1)
-                    date_input = date_input.replace(day=28)
-                except:
-                    return date_input
-                finally:
-                    return date_input
-
-            if date_input.month in thirties:
-                date_input += relativedelta(months=1)
-                date_input = date_input.replace(day=31)
-                return date_input
-
-            if date_input.month in thirty_ones:
-                date_input += relativedelta(months=1)
-                try:
-                    date_input = date_input.replace(day=31)
-                except:
-                    date_input = date_input.replace(day=30)
-                finally:
-                    return date_input
-
-        form = CustomForecastForm(request.POST or None)
-        if form.is_valid():
-            # get forecast info
-            # get performance metric desired
-            metric = request.POST.get("metric")
-            # get start date
-            start_date = datetime.strptime(request.POST.get("start_date"), '%Y-%m-%d')
-            # get end date
-            end_date = datetime.strptime(request.POST.get("end_date"), '%Y-%m-%d')
-            # get number of predictions
-            n_preds = request.POST.get("number_of_predictions")
-            # get fitting method
-            # fitting_method = request.POST.get("fitting_method")
-            # get season length
-            season_length = int(request.POST.get('season_length'))
-
-            # get the constant values
-            alpha = request.POST.get("alpha")
-            beta = request.POST.get("beta")
-            gamma = request.POST.get("gamma")
-
-            segment = request.POST.get("segment")
-            # get the starting,end, and skip constant values
-            constant_value_start = request.POST.get("constant_value_start")
-
-            # create an array for the values (e.g. total + group for month of january)
-            value_list = []
-
-            # add the total + group for each month
-            # to keep track, increment a month for each query, and add each query to the value_count list
-            date = start_date
-
-            while date <= end_date:
-                # for total
-                if segment == 'TOTAL':
-                    total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
-                # for group or individual
-                elif segment == 'IND' or segment == 'GRP':
-                    # segs = Seg_list.objects.filter(seg_type=segment)
-                    total_value = Actual.objects.filter(date=date, segment__seg_type=segment).aggregate(
-                        Sum('actual_%s' % metric))
-                    # total_value = Actual.objects.filter(date=date, segment_id=segs).aggregate(Sum('actual_%s' % metric))
-                    # total_value = Actual.objects.filter(date=date, segment_id=segs)
-                # for individual segments
-                else:
-                    # segment_id = Seg_list.objects.get(tag=segment)
-                    total_value = Actual.objects.filter(date=date, segment__tag=segment).aggregate(
-                        Sum('actual_%s' % metric))
-                try:
-                    value_list.append(float(total_value['actual_%s__sum' % metric]))
-                except:
-                    value_list.append(0)
-                date = add_one_month(date)
-
-            #while date <= end_date:
-            #    total_value = Actual.objects.filter(date=date).aggregate(Sum('actual_%s' % metric))
-            #    try:
-            #        value_list.append(float(total_value['actual_%s__sum' % metric]))
-            #    except:
-            #        value_list.append(0)
-            #    date = add_one_month(date)
-
-            # make the necessary forecast using the HoltWinters class and the values in the value_count variable
-            # if the data is less than the season length, an error will occur
-            hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
-            result = hw.triple_exponential_smoothing(float(alpha), float(beta), float(gamma))[-int(n_preds):]
-            try:
-                # hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
-                # result = hw.triple_exponential_smoothing(alpha,beta,gamma)[-n_preds:]
-                pass
-            except Exception:
-                pass
-                # result = "Data too short for season length %s" % season_length
-
-            return render(request, 'rfs/default_forecast_form.html', {'form': form,
-                                                                      'project': project,
-                                                                      "metric": metric,
-                                                                      "start_date": start_date,
-                                                                      "end_date": end_date,
-                                                                      "values_list": value_list,
-                                                                      "n_preds": n_preds,
-                                                                      "season_length": season_length,
-                                                                      "alpha": alpha,  # hw.constants[0][0],
-                                                                      "beta": beta,  # hw.constants[1][0],
-                                                                      "gamma": gamma,  # hw.constants[2][0],
-                                                                      "result": result,
-                                                                      'arc_projects': Project.objects.all().filter(
-                                                                          status='ARC'),
-                                                                      'all_projects': Project.objects.all().filter(
-                                                                          status='ACT'),
-                                                                      'act_files': File.objects.filter(status='ACT',
-                                                                                                       project_id=project_id),
-                                                                      'actual_data_list': Actual.objects.all().filter(
-                                                                          project_id=project_id),
-                                                                      'arc_files': File.objects.filter(status='ARC',
-                                                                                                       project_id=project_id),
-                                                                      'active_tag': 'active',
-                                                                      'block_display': 'display:block;',
-                                                                      'current_page': 'current-page',
-                                                                      })
-
-            # return render(request,'rfs/default_forecast_form.html',{"form":form,"values":values_dict})
-        else:
-            return render(request, 'rfs/default_forecast_form.html', {'form': form,
-                                                                      'project': project,
-                                                                      'arc_projects': Project.objects.all().filter(
-                                                                          status='ARC'),
-                                                                      'all_projects': Project.objects.all().filter(
-                                                                          status='ACT'),
-                                                                      'act_files': File.objects.filter(status='ACT',
-                                                                                                       project_id=project_id),
-                                                                      'actual_data_list': Actual.objects.all().filter(
-                                                                          project_id=project_id),
-                                                                      'arc_files': File.objects.filter(status='ARC',
-                                                                                                       project_id=project_id),
-                                                                      'active_tag': 'active',
-                                                                      'block_display': 'display:block;',
-                                                                      'current_page': 'current-page',
-                                                                      })
-
-    # a view for updating room nights sold in any given month
-    """
 
 
 def update_rns(request, project_id):
