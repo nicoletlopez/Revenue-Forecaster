@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project,File, Seg_list, Ind_seg, Grp_seg, Actual, Forecast
+from .models import Project,File, Seg_list, Ind_seg, Grp_seg, Actual, Forecast, Activity
 
 class ProjectList(admin.ModelAdmin):
     list_display = ('project_name', 'description', 'status')
@@ -27,6 +27,7 @@ admin.site.register(Ind_seg)
 admin.site.register(Grp_seg)
 admin.site.register(Actual, ActualList)
 admin.site.register(Forecast, ForecastList)
+admin.site.register(Activity)
 
 admin.site.site_header = 'AURA Admin'
 admin.site.index_title = 'Revenue Forecasting System'

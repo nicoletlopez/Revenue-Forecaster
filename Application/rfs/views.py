@@ -747,12 +747,26 @@ def forecast_form_custom(request, project_id):
         try:
             hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
             result = hw.triple_exponential_smoothing(alpha, beta, gamma)
-            result = result[len(result) - 1]
+            # result = result[len(result) - 1]
         except Exception:
             traceback.print_exc()
             result = "Data too short for season length %s" % season_length
 
         Activity(project=project, user=request.user,log="Forecasted the %s in %s segment using a custom method" % (metric, segment)).save()
+
+        def map_forecast_to_date(forecast_result_list, end_date_of_forecast):
+            date_list = []
+            result_map = {}
+            for counter in range(0, len(forecast_result_list)):
+                date = add_one_month(end_date_of_forecast).strftime("%B %Y")
+                date_list.append(date)
+            for counter in range(0, len(date_list)):
+                result_map[date_list[counter]] = forecast_result_list[counter]
+
+            return result_map
+
+        result_map = map_forecast_to_date(result, end_date)
+
 
         return render(request, 'rfs/default_forecast_form.html',
                       {
@@ -768,7 +782,7 @@ def forecast_form_custom(request, project_id):
                           'alpha': alpha,
                           'beta': beta,
                           'gamma': gamma,
-                          'result': result,
+                          'result': result_map,
                           'datetime':datetime.today(),
                           'arc_projects': Project.objects.all().filter(status='ARC'),
                           'actual_data_list': Actual.objects.all().filter(project_id=project_id),

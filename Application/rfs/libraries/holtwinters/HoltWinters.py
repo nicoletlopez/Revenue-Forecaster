@@ -136,7 +136,7 @@ class HoltWinters(object):
         self.constants =  self.value_dictionary[self.min_mad_index]
         predicted_values = self.triple_exponential_smoothing(self.constants[0],
                                                              self.constants[1],
-                                                             self.constants[2])[-self.n_preds]
+                                                             self.constants[2])[-self.n_preds:]
         print("Min MAD: %s " % self.min_mad)
         print("Min MAD index: %s" % self.min_mad_index)
         print("Constants: %s" % self.constants)
