@@ -2,6 +2,7 @@
 {% block title %}{{ project.project_name }} Project - Forecast{% endblock %}
 {% block subtitle %}forecast{% endblock %}
 {% block content %}
+    {% load humanize %}
     <div class="row">
 <div class="">
                       <ul class="nav nav-tabs bar_tabs" role="tablist">
@@ -12,7 +13,7 @@
                       </ul>
                         <div role="tabpanel" class="tab-pane fade active in" aria-labelledby="home-tab">
 
-                            {% block forecast_form %}
+{% block forecast_form %}
     <form class="form-horizontal form-label-left" role="form" method='post' action="" enctype="multipart/form-data">
         {% csrf_token %}
         {% include 'rfs/form_template.html' %}
@@ -23,22 +24,151 @@
         </div>
     </form>
     {% comment %}Prints out the forecast options metrics{% endcomment %}
-    <strong>Metric:</strong>{{ metric }}<br/>
-    <strong>Start Date:</strong>{{ start_date }}<br/>
-    <strong>End Date:</strong>{{ end_date }}<br/>
-    <strong>Segment:</strong>{{ segment }}<br/>
-    <strong>Values (per month):</strong>{{ values_list }}<br/>
-    <strong>Number of Predictions:</strong>{{ n_preds }}<br/>
-    <strong>Fitting Method:</strong>{{ fitting_method }}<br/>
-    <strong>Seasonal Length:</strong>{{ season_length }}<br/>
-    <h3>Optional:</h3>
-    <strong>Alpha:</strong>{{ alpha }}<br/>
-    <strong>Beta:</strong>{{ beta }}<br/>
-    <strong>Gamma:</strong>{{ gamma }}<br/>
-    <h1>Results:</h1>{{ result }}
+
 {% endblock forecast_form %}
+
                         </div>
 
 </div>
         </div>
 {% endblock %}
+{% block 2ndblock %}
+    {% if result %}
+    <div class="col-md-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+
+                    <section class="content invoice">
+                      <!-- title row -->
+                      <div class="row">
+                        <div class="col-xs-12 invoice-header">
+                          <h1>
+                                          <i class="fa fa-bar-chart"></i> Forecast.
+                                          <small class="pull-right"><!--date--></small>
+                                      </h1>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- info row -->
+                      <div class="row invoice-info">
+                        <div class="col-sm-4 invoice-col">
+                          From
+                          <address>
+                                          <strong>{{ start_date }}</strong>
+                                      </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                          To
+                          <address>
+                                          <strong>{{ end_date }}</strong>
+                                      </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                          <b>Forecast #{{ project.id }}{{ project }}{{ metric }}{{ segment }}{{ n_preds }}{{ season_length }}</b>
+                          <br>
+                          <br>
+                          <b>Project Name:</b> {{ project }}
+                          <br>
+                          <b>Date Today:</b> {{ datetime.date }}
+                          <br>
+                          <b>User:</b> {{ user }}
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+
+                      <!-- Table row -->
+                      <div class="row">
+                        <hr/>
+                      </div>
+                      <!-- /.row -->
+
+                      <div class="row">
+                        <!-- accepted payments column -->
+                        <div class="col-xs-6">
+                          <p class="lead">Optional</p>
+                          <div class="table-responsive">
+                            <table class="table">
+                              <tbody>
+                                <tr>
+                                  <th style="width:50%">Alpha:</th>
+                                  <td>{{ alpha }}</td>
+                                </tr>
+                                <tr>
+                                  <th>Beta:</th>
+                                  <td>{{ beta }}</td>
+                                </tr>
+                                <tr>
+                                  <th>Gamma:</th>
+                                  <td>{{ gamma }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-6">
+                          <p class="lead">Results: {{ result }}</p>
+
+                          <div class="table-responsive">
+                            <table class="table">
+                              <tbody>
+                                <tr>
+                                  <th style="width:50%">Metric:</th>
+                                  <td>{{ metric }}</td>
+                                </tr>
+                                <tr>
+                                  <th>Segment:</th>
+                                  <td>{{ segment }}</td>
+                                </tr>
+                                <tr>
+                                  <th>Values (per month):</th>
+                                  <td>{{ values_list }}</td>
+                                </tr>
+                                <tr>
+                                  <th>Number of Predictions:</th>
+                                  <td>{{ n_preds }}</td>
+                                </tr>
+                                {% if fitting_method %}
+                                <tr>
+                                  <th>Fitting Method:</th>
+                                  <td>{{ fitting_method }}</td>
+                                </tr>
+                                {% endif %}
+                              <tr>
+                                  <th>Seasonal Length:</th>
+                                  <td>{{ season_length }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+
+                      <!-- this row will not appear when printing -->
+                      <div class="row no-print">
+                        <div class="col-xs-12">
+                          <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button>
+                            <!--
+                          <button class="btn btn-success pull-right"><i class="fa fa-download"></i> Generate Excel</button>
+                          <button class="btn btn-primary pull-right" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>
+                            -->
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </div>
+    {% endif %}
+        {% endblock %}

@@ -38,14 +38,14 @@
                           <thead>
                             <tr>
                                 <th>Project</th>
-                                <th>No. of Files</th>
+                                <th>No. of Activities</th>
                             </tr>
                           </thead>
                           <tbody>
                           {% for project in all_projects %}
                           <tr>
                               <td><a href="{% url 'rfs:project' project.id %}"><div style="height:100%;width:100%">{{ project.project_name }}</div></a></td>
-                              <td>{{ project.file_set.count }}</td>
+                              <td>{{ project.activity_set.count }}</td>
                           </tr>
                           {% endfor %}
                           </tbody>
