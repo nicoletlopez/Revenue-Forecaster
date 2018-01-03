@@ -723,7 +723,7 @@ def forecast_form_custom(request, project_id):
         metric = request.POST.get("metric")
         start_date = datetime.strptime(request.POST.get("start_date"), '%Y-%m-%d')
         end_date = datetime.strptime(request.POST.get("end_date"), '%Y-%m-%d')
-        n_preds = request.POST.get("number_of_predictions")
+        n_preds = int(request.POST.get("number_of_predictions"))
         season_length = int(request.POST.get("season_length"))
         segment = request.POST.get("segment")
 
@@ -796,7 +796,7 @@ def forecast_form_custom(request, project_id):
                           'alpha': alpha,
                           'beta': beta,
                           'gamma': gamma,
-                          'result': result,
+                          'result': result_map,
                           'datetime':datetime.today(),
                           'arc_projects': Project.objects.all().filter(status='ARC'),
                           'actual_data_list': Actual.objects.all().filter(project_id=project_id),
