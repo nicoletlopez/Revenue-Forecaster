@@ -409,7 +409,7 @@ def excel_to_db(request, project_id):
                 }
                 return render(request, 'rfs/datafeeder.html', context)
             file.save()
-            Activity(project=project, user=request.user, file=form.cleaned_data.get("excel_file"),log="Inserted data using file %s" % (form.cleaned_data.get("excel_file"))).save()
+
 
             def record(result_array):
                 for tuples in result_array:
@@ -443,7 +443,6 @@ def excel_to_db(request, project_id):
                 # print("%s %s %s %s %s" % (segment,date,rns,arr,rev))
             except:
                 file.delete()
-                Activity.objects.filter(project=project).delete()
 
                 context = {'project': project,
                            'arc_projects': Project.objects.all().filter(status='ARC'),
@@ -452,13 +451,14 @@ def excel_to_db(request, project_id):
                            'form': form,
                            'actual_data_list': Actual.objects.all().filter(project_id=project_id),
                            'arc_files': File.objects.filter(status='ARC', project_id=project_id),
-                           'error_message': 'Excel format wrong. Please choose a correct one',
+                           'error_message': 'Excel cell format wrong. Please choose a correct one',
                            'active_tag': 'active',
                            'block_display': 'display:block;',
                            'current_page': 'current-page',
                            }
                 return render(request, 'rfs/datafeeder.html', context)
 
+            Activity(project=project, user=request.user, file=form.cleaned_data.get("excel_file"),log="Inserted data using file %s" % (form.cleaned_data.get("excel_file"))).save()
             context = {'project': project,
                        'message': 'Data insert success!',
                        'arc_projects': Project.objects.all().filter(status='ARC'),
