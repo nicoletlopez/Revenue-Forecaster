@@ -37,6 +37,7 @@
     <div class="col-md-12">
                 <div class="x_panel">
                   <div class="x_title">
+                      <h2>Forecast <small><!-- --></small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -95,6 +96,22 @@
                       <!-- /.row -->
 
                       <div class="row">
+                      <div class="col-xs-6">
+                          <p class="lead">Results:</p>
+                        <div class="table-responsive">
+                            <table class="table">
+                              <tbody>
+                              {% for key,value in result.items %}
+                                <tr>
+                                  <th style="width:50%">{{ key }}</th>
+                                  <td>{{ value|intcomma }}</td>
+                                </tr>
+                              {% endfor %}
+                              </tbody>
+                            </table>
+                          </div>
+
+                        </div>
                         <!-- accepted payments column -->
                         <div class="col-xs-6">
                             <div class="table-responsive">
@@ -156,22 +173,7 @@
                           </div>
                         </div>
                         <!-- /.col -->
-                        <div class="col-xs-6">
-                          <p class="lead">Results:</p>
-                        <div class="table-responsive">
-                            <table class="table">
-                              <tbody>
-                              {% for key,value in result.items %}
-                                <tr>
-                                  <th style="width:50%">{{ key }}</th>
-                                  <td>{{ value|intcomma }}</td>
-                                </tr>
-                              {% endfor %}
-                              </tbody>
-                            </table>
-                          </div>
 
-                        </div>
                         <!-- /.col -->
                       </div>
                       <!-- /.row -->
