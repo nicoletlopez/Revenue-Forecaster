@@ -2,83 +2,83 @@
 {% block title %}{{ project.project_name }} Project - Dashboard{% endblock %}
 {% block body %}
 
-<!-- page content -->
-<div class="">
-      <div class="clearfix"></div>
-      <div class="row">
-        <div class="col-md-12">
-          <div class="x_panel">
-            <div class="x_title">
-              <div class="navbar">
-                <div class="container">
-                  <ul style="height:40px" class="nav nav-pills navbar-nav navbar navBot">
-                  {% url 'rfs:ind' project.id as url0 %}
-                    {% url 'rfs:grp' project.id as url1 %}
-                  {% url 'rfs:forecast' project.id as url2 %}
-                  {% url 'rfs:custom-forecast' project.id as url3 %}
-                  {% if project.status == 'ACT' %}
-                      <li class="{% if request.resolver_match.url_name == 'project' or request.path == url0 or request.path == url1 %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-dashboard"> </i> Dashboard </a></li>
-                      <li class="{% if request.resolver_match.url_name == 'project-details' %}active{% endif %}"><a href="{% url 'rfs:project-details' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
-                      <li class="{% if request.resolver_match.url_name == 'datafeed' %}active{% endif %}"><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
-                      {% if actual_data_list %}
-                      <li class="{% if request.path == url2 or request.path == url3 %}active{% endif %}"><a href="{% url 'rfs:forecast' project.id %}"><i class="fa fa-bar-chart"> </i> Forecast </a></li>
-                        {% endif %}
-                  {% else %}
-                      <h3>Project will be available when restored.</h3>
-                          <form action="{% url 'rfs:project-delete' project.id %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="project_id" value="{{ project.id }}">
-                        <input type="hidden" name="status" value="ACT">
-                        <button type="submit" class="btn btn-success">Restore project</button>
-                        </form>
-                  {% endif %}
-                  </ul>
-              <ul class="nav navbar-nav navbar-right panel_toolbox">
-                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                </li>
-                  <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                {% if project.status == 'ACT' %}
-                                    <form action="{% url 'rfs:project-delete' project.id %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="project_id" value="{{ project.id }}">
-                                    <input type="hidden" name="status" value="ARC">
-                                    <button type="submit" class="btn btn-danger btn-block btn-sm">Archive project</button>
-                                    </form>
+    <!-- page content -->
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <div class="navbar">
+                            <div class="container">
+                                <ul style="height:40px" class="nav nav-pills navbar-nav navbar navBot">
+                                    {% url 'rfs:ind' project.id as url0 %}
+                                    {% url 'rfs:grp' project.id as url1 %}
+                                    {% url 'rfs:forecast' project.id as url2 %}
+                                    {% url 'rfs:custom-forecast' project.id as url3 %}
+                                    {% if project.status == 'ACT' %}
+                                        <li class="{% if request.resolver_match.url_name == 'project' or request.path == url0 or request.path == url1 %}active{% endif %}"><a href="{% url 'rfs:project' project.id %}"><i class="fa fa-dashboard"> </i> Dashboard </a></li>
+                                        <li class="{% if request.resolver_match.url_name == 'project-details' %}active{% endif %}"><a href="{% url 'rfs:project-details' project.id %}"><i class="fa fa-info"> </i> Details </a></li>
+                                        <li class="{% if request.resolver_match.url_name == 'datafeed' %}active{% endif %}"><a href="{% url 'rfs:datafeed' project.id %}"><i class="fa fa-database"> </i> Data Feeder </a></li>
+                                        {% if actual_data_list %}
+                                            <li class="{% if request.path == url2 or request.path == url3 %}active{% endif %}"><a href="{% url 'rfs:forecast' project.id %}"><i class="fa fa-bar-chart"> </i> Forecast </a></li>
+                                        {% endif %}
                                     {% else %}
+                                        <h3>Project will be available when restored.</h3>
                                         <form action="{% url 'rfs:project-delete' project.id %}" method="post">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="project_id" value="{{ project.id }}">
-                                        <input type="hidden" name="status" value="ACT">
-                                        <button type="submit" class="btn btn-success btn-block btn-sm">Restore project</button>
+                                            {% csrf_token %}
+                                            <input type="hidden" name="project_id" value="{{ project.id }}">
+                                            <input type="hidden" name="status" value="ACT">
+                                            <button type="submit" class="btn btn-success">Restore project</button>
                                         </form>
-                                {% endif %}
-                            </li>
-                        </ul>
-                  </li>
-              </ul>
-              </div>
-              </div>
-              <div class="clearfix"></div>
+                                    {% endif %}
+                                </ul>
+                                <ul class="nav navbar-nav navbar-right panel_toolbox">
+                                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li>
+                                                {% if project.status == 'ACT' %}
+                                                    <form action="{% url 'rfs:project-delete' project.id %}" method="post">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="project_id" value="{{ project.id }}">
+                                                        <input type="hidden" name="status" value="ARC">
+                                                        <button type="submit" class="btn btn-danger btn-block btn-sm">Archive project</button>
+                                                    </form>
+                                                {% else %}
+                                                    <form action="{% url 'rfs:project-delete' project.id %}" method="post">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="project_id" value="{{ project.id }}">
+                                                        <input type="hidden" name="status" value="ACT">
+                                                        <button type="submit" class="btn btn-success btn-block btn-sm">Restore project</button>
+                                                    </form>
+                                                {% endif %}
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+
+                    <div class="x_content">
+                        {% if project.status == 'ARC' %}
+                        {% else %}
+                            {% block content %}
+
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+
+
+                </div>
             </div>
-
-
-            <div class="x_content">
-            {% if project.status == 'ARC' %}
-            {% else %}
-            {% block content %}
-
+            {% block 2ndblock %}
             {% endblock %}
-            {% endif %}
-            </div>
-
-
-          </div>
         </div>
-      {% block 2ndblock %}
-      {% endblock %}
-      </div>
     </div>
 {% endblock %}

@@ -133,6 +133,7 @@ class ProjectDashboard(LoginRequiredMixin, DetailView):
         context['actual_rev'] = Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_rev'))
         context['actual_rns'] = Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_rns'))
         context['actual_arr'] = Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_arr'))
+        context['title'] = 'Total'
         if Actual.objects.filter(project_id=self.kwargs['pk']):
             context['actual_ocr'] = round(
                 (Actual.objects.all().filter(project_id=self.kwargs['pk']).aggregate(Sum('actual_ocr')))[
@@ -168,6 +169,7 @@ class GraphInd(LoginRequiredMixin, DetailView):
         context['actual_ocr'] = round((Actual.objects.all().filter(project_id=self.kwargs['pk'],
                                                                    segment_id__seg_type=segment).aggregate(
             Sum('actual_ocr')))['actual_ocr__sum'] * 10, 2)
+        context['title']='Individual'
         context['active_tag'] = 'active'
         context['block_display'] = 'display:block;'
         context['current_page'] = 'current-page'
@@ -201,6 +203,7 @@ class GraphGrp(LoginRequiredMixin, DetailView):
         context['actual_ocr'] = round((Actual.objects.all().filter(project_id=self.kwargs['pk'],
                                                                    segment_id__seg_type=segment).aggregate(
             Sum('actual_ocr')))['actual_ocr__sum'] * 10, 2)
+        context['title'] = 'Group'
         context['active_tag'] = 'active'
         context['block_display'] = 'display:block;'
         context['current_page'] = 'current-page'
@@ -643,8 +646,8 @@ def forecast_form_default(request, project_id):
 
         project_name = Project.objects.get(id=project_id).project_name
         write_to_excel(metric, segment, result, project_name)
-
-        Activity(project=project, user=request.user,log="Forecasted the %s in %s segment using the %s method" % (metric, segment, fitting_method)).save()
+        #metric,segment,fitting_method
+        Activity(project=project, user=request.user,log="Forecasted the '%s' in '%s' segment using the '%s' method" % (dict(form.fields['metric'].choices)[metric], dict(form.fields['segment'].choices)[segment], dict(form.fields['fitting_method'].choices)[fitting_method])).save()
 
         return render(request, 'rfs/default_forecast_form.html', {
             'project': project,
@@ -760,8 +763,8 @@ def forecast_form_custom(request, project_id):
         except Exception:
             traceback.print_exc()
             result = "Data too short for season length %s" % season_length
-
-        Activity(project=project, user=request.user,log="Forecasted the %s in %s segment using a custom method" % (metric, segment)).save()
+        #metric,segment
+        Activity(project=project, user=request.user,log="Forecasted the '%s' in '%s' segment using a custom method" % (dict(form.fields['metric'].choices)[metric], dict(form.fields['segment'].choices)[segment])).save()
 
         def map_forecast_to_date(forecast_result_list, end_date_of_forecast):
             date_list = []
@@ -805,6 +808,7 @@ def forecast_form_custom(request, project_id):
                           'arc_projects': Project.objects.all().filter(status='ARC'),
                           'actual_data_list': Actual.objects.all().filter(project_id=project_id),
                           'arc_files': File.objects.filter(status='ARC', project_id=project_id),
+                          'all_projects': Project.objects.all().filter(status='ACT'),
                           'active_tag': 'active',
                           'block_display': 'display:block;',
                           'current_page': 'current-page',

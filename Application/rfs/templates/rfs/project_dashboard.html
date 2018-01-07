@@ -4,53 +4,54 @@
     {% if actual_data_list %}
 
         <div class="row">
-<div class="">
-                      <ul class="nav nav-tabs bar_tabs right" role="tablist">
-                        <li role="presentation" class=""><a href="{% url 'rfs:grp' project.id %}" ><i class="fa fa-users"></i></a>
-                        </li>
-                        <li role="presentation" class=""><a href="{% url 'rfs:ind' project.id %}"><i class="fa fa-user"></i></a>
-                        </li>
-                        <li role="presentation" class=""><a href="{% url 'rfs:project' project.id %}" ><i class="fa fa-building"></i></a>
-                        </li>
-                      </ul>
-                        <div role="tabpanel" class="tab-pane fade active in" id="tab_content11" aria-labelledby="home-tab">
-                          {% include "rfs/actual_graphs.html" %}
-                        </div>
+            <h1>{{ title }} Graphical Data</h1>
+            <div class="">
+                <ul class="nav nav-tabs bar_tabs right" role="tablist">
+                    <li role="presentation" class=""><a href="{% url 'rfs:grp' project.id %}" ><i class="fa fa-users"></i></a>
+                    </li>
+                    <li role="presentation" class=""><a href="{% url 'rfs:ind' project.id %}"><i class="fa fa-user"></i></a>
+                    </li>
+                    <li role="presentation" class=""><a href="{% url 'rfs:project' project.id %}" ><i class="fa fa-building"></i></a>
+                    </li>
+                </ul>
+                <div role="tabpanel" class="tab-pane fade active in" id="tab_content11" aria-labelledby="home-tab">
+                    {% include "rfs/actual_graphs.html" %}
+                </div>
 
-</div>
+            </div>
         </div>
 
 
-        {% else %}
+    {% else %}
         <div class="col-md-12">
-          <div class="col-middle">
+        <div class="col-middle">
             <div class="text-center text-center">
-              <h2 class="error-number">{% block jumbo %}No data graphs to show{% endblock jumbo %}</h2>
-              <h2>{% block subjumbo %}Actual data is required{% endblock subjumbo %}</h2>
+                <h2 class="error-number">{% block jumbo %}No data graphs to show{% endblock jumbo %}</h2>
+                <h2>{% block subjumbo %}Actual data is required{% endblock subjumbo %}</h2>
 
 
-              <div class="center">
+                <div class="center">
 
-                  <div class="row">
-                      <div class="col-md-offset-5 col-md-2">
-                  <div class="btn-group-justified">
-                    <a class="btn btn-app" href="{% url 'rfs:datafeed' project.id %}">
-                      <i class="fa fa-database"></i> Feed Data
-                    </a>
+                    <div class="row">
+                        <div class="col-md-offset-5 col-md-2">
+                            <div class="btn-group-justified">
+                                <a class="btn btn-app" href="{% url 'rfs:datafeed' project.id %}">
+                                    <i class="fa fa-database"></i> Feed Data
+                                </a>
 
 
+                            </div>
                         </div>
                     </div>
-                  </div>
+                </div>
             </div>
-          </div>
         </div>
     {% endif %}
 {% endblock %}
 {% block 2ndblock %}
     {% if actual_data_list %}
-    {% if project.status == 'ACT' %}
-    {% include 'rfs/actual_table.html' %}
-       {% endif %}
-{% endif %}
+        {% if project.status == 'ACT' %}
+            {% include 'rfs/actual_table.html' %}
+        {% endif %}
+    {% endif %}
 {% endblock %}

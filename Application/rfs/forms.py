@@ -89,8 +89,8 @@ class ForecastOptionsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ForecastOptionsForm, self).__init__(*args, **kwargs)
         self.fields['metric'].widget.attrs = {'class': 'form-control'}
-        self.fields['start_date'].widget.attrs = {'class': 'form-control'}
-        self.fields['end_date'].widget.attrs = {'class': 'form-control'}
+        self.fields['start_date'].widget.attrs = {'class': 'form-control','data-inputmask':"'mask':'9999-99-99'",'placeholder':'YYYY-MM-DD'}
+        self.fields['end_date'].widget.attrs = {'class': 'form-control','data-inputmask':"'mask':'9999-99-99'",'placeholder':'YYYY-MM-DD'}
         self.fields['number_of_predictions'].widget.attrs = {'class': 'form-control'}
         self.fields['season_length'].widget.attrs = {'class': 'form-control'}
         self.fields['fitting_method'].widget.attrs = {'style':'list-style:none'}
@@ -125,8 +125,8 @@ class CustomForecastForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(CustomForecastForm, self).__init__(*args, **kwargs)
         self.fields['metric'].widget.attrs = {'class': 'form-control'}
-        self.fields['start_date'].widget.attrs = {'class': 'form-control'}
-        self.fields['end_date'].widget.attrs = {'class': 'form-control'}
+        self.fields['start_date'].widget.attrs = {'class': 'form-control','data-inputmask':"'mask':'9999-99-99'",'placeholder':'YYYY-MM-DD'}
+        self.fields['end_date'].widget.attrs = {'class': 'form-control','data-inputmask':"'mask':'9999-99-99'",'placeholder':'YYYY-MM-DD'}
         self.fields['number_of_predictions'].widget.attrs = {'class': 'form-control'}
         self.fields['season_length'].widget.attrs = {'class': 'form-control'}
         self.fields['segment'].widget.attrs = {'class': 'form-control'}
