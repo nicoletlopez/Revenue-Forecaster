@@ -1,5 +1,5 @@
 import numpy as np
-from ..fitting import ConstantFitting as cfitting
+from rfs.libraries.fitting import ConstantFitting as cfitting
 from tqdm import tqdm
 
 class HoltWinters(object):

@@ -647,6 +647,7 @@ def forecast_form_default(request, project_id):
             for value in value_list:
                 value_date_map[start_date] = value
                 start_date = add_one_month(start_date)
+            return value_date_map
 
         result_map = map_forecast_to_date(result, end_date)
 
