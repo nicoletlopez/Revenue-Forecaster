@@ -144,9 +144,9 @@ class CustomForecastForm(forms.Form):
     season_length = forms.IntegerField(initial=12)
     segment = forms.ChoiceField(choices=FORECAST_SUB_SEGMENT, initial='Total Individual and Group')
 
-    alpha = forms.FloatField(max_value=1.0,min_value=0.01,required=False,initial=0.6)
-    beta = forms.FloatField(max_value=1.0,min_value=0.01,required=False,initial=0.4)
-    gamma = forms.FloatField(max_value=1.0, min_value=0.01,required=False,initial=0.5)
+    alpha = forms.FloatField(max_value=1.0,min_value=0.01,required=True,initial=0.6)
+    beta = forms.FloatField(max_value=1.0,min_value=0.01,required=True,initial=0.4)
+    gamma = forms.FloatField(max_value=1.0, min_value=0.01,required=True,initial=0.5)
 
     #may have errors if constant_value_end is greater than constant_value_start
     # constant_value_start = forms.FloatField(min_value=1,max_value=101,required=False,initial=1)

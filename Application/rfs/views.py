@@ -705,6 +705,22 @@ def forecast_form_custom(request, project_id):
         form = CustomForecastForm(request.POST or None)
         project = get_object_or_404(Project, pk=project_id)
 
+
+
+    if form.is_valid():
+        metric = request.POST.get("metric")
+        start_date = datetime.strptime(request.POST.get("start_date"), '%Y-%m-%d')
+        end_date = datetime.strptime(request.POST.get("end_date"), '%Y-%m-%d')
+        n_preds = int(request.POST.get("number_of_predictions"))
+        season_length = int(request.POST.get("season_length"))
+        segment = request.POST.get("segment")
+
+        alpha = float(request.POST.get('alpha'))
+        beta = float(request.POST.get('beta'))
+        gamma = float(request.POST.get('gamma'))
+
+
+
         def add_one_month(date_input):
             thirties = [2, 4, 6, 9, 11]
             thirty_ones = [3, 5, 7, 8, 10, 12]
@@ -732,20 +748,6 @@ def forecast_form_custom(request, project_id):
                 finally:
                     return date_input
 
-    if form.is_valid():
-        metric = request.POST.get("metric")
-        start_date = datetime.strptime(request.POST.get("start_date"), '%Y-%m-%d')
-        end_date = datetime.strptime(request.POST.get("end_date"), '%Y-%m-%d')
-        n_preds = int(request.POST.get("number_of_predictions"))
-        season_length = int(request.POST.get("season_length"))
-        segment = request.POST.get("segment")
-
-        alpha = float(request.POST.get('alpha'))
-        beta = float(request.POST.get('beta'))
-        gamma = float(request.POST.get('gamma'))
-
-        constant_value_start = request.POST.get("constant_value_start")
-
         value_list = []
 
         date = start_date
@@ -766,7 +768,8 @@ def forecast_form_custom(request, project_id):
 
         try:
             hw = hwinters.HoltWinters(value_list, int(n_preds), int(season_length))
-            result = hw.triple_exponential_smoothing(alpha, beta, gamma)
+            print("Number of predictions: %s" % n_preds)
+            result = hw.triple_exponential_smoothing(alpha, beta, gamma)[-n_preds:]
             # result = result[len(result) - 1]
         except Exception:
             traceback.print_exc()
