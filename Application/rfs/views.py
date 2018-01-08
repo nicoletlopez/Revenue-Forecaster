@@ -800,7 +800,17 @@ def forecast_form_custom(request, project_id):
 
             return result_map
 
+        def map_value_used_to_date(value_list,start_date):
+            value_date_map = {}
+            for value in value_list:
+                value_date_map[start_date.strftime("%B %Y")] = value
+                start_date = add_one_month(start_date)
+            return value_date_map
+
         result_map = map_forecast_to_date(result, end_date)
+
+        value_date_map = map_value_used_to_date(value_list,start_date)
+        
 
 
         return render(request, 'rfs/default_forecast_form.html',
@@ -811,7 +821,7 @@ def forecast_form_custom(request, project_id):
                           'start_date': start_date,
                           'end_date': end_date,
                           'segment': segment_value,
-                          'values_list': value_list,
+                          'values_list': value_date_map,
                           'n_preds': n_preds,
                           'season_length': season_length,
                           'alpha': alpha,

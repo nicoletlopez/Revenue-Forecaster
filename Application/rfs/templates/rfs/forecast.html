@@ -3,7 +3,9 @@
     <div class="col-md-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Forecast <small><!-- --></small></h2>
+                <h2>Forecast
+                    <small><!-- --></small>
+                </h2>
                 <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
@@ -82,7 +84,7 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="profile-r">
-                                <p class="lead">Values</p>
+                                    <p class="lead">Values</p>
                                     <div class="table-responsive">
                                         <table class="table">
                                             <tbody>
@@ -97,7 +99,18 @@
                                             <tr>
                                                 <th>Values (per month):</th>
                                                 <td>
-                                                    {{ values_list }}
+                                                    <table class="table-striped tile_info">
+                                                        <tbody>
+                                                        {% for key,value in values_list.items %}
+                                                            {% if value > 0 %}
+                                                                <tr>
+                                                                    <td>{{ key }}</td>
+                                                                    <td>{{ value|intcomma }}</td>
+                                                                </tr>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
                                                 </td>
                                             </tr>
                                             <tr>
