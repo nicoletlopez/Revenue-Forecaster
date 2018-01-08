@@ -642,7 +642,15 @@ def forecast_form_default(request, project_id):
 
             return result_map
 
+        def map_value_used_to_date(value_list,start_date):
+            value_date_map = {}
+            for value in value_list:
+                value_date_map[start_date] = value
+                start_date = add_one_month(start_date)
+
         result_map = map_forecast_to_date(result, end_date)
+
+        value_date_map = map_value_used_to_date(value_list,start_date)
 
         project_name = Project.objects.get(id=project_id).project_name
         write_to_excel(metric, segment, result, project_name)
