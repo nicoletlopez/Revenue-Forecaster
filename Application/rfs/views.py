@@ -656,18 +656,20 @@ def forecast_form_default(request, project_id):
         project_name = Project.objects.get(id=project_id).project_name
         write_to_excel(metric, segment, result, project_name)
         #metric,segment,fitting_method
-        Activity(project=project, user=request.user,log="Forecasted the '%s' in '%s' segment using the '%s' method" % (dict(form.fields['metric'].choices)[metric], dict(form.fields['segment'].choices)[segment], dict(form.fields['fitting_method'].choices)[fitting_method])).save()
-
+        metric_value = dict(form.fields['metric'].choices)[metric]
+        segment_value = dict(form.fields['segment'].choices)[segment]
+        fitting_method_value = dict(form.fields['fitting_method'].choices)[fitting_method]
+        Activity(project=project, user=request.user, log="Forecasted the '%s' in '%s' segment using the '%s' method" % (metric_value, segment_value, fitting_method_value)).save()
         return render(request, 'rfs/default_forecast_form.html', {
             'project': project,
             'form': form,
-            'metric': metric,
+            'metric': metric_value,
             'start_date': start_date,
             'end_date': end_date,
-            'segment': segment,
-            'values_list': value_list,
+            'segment': segment_value,
+            'values_list': value_date_map,
             'n_preds': n_preds,
-            'fitting_method': fitting_method,
+            'fitting_method': fitting_method_value,
             'season_length': season_length,
             'alpha': hw.constants[0],
             'beta': hw.constants[1],
@@ -776,7 +778,9 @@ def forecast_form_custom(request, project_id):
             traceback.print_exc()
             result = "Data too short for season length %s" % season_length
         #metric,segment
-        Activity(project=project, user=request.user,log="Forecasted the '%s' in '%s' segment using a custom method" % (dict(form.fields['metric'].choices)[metric], dict(form.fields['segment'].choices)[segment])).save()
+        metric_value = dict(form.fields['metric'].choices)[metric]
+        segment_value = dict(form.fields['segment'].choices)[segment]
+        Activity(project=project, user=request.user,log="Forecasted the '%s' in '%s' segment using a custom method" % (metric_value, segment_value)).save()
 
         def map_forecast_to_date(forecast_result_list, end_date_of_forecast):
             date_list = []
@@ -803,10 +807,10 @@ def forecast_form_custom(request, project_id):
                       {
                           'project': project,
                           'form': form,
-                          'metric': metric,
+                          'metric': metric_value,
                           'start_date': start_date,
                           'end_date': end_date,
-                          'segment': segment,
+                          'segment': segment_value,
                           'values_list': value_list,
                           'n_preds': n_preds,
                           'season_length': season_length,

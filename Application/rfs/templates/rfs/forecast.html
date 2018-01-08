@@ -42,9 +42,6 @@
                         </div>
                         <!-- /.col -->
                         <div class="col-sm-4 invoice-col">
-                            <b>Forecast #{{ project.id }}{{ metric }}{{ segment }}{{ n_preds }}{{ season_length }}</b>
-                            <br>
-                            <br>
                             <b>Project Name:</b> {{ project }}
                             <br>
                             <b>Date Today:</b> {{ datetime.date }}
@@ -70,7 +67,7 @@
                                             <thead>
                                             <tr>
                                                 <th>Month</th>
-                                                <th>{{ metric }} {{ segment }}</th>
+                                                <th>{{ metric }} of {{ segment }}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -100,11 +97,7 @@
                                             <tr>
                                                 <th>Values (per month):</th>
                                                 <td>
-                                                    {% for value in values_list %}
-                                                        {% if value > 0 %}
-                                                            {{ value|intcomma }}<br/>
-                                                        {% endif %}
-                                                    {% endfor %}
+                                                    {{ values_list }}
                                                 </td>
                                             </tr>
                                             <tr>
